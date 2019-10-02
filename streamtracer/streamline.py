@@ -4,10 +4,10 @@ from scipy.interpolate import RegularGridInterpolator as interpolate
 import matplotlib.pyplot as plt
 
 
-__all__ = ['Streamlines']
+__all__ = ['StreamTracer']
 
 
-class Streamlines:
+class StreamTracer:
     """
     Parameters
     ----------
