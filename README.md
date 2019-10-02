@@ -12,8 +12,6 @@ Intel and Windows seems notorious for its hard to load/find compilers, so it may
 However, if Intel is required, find and run `compilervars.bat` in your command line.
 This is usually found at `<intel_install_dir>\compilers_and_libraries\windows\bin\compilervars.bat`
 
-On the HPC, this can be done with `module load`, see below section for "Full Imperial HPC Installation".
-
 Once the compiler required is available, run one of the following commands:
 
 | OS | Compiler | Command |
