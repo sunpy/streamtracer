@@ -2,6 +2,7 @@ build/*
 *.ipynb_checkpoints*
 *.DS_Store
 streamtracer.egg-info*
+dist/*
 
 doc/_build/*
 doc/api/*
