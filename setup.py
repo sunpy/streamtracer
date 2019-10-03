@@ -3,7 +3,10 @@
 from numpy.distutils.core import setup, Extension
 
 exts = [Extension(name='streamtracer.fortran.streamtracer',
-                  sources=['streamtracer/fortran/Streamtracer.f90']
+                  sources=['streamtracer/fortran/Streamtracer.f90'],
+                  # f2py_options=['-gomp'],
+                  extra_f90_compile_args=['-fopenmp'],
+                  extra_link_args=['-fopenmp']
                   ),
         ]
 
@@ -13,7 +16,7 @@ if __name__ == "__main__":
           description='Python wrapped fortran to caclulate streamlines',
           author='Lars Mejnertsen & David Stansby',
           author_email='dstansby@gmail.com',
-          install_requires=['numpy', ],
+          install_requires=['numpy', 'scipy'],
           python_requires='>=3.6',
           packages=['streamtracer', ],
           ext_modules=exts,
