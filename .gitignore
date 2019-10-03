@@ -4,6 +4,8 @@ build/*
 streamtracer.egg-info*
 dist/*
 *.pyc
+.coverage
+*.so
 
 doc/_build/*
 doc/api/*
