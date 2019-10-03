@@ -1,4 +1,7 @@
 build:
   image: latest
 
+python:
+  setup_py_install: true
+
 requirements_file: requirements/docs.txt
