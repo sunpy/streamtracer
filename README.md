@@ -1,6 +1,10 @@
 # streamtracer
+Fast streamline tracing in python
 
-## Fast streamline tracing in python
+
+[![Build Status](https://dev.azure.com/dstansby/dstansby/_apis/build/status/dstansby.streamtracer?branchName=master)](https://dev.azure.com/dstansby/dstansby/_build/latest?definitionId=1&branchName=master)
+[![codecov](https://codecov.io/gh/dstansby/streamtracer/branch/master/graph/badge.svg)](https://codecov.io/gh/dstansby/streamtracer)
+
 
 ### Installation
 
