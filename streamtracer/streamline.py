@@ -55,17 +55,6 @@ class StreamTracer:
         self.var_names = []
         self.cell_data = {}
 
-    def reset(self, ns=None, ds=None):
-        del self.xs
-        del self.ROT
-
-        if(ns is None):
-            ns = self.ns0
-        if(ds is None):
-            ds = self.ds
-
-        self.__init__(ns, ds)
-
     # Calculate the streamline from a vector array
     def calc(self, x0, v, d, xc, v_name='v'):
         """
@@ -146,7 +135,7 @@ class StreamTracer:
         for s in self.cell_data:
             self.cell_data[s] = self.cell_data[s][el]
 
-    def interp(self, x, y, z, v, var_name):
+    def _interp(self, x, y, z, v, var_name):
         """
         Interpolate for other quantities.
         """
