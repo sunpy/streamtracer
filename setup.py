@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import os
 from numpy.distutils.core import setup, Extension
 
 exts = []
