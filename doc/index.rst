@@ -1,3 +1,6 @@
+streamtracer
+============
+
 streamtracer is a python package for rapid streamline tracing. It is a wrapper
 to compiled fortran code that does the heavy lifting.
 
