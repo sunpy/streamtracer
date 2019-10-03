@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'streamtracer'
-copyright = '2019, David Stansby, Lars Mejnertsen'
-author = 'David Stansby, Lars Mejnertsen'
+copyright = '2019, David Stansby'
+author = 'David Stansby'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'

@@ -8,6 +8,8 @@ __all__ = ['StreamTracer']
 
 class StreamTracer:
     """
+    A streamline tracing class.
+
     Parameters
     ----------
     n_steps : int
@@ -28,7 +30,7 @@ class StreamTracer:
 
     Attributes
     ----------
-    xs : array of (*, 3) arrays
+    xs : array of (n, 3) arrays
         An array of the streamlines, which in general have different numbers
         of points.
     """
@@ -63,7 +65,7 @@ class StreamTracer:
         x0 : (n, 3) array
             Seed points.
         v : (nx, ny, nz, 3) array
-            Box of magnetic field vectors.
+            Box of field vectors.
         d : (3,) array
             Box gridpoint spacing in (x, y, z) directions.
         xc : (3,) array

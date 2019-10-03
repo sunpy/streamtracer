@@ -1,2 +1,2 @@
-.. automodapi:: streamtracer.streamline
+.. automodapi:: streamtracer
    :no-inheritance-diagram:
