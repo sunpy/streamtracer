@@ -16,7 +16,7 @@ if __name__ == "__main__":
           description='Python wrapped fortran to caclulate streamlines',
           author='Lars Mejnertsen & David Stansby',
           author_email='dstansby@gmail.com',
-          install_requires=['numpy', ],
+          install_requires=['numpy', 'scipy'],
           python_requires='>=3.6',
           packages=['streamtracer', ],
           ext_modules=exts,
