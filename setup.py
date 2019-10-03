@@ -3,7 +3,8 @@
 from numpy.distutils.core import setup, Extension
 
 exts = [Extension(name='streamtracer.fortran.streamtracer',
-                  sources=['streamtracer/fortran/Streamtracer.f90']
+                  sources=['streamtracer/fortran/Streamtracer.f90'],
+                  extra_f90_compile_args=['-fopenmp'],
                   ),
         ]
 
