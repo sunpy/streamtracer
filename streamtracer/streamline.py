@@ -12,14 +12,14 @@ class StreamTracer:
     Parameters
     ----------
     n_steps : int
-        Number of steps.
+        Number of steps available for each line.
     step_size : float
         Step size in fraction of cell size.
     direction : int, optional
         Integration direction. ``0`` for both directions, ``1`` for forward, or
         ``-1`` for backwards.
     inner_boundary : bool, optional
-        Whether to terminate calculation at the inner boundary.
+        Whether to terminate calculation at a spherical inner boundary.
     r_IB : float, optional
         Radius of the inner boundary.
 
@@ -37,7 +37,7 @@ class StreamTracer:
         self.dir = direction
 
         streamtracer.inner_boundary = inner_boundary
-        streamtracer.r_IB = 1.
+        streamtracer.r_IB = r_IB
 
         self._ROT_reasons = ['Uncalculated',
                              'Out of steps',

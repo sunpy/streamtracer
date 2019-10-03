@@ -1,1 +1,1 @@
-from streamline import StreamTracer
+from .streamline import StreamTracer
