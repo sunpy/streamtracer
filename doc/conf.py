@@ -16,7 +16,7 @@
 import sys
 import unittest.mock
 
-modules = 'streamtracer.fortran'
+modules = ['streamtracer.fortran']
 for module in modules:
     sys.modules[module] = unittest.mock.MagicMock()
 
