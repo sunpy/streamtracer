@@ -1,3 +1,19 @@
+# streamtracer
+
+## Fast streamline tracing in python
+
+### Installation
+
+In theory, it should be possible to build and install streamtracer in one
+go with
+
+```sh
+pip install .
+```
+
+Note that this requires a fortran compiler; currently known to work is
+gfortran.
+
 ### Building
 
 The fortran sources will need to be built first; for this, you will need a fortran compiler.
@@ -22,19 +38,3 @@ Once the compiler required is available, run one of the following commands:
 | Linux | gfortran | `python setup.py config_fc --fcompiler gnu95 --f90flags "-fopenmp" build_src build_ext -lgomp` |
 
 *Note, for intel, the fcompiler may be a slightly different name. Change to whichever is available.*
-
-### Installation
-
-Once built, it can simply be installed by running:
-
-```sh
-python setup.py install
-```
-
-Once installed, the package can be used by importing:
-
-```python
-import streamtracer
-```
-
-See the examples for more use cases
