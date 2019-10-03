@@ -1,7 +1,10 @@
-build:
-  image: latest
+version: 2
+
+sphinx:
+  configuration: doc/conf.py
 
 python:
   setup_py_install: true
-
-requirements_file: requirements/docs.txt
+  install:
+    - requirements: requirements/docs.txt
+    - method: setuptools
