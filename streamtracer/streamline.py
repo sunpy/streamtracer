@@ -1,7 +1,6 @@
 import numpy as np
 from streamtracer.fortran.streamtracer import streamtracer
 from scipy.interpolate import RegularGridInterpolator as interpolate
-import matplotlib.pyplot as plt
 
 
 __all__ = ['StreamTracer']
@@ -22,6 +21,10 @@ class StreamTracer:
         Whether to terminate calculation at a spherical inner boundary.
     r_IB : float, optional
         Radius of the inner boundary.
+    outer_boundary : bool, optional
+        Whether to terminate calculate at a spherical outer boundary.
+    r_OB : float, optional
+        Radius of the outer boundary.
 
     Attributes
     ----------
@@ -30,7 +33,8 @@ class StreamTracer:
         of points.
     """
     def __init__(self, n_steps, step_size, direction=0,
-                 inner_boundary=True, r_IB=1.):
+                 inner_boundary=True, r_IB=1.,
+                 outer_boundary=False, r_OB=None):
         self.ns = n_steps
         self.ns0 = n_steps  # Save original number
         self.ds = step_size
