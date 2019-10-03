@@ -7,4 +7,4 @@ python:
   install:
     - requirements: requirements/docs.txt
     - method: setuptools
-      path: streamtracer
+      path: .
