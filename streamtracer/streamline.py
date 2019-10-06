@@ -58,30 +58,30 @@ class StreamTracer:
         self.cell_data = {}
 
     # Calculate the streamline from a vector array
-    def calc(self, x0, v, d, xc, v_name='v'):
+    def trace(self, seeds, field, d, xc, v_name='v'):
         """
         Parameters
         ----------
-        x0 : (n, 3) array
+        seeds : (n, 3) array
             Seed points.
-        v : (nx, ny, nz, 3) array
+        field : (nx, ny, nz, 3) array
             Box of field vectors.
         d : (3,) array
             Box gridpoint spacing in (x, y, z) directions.
         xc : (3,) array
             Coordinate of the box center.
         """
-        self.x0 = x0.copy()
-        self.n_lines = x0.shape[0]
+        self.x0 = seeds.copy()
+        self.n_lines = seeds.shape[0]
         streamtracer.ds = self.ds
         streamtracer.xc = xc.copy()
 
-        x0 = np.atleast_2d(x0)
+        seeds = np.atleast_2d(seeds)
         # Validate shapes
-        if len(x0.shape) != 2:
-            raise ValueError('x0 must be a 2D array')
-        if x0.shape[1] != 3:
-            raise ValueError(f'x0 must have shape (n, 3), got {x0.shape}')
+        if len(seeds.shape) != 2:
+            raise ValueError('seeds must be a 2D array')
+        if seeds.shape[1] != 3:
+            raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
         if len(v.shape) != 4:
             raise ValueError('field must be a 4D array')
