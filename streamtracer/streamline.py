@@ -83,9 +83,9 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
-        if len(v.shape) != 4:
+        if len(field.shape) != 4:
             raise ValueError('field must be a 4D array')
-        if v.shape[-1] != 3:
+        if field.shape[-1] != 3:
             raise ValueError(f'field must have shape (nx, ny, nz, 3), got {v.shape}')
 
         self.x0 = np.array([xi + xc for xi in self.x0])
@@ -93,7 +93,7 @@ class StreamTracer:
         if self.dir == 1 or self.dir == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                self.x0, v, d, self.dir, self.ns)
+                self.x0, field, d, self.dir, self.ns)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -105,10 +105,10 @@ class StreamTracer:
         elif self.dir == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                self.x0, v, d, 1, self.ns)
+                self.x0, field, d, 1, self.ns)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                self.x0, v, d, -1, self.ns)
+                self.x0, field, d, -1, self.ns)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])

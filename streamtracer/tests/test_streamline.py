@@ -1,23 +1,34 @@
 import numpy as np
+import pytest
 
 from streamtracer import StreamTracer
 
 
-def test_smoke():
-    # Smoke test for StreamTracer creation
-    StreamTracer(10000, 0.01)
+@pytest.fixture
+def tracer():
+    return StreamTracer(1000, 0.1)
 
 
-def test_uniform_field():
-    tracer = StreamTracer(10000, 0.1)
-
-    seed = np.array([0, 0, 0])
+@pytest.fixture
+def uniform_field():
+    # Uniform field in the x direction
     v = np.zeros((100, 100, 100, 3))
     # Make all vectors point in the x-direction
     v[:, :, :, 0] = 1
+    return v
+
+
+def test_smoke(tracer):
+    # Smoke test for StreamTracer creation
+    pass
+
+
+def test_uniform_field(tracer, uniform_field):
+    seed = np.array([0, 0, 0])
+
     grid_spacing = [1, 1, 1]
     xc = [0, 0, 0]
-    tracer.trace(seed, v, grid_spacing, xc)
+    tracer.trace(seed, uniform_field, grid_spacing, xc)
     assert isinstance(tracer.xs, np.ndarray)
 
     sline = tracer.xs[0]
