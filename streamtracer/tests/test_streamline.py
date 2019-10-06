@@ -25,7 +25,6 @@ def test_smoke(tracer):
 
 def test_uniform_field(tracer, uniform_field):
     seed = np.array([0, 0, 0])
-
     grid_spacing = [1, 1, 1]
     xc = [0, 0, 0]
     tracer.trace(seed, uniform_field, grid_spacing, xc)
@@ -38,3 +37,17 @@ def test_uniform_field(tracer, uniform_field):
 
     # Check that streamline always goes in a positive direction
     assert np.all(np.diff(sline[:, 0]) > 0)
+
+
+def test_trace_direction(tracer, uniform_field):
+    seed = np.array([0, 0, 0])
+    grid_spacing = [1, 1, 1]
+    xc = [0, 0, 0]
+    tracer.trace(seed, uniform_field, grid_spacing, xc, direction=1)
+    sline = tracer.xs[0]
+    assert np.all(sline[:, 0] >= 0)
+
+    tracer.trace(seed, uniform_field, grid_spacing, xc, direction=-1)
+    sline = tracer.xs[0]
+
+    assert np.all(sline[:, 0] <= 0)

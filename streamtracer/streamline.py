@@ -16,9 +16,6 @@ class StreamTracer:
         Number of steps available for each line.
     step_size : float
         Step size in fraction of cell size.
-    direction : int, optional
-        Integration direction. ``0`` for both directions, ``1`` for forward, or
-        ``-1`` for backwards.
     inner_boundary : bool, optional
         Whether to terminate calculation at a spherical inner boundary.
     r_IB : float, optional
@@ -34,13 +31,12 @@ class StreamTracer:
         An array of the streamlines, which in general have different numbers
         of points.
     """
-    def __init__(self, n_steps, step_size, direction=0,
+    def __init__(self, n_steps, step_size,
                  inner_boundary=False, r_IB=None,
                  outer_boundary=False, r_OB=None):
         self.ns = n_steps
         self.ns0 = n_steps  # Save original number
         self.ds = step_size
-        self.dir = direction
 
         streamtracer.inner_boundary = inner_boundary
         streamtracer.r_IB = r_IB
@@ -58,7 +54,7 @@ class StreamTracer:
         self.cell_data = {}
 
     # Calculate the streamline from a vector array
-    def trace(self, seeds, field, d, xc, v_name='v'):
+    def trace(self, seeds, field, d, xc, direction=0, v_name='v'):
         """
         Parameters
         ----------
@@ -70,6 +66,9 @@ class StreamTracer:
             Box gridpoint spacing in (x, y, z) directions.
         xc : (3,) array
             Coordinate of the box center.
+        direction : int, optional
+            Integration direction. ``0`` for both directions, ``1`` for forward, or
+            ``-1`` for backwards.
         """
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
@@ -90,10 +89,10 @@ class StreamTracer:
 
         self.x0 = np.array([xi + xc for xi in self.x0])
 
-        if self.dir == 1 or self.dir == -1:
+        if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                self.x0, field, d, self.dir, self.ns)
+                self.x0, field, d, direction, self.ns)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -102,7 +101,7 @@ class StreamTracer:
             # Save the Reason of Termination
             self.ROT = ROT
 
-        elif self.dir == 0:
+        elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
                 self.x0, field, d, 1, self.ns)
