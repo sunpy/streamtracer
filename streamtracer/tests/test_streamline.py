@@ -17,7 +17,7 @@ def test_uniform_field():
     v[:, :, :, 0] = 1
     grid_spacing = [1, 1, 1]
     xc = [0, 0, 0]
-    tracer.calc(seed, v, grid_spacing, xc)
+    tracer.trace(seed, v, grid_spacing, xc)
     assert isinstance(tracer.xs, np.ndarray)
 
     sline = tracer.xs[0]
