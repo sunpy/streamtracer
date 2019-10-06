@@ -35,7 +35,7 @@ class StreamTracer:
         of points.
     """
     def __init__(self, n_steps, step_size, direction=0,
-                 inner_boundary=True, r_IB=1.,
+                 inner_boundary=False, r_IB=None,
                  outer_boundary=False, r_OB=None):
         self.ns = n_steps
         self.ns0 = n_steps  # Save original number
@@ -76,6 +76,7 @@ class StreamTracer:
         streamtracer.ds = self.ds
         streamtracer.xc = xc.copy()
 
+        x0 = np.atleast_2d(x0)
         # Validate shapes
         if len(x0.shape) != 2:
             raise ValueError('x0 must be a 2D array')
