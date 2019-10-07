@@ -49,22 +49,23 @@ class StreamTracer:
                          0: 'Both',
                          1: 'Forward'}
 
-        self.var = {}
-        self.var_names = []
-        self.cell_data = {}
-
     # Calculate the streamline from a vector array
-    def trace(self, seeds, field, d, xc, direction=0, v_name='v'):
+    def trace(self, seeds, field, grid_spacing, box_center, direction=0):
         """
+        Trace streamlines.
+
+        This traces streamlines from a series of seeds, through a vector
+        field.
+
         Parameters
         ----------
         seeds : (n, 3) array
             Seed points.
         field : (nx, ny, nz, 3) array
             Box of field vectors.
-        d : (3,) array
+        grid_spacing : (3,) array
             Box gridpoint spacing in (x, y, z) directions.
-        xc : (3,) array
+        box_center : (3,) array
             Coordinate of the box center.
         direction : int, optional
             Integration direction. ``0`` for both directions, ``1`` for forward, or
@@ -73,7 +74,7 @@ class StreamTracer:
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
         streamtracer.ds = self.ds
-        streamtracer.xc = xc.copy()
+        streamtracer.box_center = box_center.copy()
 
         seeds = np.atleast_2d(seeds)
         # Validate shapes
@@ -87,12 +88,12 @@ class StreamTracer:
         if field.shape[-1] != 3:
             raise ValueError(f'field must have shape (nx, ny, nz, 3), got {v.shape}')
 
-        self.x0 = np.array([xi + xc for xi in self.x0])
+        self.x0 = np.array([xi + box_center for xi in self.x0])
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                self.x0, field, d, direction, self.ns)
+                self.x0, field, grid_spacing, direction, self.ns)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -104,10 +105,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                self.x0, field, d, 1, self.ns)
+                self.x0, field, grid_spacing, 1, self.ns)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                self.x0, field, d, -1, self.ns)
+                self.x0, field, grid_spacing, -1, self.ns)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
@@ -125,14 +126,9 @@ class StreamTracer:
 
         # Remove streamlines with zero size
         el = self.ns > 1
-        self.ROT = self.ROT[el]  # , :
+        self.ROT = self.ROT[el]
         self.ns = self.ns[el]
 
-        self.xs = np.array([xi - xc for xi in self.xs])
+        self.xs = np.array([xi - box_center for xi in self.xs])
 
-        self.var[v_name] = vs.copy()
-        self.var_names = np.array([s for s in self.var])
         del vs
-
-        for s in self.cell_data:
-            self.cell_data[s] = self.cell_data[s][el]
