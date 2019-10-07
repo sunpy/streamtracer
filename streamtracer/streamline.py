@@ -86,7 +86,7 @@ class StreamTracer:
         if len(field.shape) != 4:
             raise ValueError('field must be a 4D array')
         if field.shape[-1] != 3:
-            raise ValueError(f'field must have shape (nx, ny, nz, 3), got {v.shape}')
+            raise ValueError(f'field must have shape (nx, ny, nz, 3), got {field.shape}')
 
         self.x0 = np.array([xi + box_center for xi in self.x0])
 
