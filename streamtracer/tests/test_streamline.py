@@ -68,3 +68,6 @@ def test_bad_input(tracer, uniform_field):
 
     with pytest.raises(ValueError, match='field must have shape'):
         tracer.trace(seed, np.ones((10, 10, 10, 2)), grid_spacing, xc)
+
+    with pytest.raises(ValueError, match='grid spacing must have shape'):
+        tracer.trace(seed, uniform_field, 1, xc)

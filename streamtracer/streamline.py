@@ -76,7 +76,9 @@ class StreamTracer:
         streamtracer.ds = self.ds
         streamtracer.box_center = box_center.copy()
 
+        grid_spacing = np.array(grid_spacing)
         seeds = np.atleast_2d(seeds)
+
         # Validate shapes
         if len(seeds.shape) != 2:
             raise ValueError('seeds must be a 2D array')
@@ -87,6 +89,9 @@ class StreamTracer:
             raise ValueError('field must be a 4D array')
         if field.shape[-1] != 3:
             raise ValueError(f'field must have shape (nx, ny, nz, 3), got {field.shape}')
+
+        if grid_spacing.shape != (3,):
+            raise ValueError(f'grid spacing must have shape (3,), got {grid_spacing.shape}')
 
         self.x0 = np.array([xi + box_center for xi in self.x0])
 
