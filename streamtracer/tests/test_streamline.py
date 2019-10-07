@@ -51,3 +51,20 @@ def test_trace_direction(tracer, uniform_field):
     sline = tracer.xs[0]
 
     assert np.all(sline[:, 0] <= 0)
+
+
+def test_bad_input(tracer, uniform_field):
+    seed = np.array([0, 0, 0])
+    grid_spacing = [1, 1, 1]
+    xc = [0, 0, 0]
+    with pytest.raises(ValueError, match='seeds must be a 2D array'):
+        tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_field, grid_spacing, xc)
+
+    with pytest.raises(ValueError, match='seeds must have shape'):
+        tracer.trace(np.array([1, 1]), uniform_field, grid_spacing, xc)
+
+    with pytest.raises(ValueError, match='field must be a 4D array'):
+        tracer.trace(seed, np.array([1]), grid_spacing, xc)
+
+    with pytest.raises(ValueError, match='field must have shape'):
+        tracer.trace(seed, np.ones((10, 10, 10, 2)), grid_spacing, xc)
