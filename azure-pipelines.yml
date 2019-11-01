@@ -24,12 +24,16 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements/testing.txt
+    sudo apt update
     sudo apt install -y gfortran
-    pip install -e .
   displayName: 'Install dependencies'
+
+- script: |
+   python -m pip install -e .
+  displayName: 'Install package'
 
 - script: |
     pip install pytest pytest-azurepipelines codecov pytest-cov
     pytest --cov=streamtracer
     codecov --token=4847529e-2a8f-4bf0-912f-ec8f5f98b3f8
-  displayName: 'pytest'
+  displayName: 'Run tests'
