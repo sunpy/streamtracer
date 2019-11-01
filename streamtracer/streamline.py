@@ -136,7 +136,6 @@ class StreamTracer:
 
         self.xs = np.array([xi - box_center for xi in self.xs])
         # Filter out nans
-        nanrows = np.any(np.isnan(self.xs), axis=1)
-        self.xs = self.xs[~nanrows, :]
+        self.xs = [xi[~np.any(np.isnan(self.xs), axis=1), :] for xi in self.xs]
 
         del vs
