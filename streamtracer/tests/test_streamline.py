@@ -28,7 +28,9 @@ def test_uniform_field(tracer, uniform_field):
     grid_spacing = [1, 1, 1]
     xc = [0, 0, 0]
     tracer.trace(seed, uniform_field, grid_spacing, xc)
-    assert isinstance(tracer.xs, np.ndarray)
+    assert isinstance(tracer.xs[0], np.ndarray)
+    assert len(tracer.xs) == len(tracer.ROT)
+    assert len(tracer.xs) == len(tracer.ns)
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
