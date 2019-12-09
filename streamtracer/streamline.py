@@ -30,6 +30,9 @@ class StreamTracer:
     xs : array of (n, 3) arrays
         An array of the streamlines, which in general have different numbers
         of points.
+
+    ns : list
+        Number of points in each streamline.
     """
     def __init__(self, n_steps, step_size,
                  inner_boundary=False, r_IB=None,
