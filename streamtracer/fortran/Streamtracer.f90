@@ -227,37 +227,37 @@
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
     integer, intent(in) :: nx, ny, nz, dir
     integer, intent(out) :: ROT
-	double precision, intent(out) :: rotation
+	  double precision, intent(out) :: rotation
     double precision, dimension(3) :: xi, xm, vi, vm
-	double precision :: ri, rm
-	integer :: i
+  	double precision :: ri, rm
+  	integer :: i
 
     ROT = 0
-	rotation = 0
+	  rotation = 0
 
     xi = x0
-	xm = x0
+  	xm = x0
 
-	call interpolate(xm, v, nx, ny, nz, d, vm)
-	vm = vm/vector_mag(vm)
+  	call interpolate(xm, v, nx, ny, nz, d, vm)
+  	vm = vm/vector_mag(vm)
 
     do i=2,ns
 
-		! Check for end of streamline
-        ROT = check_bounds(xi, nx, ny, nz, d)
-        if(ROT.ne.0) exit
+	  	! Check for end of streamline
+      ROT = check_bounds(xi, nx, ny, nz, d)
+      if(ROT.ne.0) exit
 
-		! Update streamline position
-        call RK4_update(xi, v, nx, ny, nz, d, dir)
+  		! Update streamline position
+      call RK4_update(xi, v, nx, ny, nz, d, dir)
 
-		! Calculate rotation
-		call interpolate(xi, v, nx, ny, nz, d, vi)
-		vi = vi/vector_mag(vi)
+	  	! Calculate rotation
+	  	call interpolate(xi, v, nx, ny, nz, d, vi)
+	  	vi = vi/vector_mag(vi)
 
-		rotation = rotation + acos(max(-1., min(1., vector_dot(vm, vi))))
+  		rotation = rotation + acos(max(-1., min(1., vector_dot(vm, vi))))
 
-		xm = xi
-		vm = vi
+	  	xm = xi
+	  	vm = vi
 
     end do
 
