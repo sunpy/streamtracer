@@ -68,6 +68,25 @@ def test_trace_direction(tracer, uniform_field):
     assert np.all(sline[:, 0] <= 0)
 
 
+def test_cyclic(uniform_field):
+    # Check that a completely cyclic grid cycles round until the maximum steps
+    # are exhausted.
+    maxsteps = 2005
+    tracer = StreamTracer(maxsteps, 0.1, cyclic=True)
+    seed = np.array([50, 50, 50])
+    grid_spacing = [1, 1, 1]
+    xc = [0, 0, 0]
+
+    tracer.trace(seed, uniform_field, grid_spacing, xc)
+    assert len(tracer.xs[0]) == (2 * maxsteps - 1)
+    assert tracer.max_steps == maxsteps
+
+    # Check that nans interrupt the tracing
+    uniform_field[0, 0, :] = np.nan
+    tracer.trace(seed, uniform_field, grid_spacing, xc)
+    assert len(tracer.xs[0]) == 2000
+
+
 def test_bad_input(tracer, uniform_field):
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]

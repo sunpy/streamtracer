@@ -71,7 +71,7 @@
 
     end function get_max_threads
 
-    subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, xs, vs, ROT, ns_out)
+    subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, vs, ROT, ns_out)
     ! INPUT:
     ! x0: seed points
     ! v: vector field
@@ -88,7 +88,7 @@
     double precision, dimension(nlines,3), intent(in) :: x0
     double precision, dimension(3), intent(in) :: d
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, intent(in) :: ns, nx, ny, nz, dir, nlines
+    integer, intent(in) :: ns, nx, ny, nz, dir, nlines, cyclic
     double precision, dimension(nlines, ns, 3), intent(out) :: xs, vs
     integer, intent(out), dimension(nlines) :: ROT, ns_out
     double precision, dimension(3) :: x0_i
@@ -105,19 +105,19 @@
     do i=1,nlines
         !DIR$ NOUNROLL
         x0_i = x0(i,:)
-        call streamline(x0_i, v, nx, ny, nz, d, dir, ns, xs_i, vs_i, ROT(i), ns_out(i))
+        call streamline(x0_i, v, nx, ny, nz, d, dir, ns, cyclic, xs_i, vs_i, ROT(i), ns_out(i))
         do j=1,ns_out(i)
             xs(i,j,:) = xs_i(j,:)
             vs(i,j,:) = vs_i(j,:)
         end do
     end do
-	!$omp end do
+  !$omp end do
 
     !$omp end parallel
 
     end subroutine streamline_array
 
-    subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, xs, vs, ROT, ns_out)
+    subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, cyclic, xs, vs, ROT, ns_out)
       ! INPUT:
       ! x0: seed point
       ! v: vector field
@@ -125,6 +125,7 @@
       ! d:
       ! dir: direction to trace (1=forwards, -1=backwards)
       ! ns_in: max steps
+      ! cyclic: if true, cyclic boundaries (instead of terminating)
       !
       ! OUTPUT:
       ! xs: traced streamline
@@ -134,7 +135,7 @@
     implicit none
     double precision, dimension(3), intent(in) :: x0, d
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, intent(in) :: ns_in, nx, ny, nz, dir
+    integer, intent(in) :: ns_in, nx, ny, nz, dir, cyclic
     double precision, dimension(ns_in, 3), intent(out) :: xs, vs
     integer, intent(out) :: ROT, ns_out
     double precision, dimension(3) :: xi
@@ -159,7 +160,7 @@
 
     do i=2,ns
         ! Check if we are out of bounds, and move if cyclic is on
-        ROT = check_bounds(xi, nx, ny, nz, d)
+        call check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
         if(ROT.ne.0) exit
 
         ! Do a single step
@@ -175,26 +176,26 @@
     ns_out = i-1
 
     if (ROT.eq.0) then
-		ROT = 1
-		ns_out = ns
-	end if
+    ROT = 1
+    ns_out = ns
+  end if
 
     end subroutine streamline
 
 
-	double precision function vector_dot(v1, v2)
+  double precision function vector_dot(v1, v2)
     double precision, dimension(3), intent(in) :: v1, v2
 
-	vector_dot = v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3)
+  vector_dot = v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3)
 
-	end function vector_dot
+  end function vector_dot
 
-	double precision function vector_mag(v)
+  double precision function vector_mag(v)
     double precision, dimension(3), intent(in) :: v
 
-	vector_mag = sqrt(vector_dot(v, v))
+  vector_mag = sqrt(vector_dot(v, v))
 
-	end function vector_mag
+  end function vector_mag
 
     subroutine RK4_update(xi, v, nx, ny, nz, d, dir)
     double precision, dimension(3), intent(inout) :: xi
@@ -226,42 +227,49 @@
 
     end subroutine RK4_update
 
-    double precision function check_bounds(xi, nx, ny, nz, d)
-    double precision, intent(in), dimension(3) ::xi, d
+    subroutine check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
+    ! INPUT
+    ! xi: vector position
+    ! nx, ny, nz: number of grid points in (x, y, z)
+    ! d: vector of grid spacings in (x, y, z)
+    ! cyclic: bool, if true then don't terminate at edge of box
+    double precision, intent(in), dimension(3) :: d
     integer, intent(in) :: nx, ny, nz
     double precision :: ri
+    integer, intent(in) :: cyclic
+    double precision, intent(out), dimension(3) :: xi
+    integer, intent(out) :: ROT
 
-    check_bounds = 0
 
+    ROT = 0
     if ( isnan(xi(1)).or.isnan(xi(2)).or.isnan(xi(3)) ) then
-        check_bounds = -2
-        return
-    end if
-
-    if(xi(1).lt.0.or.xi(1).gt.d(1)*nx) then
-        check_bounds = 2
-        return
-    end if
-
-    if(xi(2).lt.0.or.xi(2).gt.d(2)*ny) then
-        check_bounds = 2
-        return
-    end if
-
-    if(xi(3).lt.0.or.xi(3).gt.d(3)*nz) then
-        check_bounds = 2
-        return
-    end if
-
-    if(inner_boundary) then
+        ROT = -2
+    elseif(xi(1).lt.0.or.xi(1).gt.d(1)*nx) then
+        if(cyclic.ne.0) then
+          xi(1) = xi(1) - FLOOR(xi(1) / d(1)*nx)
+        else
+          ROT = 2
+        end if
+    elseif(xi(2).lt.0.or.xi(2).gt.d(2)*ny) then
+      if(cyclic.ne.0) then
+        xi(2) = xi(2) - FLOOR(xi(2) / d(2)*ny)
+      else
+        ROT = 2
+      end if
+    elseif(xi(3).lt.0.or.xi(3).gt.d(3)*nz) then
+      if(cyclic.ne.0) then
+        xi(3) = xi(3) - FLOOR(xi(3) / d(3)*nz)
+      else
+        ROT = 2
+      end if
+    elseif(inner_boundary) then
         ri = sqrt((xi(1)-xc(1))**2+(xi(2)-xc(2))**2+(xi(3)-xc(3))**2)
         if(ri.le.r_IB) then
-            check_bounds = 3
-            return
+            ROT = 3
         end if
     end if
 
-    end function check_bounds
+    end subroutine check_bounds
 
     subroutine stream_function(xI, v, nx, ny, nz, d, dir, f)
     implicit none
@@ -314,7 +322,7 @@
     !                              v(i1(1),i1(2),i0(3),3), v(i1(1),i1(2),i1(3),3), &
     !                              vI(3))
 
-	vmag  = sqrt(vI(1)**2+vI(2)**2+vI(3)**2)
+  vmag  = sqrt(vI(1)**2+vI(2)**2+vI(3)**2)
     !DIR$ NOUNROLL
     f = dir*vI/vmag*ds
 

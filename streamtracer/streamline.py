@@ -36,10 +36,12 @@ class StreamTracer:
     """
     def __init__(self, n_steps, step_size,
                  inner_boundary=False, r_IB=None,
-                 outer_boundary=False, r_OB=None):
-        self.ns = n_steps
+                 outer_boundary=False, r_OB=None,
+                 cyclic=False):
+        self.max_steps = n_steps
         self.ns0 = n_steps  # Save original number
         self.ds = step_size
+        self.cyclic = cyclic
 
         streamtracer.inner_boundary = inner_boundary
         streamtracer.r_IB = r_IB
@@ -96,7 +98,7 @@ class StreamTracer:
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid_spacing, direction, self.ns)
+                seeds, field, grid_spacing, direction, self.max_steps, self.cyclic)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -108,10 +110,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid_spacing, 1, self.ns)
+                seeds, field, grid_spacing, 1, self.max_steps, self.cyclic)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid_spacing, -1, self.ns)
+                seeds, field, grid_spacing, -1, self.max_steps, self.cyclic)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
