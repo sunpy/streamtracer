@@ -53,7 +53,7 @@ class StreamTracer:
                          1: 'Forward'}
 
     # Calculate the streamline from a vector array
-    def trace(self, seeds, field, grid_spacing, box_center, direction=0):
+    def trace(self, seeds, field, grid_spacing, direction=0):
         """
         Trace streamlines.
 
@@ -68,8 +68,6 @@ class StreamTracer:
             Box of field vectors.
         grid_spacing : (3,) array
             Box gridpoint spacing in (x, y, z) directions.
-        box_center : (3,) array
-            Coordinate of the box center.
         direction : int, optional
             Integration direction. ``0`` for both directions, ``1`` for forward, or
             ``-1`` for backwards.
@@ -77,7 +75,6 @@ class StreamTracer:
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
         streamtracer.ds = self.ds
-        streamtracer.box_center = box_center.copy()
 
         grid_spacing = np.array(grid_spacing)
         seeds = np.atleast_2d(seeds)
@@ -96,12 +93,10 @@ class StreamTracer:
         if grid_spacing.shape != (3,):
             raise ValueError(f'grid spacing must have shape (3,), got {grid_spacing.shape}')
 
-        self.x0 = np.array([xi + box_center for xi in self.x0])
-
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                self.x0, field, grid_spacing, direction, self.ns)
+                seeds, field, grid_spacing, direction, self.ns)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -113,10 +108,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                self.x0, field, grid_spacing, 1, self.ns)
+                seeds, field, grid_spacing, 1, self.ns)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                self.x0, field, grid_spacing, -1, self.ns)
+                seeds, field, grid_spacing, -1, self.ns)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
@@ -137,7 +132,6 @@ class StreamTracer:
         self.ROT = self.ROT[el]
         self.ns = self.ns[el]
 
-        self.xs = np.array([xi - box_center for xi in self.xs])
         # Filter out nans
         xi = self.xs[0]
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]

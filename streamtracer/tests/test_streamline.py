@@ -26,8 +26,7 @@ def test_smoke(tracer):
 def test_uniform_field(tracer, uniform_field):
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
-    xc = [0, 0, 0]
-    tracer.trace(seed, uniform_field, grid_spacing, xc)
+    tracer.trace(seed, uniform_field, grid_spacing)
     assert isinstance(tracer.xs[0], np.ndarray)
     assert len(tracer.xs) == len(tracer.ROT)
     assert len(tracer.xs) == len(tracer.ns)
@@ -44,12 +43,11 @@ def test_uniform_field(tracer, uniform_field):
 def test_trace_direction(tracer, uniform_field):
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
-    xc = [0, 0, 0]
-    tracer.trace(seed, uniform_field, grid_spacing, xc, direction=1)
+    tracer.trace(seed, uniform_field, grid_spacing, direction=1)
     sline = tracer.xs[0]
     assert np.all(sline[:, 0] >= 0)
 
-    tracer.trace(seed, uniform_field, grid_spacing, xc, direction=-1)
+    tracer.trace(seed, uniform_field, grid_spacing, direction=-1)
     sline = tracer.xs[0]
 
     assert np.all(sline[:, 0] <= 0)
@@ -58,18 +56,17 @@ def test_trace_direction(tracer, uniform_field):
 def test_bad_input(tracer, uniform_field):
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
-    xc = [0, 0, 0]
     with pytest.raises(ValueError, match='seeds must be a 2D array'):
-        tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_field, grid_spacing, xc)
+        tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_field, grid_spacing)
 
     with pytest.raises(ValueError, match='seeds must have shape'):
-        tracer.trace(np.array([1, 1]), uniform_field, grid_spacing, xc)
+        tracer.trace(np.array([1, 1]), uniform_field, grid_spacing)
 
     with pytest.raises(ValueError, match='field must be a 4D array'):
-        tracer.trace(seed, np.array([1]), grid_spacing, xc)
+        tracer.trace(seed, np.array([1]), grid_spacing)
 
     with pytest.raises(ValueError, match='field must have shape'):
-        tracer.trace(seed, np.ones((10, 10, 10, 2)), grid_spacing, xc)
+        tracer.trace(seed, np.ones((10, 10, 10, 2)), grid_spacing)
 
     with pytest.raises(ValueError, match='grid spacing must have shape'):
-        tracer.trace(seed, uniform_field, 1, xc)
+        tracer.trace(seed, uniform_field, 1)
