@@ -125,14 +125,9 @@ class StreamTracer:
             # Stack the forward and reverse arrays
             self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)])
             vs = np.array([np.vstack([vri, vfi]) for vri, vfi in zip(vs_r, vs_f)])
-            self.ns = np.fromiter([len(xsi) for xsi in self.xs], int)
+            self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
-
-        # Remove streamlines with zero size
-        el = self.ns > 1
-        self.ROT = self.ROT[el]
-        self.ns = self.ns[el]
         else:
             raise ValueError(f'Direction must be -1, 1 or 0 (got {direction})')
 

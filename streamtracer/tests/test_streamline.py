@@ -41,7 +41,6 @@ def test_uniform_field(tracer, uniform_field):
     tracer.trace(seed, uniform_field, grid_spacing)
     assert isinstance(tracer.xs[0], np.ndarray)
     assert len(tracer.xs) == len(tracer.ROT)
-    assert len(tracer.xs) == len(tracer.ns)
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
@@ -75,15 +74,14 @@ def test_cyclic(uniform_field):
     tracer = StreamTracer(maxsteps, 0.1, cyclic=True)
     seed = np.array([99.9, 50, 50])
     grid_spacing = [1, 1, 1]
-    xc = [0, 0, 0]
 
-    tracer.trace(seed, uniform_field, grid_spacing, xc)
+    tracer.trace(seed, uniform_field, grid_spacing)
     assert len(tracer.xs[0]) == (2 * maxsteps - 1)
     assert tracer.max_steps == maxsteps
 
     # Check that nans interrupt the tracing
     uniform_field[0, 0, :] = np.nan
-    tracer.trace(seed, uniform_field, grid_spacing, xc, direction=1)
+    tracer.trace(seed, uniform_field, grid_spacing, direction=1)
     assert len(tracer.xs[0]) == 2000
 
 
