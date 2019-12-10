@@ -146,23 +146,28 @@
 
     ROT = 0
 
+    ! Set all streamline points to (0, 0, 0) to start
     xs = 0
+    ! Set all the output vectors to (1,1,1) to start
+    vs = 1.
+
+    ! Set the initial point to be the seed
     xs(1, :) = x0
     xi = x0
 
-    vs = 1.
-
-    call interpolate(xi, v, nx, ny, nz, d, vs(1,:))
+    call interpolate(xi, v, nx, ny, nz, d, vs(1 ,:))
 
     do i=2,ns
-
+        ! Check if we are out of bounds, and move if cyclic is on
         ROT = check_bounds(xi, nx, ny, nz, d)
         if(ROT.ne.0) exit
 
+        ! Do a single step
         call RK4_update(xi, v, nx, ny, nz, d, dir)
-
+        ! Save the step value
         xs(i,:) = xi
 
+        ! Calculate the local B vector
         call interpolate(xi, v, nx, ny, nz, d, vs(i,:))
 
     end do

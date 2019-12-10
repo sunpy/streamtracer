@@ -50,6 +50,9 @@ def test_uniform_field(tracer, uniform_field):
 
     # Check that streamline always goes in a positive direction
     assert np.all(np.diff(sline[:, 0]) > 0)
+    # Check that there are 100 * 0.1 = 1000 steps in the streamline, ie. 1001
+    # points in the streamline
+    assert sline.shape[0] == 1001
 
 
 def test_trace_direction(tracer, uniform_field):
