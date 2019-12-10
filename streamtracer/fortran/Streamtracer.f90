@@ -88,7 +88,8 @@
     double precision, dimension(nlines,3), intent(in) :: x0
     double precision, dimension(3), intent(in) :: d
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, intent(in) :: ns, nx, ny, nz, dir, nlines, cyclic
+    integer, intent(in) :: ns, nx, ny, nz, dir, nlines
+    integer, intent(in), dimension(3) :: cyclic
     double precision, dimension(nlines, ns, 3), intent(out) :: xs, vs
     integer, intent(out), dimension(nlines) :: ROT, ns_out
     double precision, dimension(3) :: x0_i
@@ -135,7 +136,8 @@
     implicit none
     double precision, dimension(3), intent(in) :: x0, d
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, intent(in) :: ns_in, nx, ny, nz, dir, cyclic
+    integer, intent(in) :: ns_in, nx, ny, nz, dir
+    integer, intent(in), dimension(3) :: cyclic
     double precision, dimension(ns_in, 3), intent(out) :: xs, vs
     integer, intent(out) :: ROT, ns_out
     double precision, dimension(3) :: xi
@@ -236,7 +238,7 @@
     double precision, intent(in), dimension(3) :: d
     integer, intent(in) :: nx, ny, nz
     double precision :: ri
-    integer, intent(in) :: cyclic
+    integer, intent(in), dimension(3) :: cyclic
     double precision, intent(out), dimension(3) :: xi
     integer, intent(out) :: ROT
 
@@ -245,19 +247,19 @@
     if ( isnan(xi(1)).or.isnan(xi(2)).or.isnan(xi(3)) ) then
         ROT = -2
     elseif(xi(1).lt.0.or.xi(1).gt.d(1)*nx) then
-        if(cyclic.ne.0) then
+        if(cyclic(1).ne.0) then
           xi(1) = MOD(xi(1), d(1)*nx)
         else
           ROT = 2
         end if
     elseif(xi(2).lt.0.or.xi(2).gt.d(2)*ny) then
-      if(cyclic.ne.0) then
+      if(cyclic(2).ne.0) then
         xi(2) = MOD(xi(2), d(2)*ny)
       else
         ROT = 2
       end if
     elseif(xi(3).lt.0.or.xi(3).gt.d(3)*nz) then
-      if(cyclic.ne.0) then
+      if(cyclic(3).ne.0) then
         xi(3) = MOD(xi(3), d(3)*nz)
       else
         ROT = 2

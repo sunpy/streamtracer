@@ -35,16 +35,11 @@ class StreamTracer:
         Number of points in each streamline.
     """
     def __init__(self, n_steps, step_size,
-                 inner_boundary=False, r_IB=None,
-                 outer_boundary=False, r_OB=None,
-                 cyclic=False):
+                 cyclic=[False, False, False]):
         self.max_steps = n_steps
         self.ns0 = n_steps  # Save original number
         self.ds = step_size
-        self.cyclic = cyclic
-
-        streamtracer.inner_boundary = inner_boundary
-        streamtracer.r_IB = r_IB
+        self.cyclic = np.array(cyclic, dtype=int)
 
         self._ROT_reasons = ['Uncalculated',
                              'Out of steps',
