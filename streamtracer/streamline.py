@@ -35,14 +35,11 @@ class StreamTracer:
         Number of points in each streamline.
     """
     def __init__(self, n_steps, step_size,
-                 inner_boundary=False, r_IB=None,
-                 outer_boundary=False, r_OB=None):
-        self.ns = n_steps
+                 cyclic=[False, False, False]):
+        self.max_steps = n_steps
         self.ns0 = n_steps  # Save original number
         self.ds = step_size
-
-        streamtracer.inner_boundary = inner_boundary
-        streamtracer.r_IB = r_IB
+        self.cyclic = np.array(cyclic, dtype=int)
 
         self._ROT_reasons = ['Uncalculated',
                              'Out of steps',
@@ -96,7 +93,7 @@ class StreamTracer:
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid_spacing, direction, self.ns)
+                seeds, field, grid_spacing, direction, self.max_steps, self.cyclic)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -108,10 +105,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid_spacing, 1, self.ns)
+                seeds, field, grid_spacing, 1, self.max_steps, self.cyclic)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid_spacing, -1, self.ns)
+                seeds, field, grid_spacing, -1, self.max_steps, self.cyclic)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
@@ -123,14 +120,11 @@ class StreamTracer:
             # Stack the forward and reverse arrays
             self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)])
             vs = np.array([np.vstack([vri, vfi]) for vri, vfi in zip(vs_r, vs_f)])
-            self.ns = np.fromiter([len(xsi) for xsi in self.xs], int)
+            self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
-
-        # Remove streamlines with zero size
-        el = self.ns > 1
-        self.ROT = self.ROT[el]
-        self.ns = self.ns[el]
+        else:
+            raise ValueError(f'Direction must be -1, 1 or 0 (got {direction})')
 
         # Filter out nans
         xi = self.xs[0]
