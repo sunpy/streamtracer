@@ -23,6 +23,18 @@ def test_smoke(tracer):
     pass
 
 
+@pytest.mark.parametrize('x0', [0, 50])
+def test_different_seeds(tracer, uniform_field, x0):
+    seed = np.array([0, x0, x0])
+    grid_spacing = [1, 1, 1]
+    tracer.trace(seed, uniform_field, grid_spacing)
+
+    sline = tracer.xs[0]
+    # Check that y, z coordinates are all zero
+    np.testing.assert_equal(sline[:, 1], x0)
+    np.testing.assert_equal(sline[:, 2], x0)
+
+
 def test_uniform_field(tracer, uniform_field):
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
