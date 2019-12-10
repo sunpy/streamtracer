@@ -49,9 +49,8 @@ def test_uniform_field(tracer, uniform_field):
 
     # Check that streamline always goes in a positive direction
     assert np.all(np.diff(sline[:, 0]) > 0)
-    # Check that there are 100 * 0.1 = 1000 steps in the streamline, ie. 1001
-    # points in the streamline
-    assert sline.shape[0] == 1001
+    # Check that there are 100 * 0.1 = 1000 steps in the streamline
+    assert sline.shape[0] == 1000
 
 
 def test_trace_direction(tracer, uniform_field):
@@ -79,9 +78,10 @@ def test_cyclic(uniform_field):
     assert len(tracer.xs[0]) == (2 * maxsteps - 1)
     assert tracer.max_steps == maxsteps
 
-    # Check that nans interrupt the tracing
+    tracer.cyclic = [False, False, False]
+    # Check that turning cyclic off interrupts the tracing
     tracer.trace(seed, uniform_field, grid_spacing, direction=1)
-    assert len(tracer.xs[0]) == 2000
+    assert len(tracer.xs[0]) == 2
 
 
 def test_bad_input(tracer, uniform_field):

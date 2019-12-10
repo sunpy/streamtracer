@@ -161,12 +161,12 @@
     call interpolate(xi, v, nx, ny, nz, d, vs(1 ,:))
 
     do i=2,ns
-        ! Check if we are out of bounds, and move if cyclic is on
-        call check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
-        if(ROT.ne.0) exit
 
         ! Do a single step
         call RK4_update(xi, v, nx, ny, nz, d, dir)
+        ! Check if we are out of bounds, and move if cyclic is on
+        call check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
+        if(ROT.ne.0) exit
         ! Save the step value
         xs(i,:) = xi
 
