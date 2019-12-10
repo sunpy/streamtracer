@@ -176,94 +176,6 @@
 
     end subroutine streamline
 
-    subroutine connectivity_array(x0, nlines, v, nx, ny, nz, d, link, rotation)
-    double precision, dimension(nlines,3), intent(in) :: x0
-    double precision, dimension(3), intent(in) :: d
-    double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, dimension(nlines), intent(out) :: link, rotation
-    integer, intent(in) :: nx, ny, nz, nlines
-    integer, dimension(nlines) :: ROT_f, ROT_r
-    double precision, dimension(3) :: x0_i
-    double precision :: rotation_i
-    integer :: i
-
-    !$ openmp_enabled = 1
-
-    !$omp parallel default(firstprivate) shared(v, x0, ROT_f, ROT_r, link, rotation)
-
-    if(debug.gt.0) call thread_count('connectivity_array')
-
-    !$omp do schedule(dynamic)
-    do i=1,nlines
-        !DIR$ NOUNROLL
-        x0_i = x0(i,:)
-        call streamline_end(x0_i, v, nx, ny, nz, d, 1, ROT_f(i), rotation_i)
-		rotation(i) = rotation_i
-    end do
-    !$omp end do
-
-    !$omp do schedule(dynamic)
-    do i=1,nlines
-        !DIR$ NOUNROLL
-        x0_i = x0(i,:)
-        call streamline_end(x0_i, v, nx, ny, nz, d, -1, ROT_r(i), rotation_i)
-		rotation(i) = rotation(i)+rotation_i
-    end do
-    !$omp end do
-
-    !$omp do schedule(static)
-    do i=1,nlines
-        link(i) = categorise_end_pts(ROT_f(i), ROT_r(i))
-    end do
-    !$omp end do
-
-    !$omp end parallel
-
-    end subroutine connectivity_array
-
-    subroutine streamline_end(x0, v, nx, ny, nz, d, dir, ROT, rotation)
-    implicit none
-    double precision, dimension(3), intent(in) :: x0, d
-    double precision, dimension(nx,ny,nz,3), intent(in) :: v
-    integer, intent(in) :: nx, ny, nz, dir
-    integer, intent(out) :: ROT
-	double precision, intent(out) :: rotation
-    double precision, dimension(3) :: xi, xm, vi, vm
-	double precision :: ri, rm
-	integer :: i
-
-    ROT = 0
-	rotation = 0
-
-    xi = x0
-	xm = x0
-
-	call interpolate(xm, v, nx, ny, nz, d, vm)
-	vm = vm/vector_mag(vm)
-
-    do i=2,ns
-
-		! Check for end of streamline
-        ROT = check_bounds(xi, nx, ny, nz, d)
-        if(ROT.ne.0) exit
-
-		! Update streamline position
-        call RK4_update(xi, v, nx, ny, nz, d, dir)
-
-		! Calculate rotation
-		call interpolate(xi, v, nx, ny, nz, d, vi)
-		vi = vi/vector_mag(vi)
-
-		rotation = rotation + acos(max(-1., min(1., vector_dot(vm, vi))))
-
-		xm = xi
-		vm = vi
-
-    end do
-
-    if (ROT.eq.0) ROT = 1
-
-    end subroutine streamline_end
 
 	double precision function vector_dot(v1, v2)
     double precision, dimension(3), intent(in) :: v1, v2
@@ -279,32 +191,6 @@
 
 	end function vector_mag
 
-    integer function categorise_end_pts(f, r)
-    integer, intent(in) :: f, r
-    integer :: link
-
-    if(r==2 .and. f==2) then
-		link = 1	! Solar Wind
-	elseif(r==3 .and. f==3) then
-		link = 2	! Closed
-	elseif(r==3 .and. f==2) then
-		link = 3	! North-Open
-	elseif(r==2 .and. f==3) then
-		link = 4	! South-Open
-	elseif(r==2 .or. f==2) then
-		link = 5	! SW-Inc
-	elseif(r==3) then
-		link = 6	! North-Inc
-	elseif(f==3) then
-		link = 7	! South-Inc
-	else
-		link = 8	! Inc-Inc
-    end if
-
-    categorise_end_pts = link
-
-    end function categorise_end_pts
-
     subroutine RK4_update(xi, v, nx, ny, nz, d, dir)
     double precision, dimension(3), intent(inout) :: xi
     double precision, dimension(3), intent(in) :: d
@@ -312,7 +198,6 @@
     double precision, dimension(3) :: xu
     integer, intent(in) :: nx, ny, nz, dir
     double precision, dimension(3) :: k1, k2, k3, k4
-    integer :: i
 
     !--- RK4 K parameters ---------------------------------------------------------------------
     call stream_function(xi, v, nx, ny, nz, d, dir, k1)
