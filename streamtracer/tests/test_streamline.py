@@ -18,11 +18,6 @@ def uniform_x_field():
     return v
 
 
-def test_smoke(tracer):
-    # Smoke test for StreamTracer creation
-    pass
-
-
 @pytest.mark.parametrize('x0', [0, 50])
 def test_different_seeds(tracer, uniform_x_field, x0):
     seed = np.array([0, x0, x0])
