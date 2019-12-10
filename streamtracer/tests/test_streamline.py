@@ -20,6 +20,7 @@ def uniform_x_field():
 
 @pytest.mark.parametrize('x0', [0, 50])
 def test_different_seeds(tracer, uniform_x_field, x0):
+    # Check that different seed points give sensible results
     seed = np.array([0, x0, x0])
     grid_spacing = [1, 1, 1]
     tracer.trace(seed, uniform_x_field, grid_spacing)
@@ -31,6 +32,7 @@ def test_different_seeds(tracer, uniform_x_field, x0):
 
 
 def test_uniform_field(tracer, uniform_x_field):
+    # Check that tracing thought a uniform field gives sensible results
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
     tracer.trace(seed, uniform_x_field, grid_spacing)
@@ -49,6 +51,7 @@ def test_uniform_field(tracer, uniform_x_field):
 
 
 def test_trace_direction(tracer, uniform_x_field):
+    # Check that the direction keyword argument works
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
     tracer.trace(seed, uniform_x_field, grid_spacing, direction=1)
@@ -62,8 +65,7 @@ def test_trace_direction(tracer, uniform_x_field):
 
 
 def test_cyclic(uniform_x_field):
-    # Check that a completely cyclic grid cycles round until the maximum steps
-    # are exhausted.
+    # Check the cyclic option
     maxsteps = 4
     tracer = StreamTracer(maxsteps, 0.1, cyclic=[True, False, False])
     seed = np.array([99.9, 50, 50])
@@ -80,6 +82,7 @@ def test_cyclic(uniform_x_field):
 
 
 def test_bad_input(tracer, uniform_x_field):
+    # Check input validation
     seed = np.array([0, 0, 0])
     grid_spacing = [1, 1, 1]
     with pytest.raises(ValueError, match='seeds must be a 2D array'):
