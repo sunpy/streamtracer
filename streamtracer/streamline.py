@@ -12,42 +12,24 @@ class StreamTracer:
 
     Parameters
     ----------
-    n_steps : int
+    max_steps : int
         Number of steps available for each line.
     step_size : float
-        Step size in fraction of cell size.
-    inner_boundary : bool, optional
-        Whether to terminate calculation at a spherical inner boundary.
-    r_IB : float, optional
-        Radius of the inner boundary.
-    outer_boundary : bool, optional
-        Whether to terminate calculate at a spherical outer boundary.
-    r_OB : float, optional
-        Radius of the outer boundary.
+        Step size as a the fraction of cell size.
+    cyclic : [bool, bool, bool], optional
+        Whether to have cyclic boundary conditions in each dimension.
 
     Attributes
     ----------
     xs : array of (n, 3) arrays
-        An array of the streamlines, which in general have different numbers
-        of points.
-
-    ns : list
-        Number of points in each streamline.
+        An array of the streamlines, which in general can have varying
+        numbers of points.
     """
-    def __init__(self, n_steps, step_size,
+    def __init__(self, max_steps, step_size,
                  cyclic=[False, False, False]):
-        self.max_steps = n_steps
-        self.ns0 = n_steps  # Save original number
+        self.max_steps = max_steps
         self.ds = step_size
         self.cyclic = np.array(cyclic, dtype=int)
-
-        self._ROT_reasons = ['Uncalculated',
-                             'Out of steps',
-                             'Out of domain',
-                             'Isnan']
-        self._dir_str = {-1: 'Reverse',
-                         0: 'Both',
-                         1: 'Forward'}
 
     # Calculate the streamline from a vector array
     def trace(self, seeds, field, grid_spacing, direction=0):

@@ -99,3 +99,6 @@ def test_bad_input(tracer, uniform_x_field):
 
     with pytest.raises(ValueError, match='grid spacing must have shape'):
         tracer.trace(seed, uniform_x_field, 1)
+
+    with pytest.raises(ValueError, match='Direction must be -1, 1 or 0'):
+        tracer.trace(seed, uniform_x_field, grid_spacing, direction=2)
