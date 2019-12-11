@@ -16,12 +16,10 @@ go with
 pip install .
 ```
 
-Note that this requires a fortran compiler; currently known to work is
-gfortran.
+Note that this requires a fortran compiler; currently known to work is gfortran.
 
-### Building
+### Building help
 
-The fortran sources will need to be built first; for this, you will need a fortran compiler.
 To see the compilers that are available, run the following command:
 
 ```sh
@@ -43,3 +41,5 @@ Once the compiler required is available, run one of the following commands:
 | Linux | gfortran | `python setup.py config_fc --fcompiler gnu95 --f90flags "-fopenmp" build_src build_ext -lgomp` |
 
 *Note, for intel, the fcompiler may be a slightly different name. Change to whichever is available.*
+
+One that step is done, you should be able to do a normal `pip install .`.
