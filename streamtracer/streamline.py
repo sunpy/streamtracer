@@ -54,18 +54,19 @@ class VectorGrid:
 
     @staticmethod
     def _validate_cyclic(vectors, cyclic):
+        dims = {0: 'x', 1: 'y', 2: 'z'}
         s = [slice(None)] * 4
         for i, c in enumerate(cyclic):
             if c:
                 slc = s.copy()
-                slc[i] = slice(0)
+                slc[i] = slice(0, 1)
                 side1 = vectors[tuple(slc)]
-                slc[i] = slice(-1)
+                slc[i] = slice(-1, None)
                 side2 = vectors[tuple(slc)]
 
                 np.testing.assert_equal(
                     side1, side2,
-                    err_msg=f'grid values in dimension {i} '
+                    err_msg=f'grid values in dimension {dims[i]} (size {vectors.shape[i]}) '
                     'do not match on each side of the cube')
 
     @property
