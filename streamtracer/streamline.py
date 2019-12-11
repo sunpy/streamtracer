@@ -55,11 +55,9 @@ class StreamTracer:
         An array of the streamlines, which in general can have varying
         numbers of points.
     """
-    def __init__(self, max_steps, step_size,
-                 cyclic=[False, False, False]):
+    def __init__(self, max_steps, step_size):
         self.max_steps = max_steps
         self.ds = step_size
-        self.cyclic = np.array(cyclic, dtype=int)
 
     # Calculate the streamline from a vector array
     def trace(self, seeds, grid, direction=0):
@@ -90,6 +88,7 @@ class StreamTracer:
 
         field = grid.vectors
         grid_spacing = grid.grid_spacing
+        cyclic = grid.cyclic
         seeds = np.atleast_2d(seeds)
 
         # Validate shapes
@@ -109,7 +108,7 @@ class StreamTracer:
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid_spacing, direction, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, direction, self.max_steps, cyclic)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -121,10 +120,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid_spacing, 1, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, 1, self.max_steps, cyclic)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid_spacing, -1, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, -1, self.max_steps, cyclic)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])

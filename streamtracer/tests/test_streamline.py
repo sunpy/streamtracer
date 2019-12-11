@@ -65,14 +65,15 @@ def test_trace_direction(tracer, uniform_x_field):
 def test_cyclic(uniform_x_field):
     # Check the cyclic option
     maxsteps = 4
-    tracer = StreamTracer(maxsteps, 0.1, cyclic=[True, False, False])
+    tracer = StreamTracer(maxsteps, 0.1)
     seed = np.array([99.9, 50, 50])
 
+    uniform_x_field.cyclic = [True, False, False]
     tracer.trace(seed, uniform_x_field)
     assert len(tracer.xs[0]) == (2 * maxsteps - 1)
     assert tracer.max_steps == maxsteps
 
-    tracer.cyclic = [False, False, False]
+    uniform_x_field.cyclic = [False, False, False]
     # Check that turning cyclic off interrupts the tracing
     tracer.trace(seed, uniform_x_field, direction=1)
     assert len(tracer.xs[0]) == 2
