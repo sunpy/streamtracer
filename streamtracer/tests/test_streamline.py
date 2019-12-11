@@ -79,6 +79,24 @@ def test_cyclic(uniform_x_field):
     assert len(tracer.xs[0]) == 2
 
 
+def test_cyclic_field():
+    # A uniform field pointing in the x direction
+    v = np.zeros((100, 100, 100, 3))
+    # Make all vectors point in the x-direction
+    v[:, :, :, 0] = 1
+    # Mismatch vectors on the x-faces
+    v[0, :, :, 0] = -1
+
+    spacing = [1, 1, 1]
+    cyclic = [True, False, False]
+    with pytest.raises(AssertionError, match='Arrays are not equal'):
+        VectorGrid(v, spacing, cyclic=cyclic)
+
+    # Check that with cyclic off no error is thrown
+    cyclic = [False, False, False]
+    VectorGrid(v, spacing, cyclic=cyclic)
+
+
 def test_bad_input(tracer, uniform_x_field):
     # Check input validation
     seed = np.array([0, 0, 0])
