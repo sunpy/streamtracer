@@ -3,7 +3,37 @@ from streamtracer.fortran.streamtracer import streamtracer
 from scipy.interpolate import RegularGridInterpolator as interpolate
 
 
-__all__ = ['StreamTracer']
+__all__ = ['StreamTracer', 'VectorGrid']
+
+
+class VectorGrid:
+    """
+    A grid of vectors.
+
+    Parameters
+    ----------
+    vectors : array
+        A (nx, ny, nz, 3) shaped array. The three values at (i, j, k, :)
+        specify the (x, y, z) components of the vector at index (i, j, k).
+    grid_spacing : array
+        A (3,) shaped array, that contains the grid spacings in the (x, y, z)
+        directions.
+    cyclic : [bool, bool, bool], optional
+        Whether to have cyclic boundary conditions in each of the (x, y, z)
+        directions.
+    """
+    def __init__(self, vectors, grid_spacing, cyclic=[False, False, False]):
+        self.vectors = vectors
+        self.grid_spacing = np.array(grid_spacing)
+        self.cyclic = cyclic
+
+    @property
+    def cyclic(self):
+        return self._cyclic
+
+    @cyclic.setter
+    def cyclic(self, val):
+        self._cyclic = np.array(val, dtype=int)
 
 
 class StreamTracer:
@@ -32,7 +62,7 @@ class StreamTracer:
         self.cyclic = np.array(cyclic, dtype=int)
 
     # Calculate the streamline from a vector array
-    def trace(self, seeds, field, grid_spacing, direction=0):
+    def trace(self, seeds, grid, direction=0):
         """
         Trace streamlines.
 
@@ -43,19 +73,23 @@ class StreamTracer:
         ----------
         seeds : (n, 3) array
             Seed points.
-        field : (nx, ny, nz, 3) array
-            Box of field vectors.
-        grid_spacing : (3,) array
-            Box gridpoint spacing in (x, y, z) directions.
+        grid : VectorGrid
+            Grid of field vectors.
         direction : int, optional
-            Integration direction. ``0`` for both directions, ``1`` for forward, or
-            ``-1`` for backwards.
+            Integration direction. ``0`` for both directions, ``1`` for
+            forward, or ``-1`` for backwards.
         """
+        if not isinstance(grid, VectorGrid):
+            raise ValueError('grid must be an instance of StreamTracer')
+        self.grid = grid
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
+
+        # Set the step size (this is a module level variable for streamtracer)
         streamtracer.ds = self.ds
 
-        grid_spacing = np.array(grid_spacing)
+        field = grid.vectors
+        grid_spacing = grid.grid_spacing
         seeds = np.atleast_2d(seeds)
 
         # Validate shapes

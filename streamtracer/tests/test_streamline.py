@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from streamtracer import StreamTracer
+from streamtracer import StreamTracer, VectorGrid
 
 
 @pytest.fixture
@@ -15,15 +15,15 @@ def uniform_x_field():
     v = np.zeros((100, 100, 100, 3))
     # Make all vectors point in the x-direction
     v[:, :, :, 0] = 1
-    return v
+    spacing = [1, 1, 1]
+    return VectorGrid(v, spacing)
 
 
 @pytest.mark.parametrize('x0', [0, 50])
 def test_different_seeds(tracer, uniform_x_field, x0):
     # Check that different seed points give sensible results
     seed = np.array([0, x0, x0])
-    grid_spacing = [1, 1, 1]
-    tracer.trace(seed, uniform_x_field, grid_spacing)
+    tracer.trace(seed, uniform_x_field)
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
@@ -34,8 +34,7 @@ def test_different_seeds(tracer, uniform_x_field, x0):
 def test_uniform_field(tracer, uniform_x_field):
     # Check that tracing thought a uniform field gives sensible results
     seed = np.array([0, 0, 0])
-    grid_spacing = [1, 1, 1]
-    tracer.trace(seed, uniform_x_field, grid_spacing)
+    tracer.trace(seed, uniform_x_field)
     assert isinstance(tracer.xs[0], np.ndarray)
     assert len(tracer.xs) == len(tracer.ROT)
 
@@ -53,12 +52,11 @@ def test_uniform_field(tracer, uniform_x_field):
 def test_trace_direction(tracer, uniform_x_field):
     # Check that the direction keyword argument works
     seed = np.array([0, 0, 0])
-    grid_spacing = [1, 1, 1]
-    tracer.trace(seed, uniform_x_field, grid_spacing, direction=1)
+    tracer.trace(seed, uniform_x_field, direction=1)
     sline = tracer.xs[0]
     assert np.all(sline[:, 0] >= 0)
 
-    tracer.trace(seed, uniform_x_field, grid_spacing, direction=-1)
+    tracer.trace(seed, uniform_x_field, direction=-1)
     sline = tracer.xs[0]
 
     assert np.all(sline[:, 0] <= 0)
@@ -69,36 +67,28 @@ def test_cyclic(uniform_x_field):
     maxsteps = 4
     tracer = StreamTracer(maxsteps, 0.1, cyclic=[True, False, False])
     seed = np.array([99.9, 50, 50])
-    grid_spacing = [1, 1, 1]
 
-    tracer.trace(seed, uniform_x_field, grid_spacing)
+    tracer.trace(seed, uniform_x_field)
     assert len(tracer.xs[0]) == (2 * maxsteps - 1)
     assert tracer.max_steps == maxsteps
 
     tracer.cyclic = [False, False, False]
     # Check that turning cyclic off interrupts the tracing
-    tracer.trace(seed, uniform_x_field, grid_spacing, direction=1)
+    tracer.trace(seed, uniform_x_field, direction=1)
     assert len(tracer.xs[0]) == 2
 
 
 def test_bad_input(tracer, uniform_x_field):
     # Check input validation
     seed = np.array([0, 0, 0])
-    grid_spacing = [1, 1, 1]
     with pytest.raises(ValueError, match='seeds must be a 2D array'):
-        tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_x_field, grid_spacing)
+        tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_x_field)
 
     with pytest.raises(ValueError, match='seeds must have shape'):
-        tracer.trace(np.array([1, 1]), uniform_x_field, grid_spacing)
+        tracer.trace(np.array([1, 1]), uniform_x_field)
 
-    with pytest.raises(ValueError, match='field must be a 4D array'):
-        tracer.trace(seed, np.array([1]), grid_spacing)
-
-    with pytest.raises(ValueError, match='field must have shape'):
-        tracer.trace(seed, np.ones((10, 10, 10, 2)), grid_spacing)
-
-    with pytest.raises(ValueError, match='grid spacing must have shape'):
-        tracer.trace(seed, uniform_x_field, 1)
+    with pytest.raises(ValueError, match='grid must be an instance of StreamTracer'):
+        tracer.trace(seed, 1)
 
     with pytest.raises(ValueError, match='Direction must be -1, 1 or 0'):
-        tracer.trace(seed, uniform_x_field, grid_spacing, direction=2)
+        tracer.trace(seed, uniform_x_field, direction=2)
