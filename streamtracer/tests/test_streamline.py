@@ -79,6 +79,17 @@ def test_cyclic(uniform_x_field):
     assert len(tracer.xs[0]) == 2
 
 
+@pytest.mark.parametrize('origin_coord', [[0, 0, 0], [1, 1, 1]])
+def test_origin(uniform_x_field, tracer, origin_coord):
+    uniform_x_field.origin_coord = origin_coord
+    seed = np.array([50, 50, 50])
+    tracer.trace(seed, uniform_x_field, direction=1)
+
+    np.testing.assert_equal(tracer.xs[0][0, :], seed)
+    end_coord = np.array([100 + origin_coord[0], 50, 50])
+    np.testing.assert_almost_equal(tracer.xs[0][-1, :], end_coord)
+
+
 def test_cyclic_field():
     # A uniform field pointing in the x direction
     v = np.zeros((100, 100, 100, 3))
