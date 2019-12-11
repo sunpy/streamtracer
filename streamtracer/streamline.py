@@ -18,6 +18,9 @@ class VectorGrid:
     grid_spacing : array
         A (3,) shaped array, that contains the grid spacings in the (x, y, z)
         directions.
+    origin_coord = [float, float, float], optional
+        The coordinate of the ``vectors[0, 0, 0, :]`` vector at the corner of
+        the box.
     cyclic : [bool, bool, bool], optional
         Whether to have cyclic boundary conditions in each of the (x, y, z)
         directions.
@@ -28,7 +31,9 @@ class VectorGrid:
     cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
     ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
-    def __init__(self, vectors, grid_spacing, cyclic=[False, False, False]):
+    def __init__(self, vectors, grid_spacing,
+                 origin_coord=[0, 0, 0],
+                 cyclic=[False, False, False]):
         grid_spacing = np.array(grid_spacing)
         self._validate_vectors(vectors)
         self._validate_spacing(grid_spacing)
@@ -37,6 +42,7 @@ class VectorGrid:
         self.vectors = vectors
         self.grid_spacing = grid_spacing
         self.cyclic = cyclic
+        self.origin_coord = np.array(origin_coord)
 
     @staticmethod
     def _validate_vectors(vectors):
@@ -139,6 +145,9 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
+        # Put seeds relative to box centre
+        seeds = seeds - grid.origin_coord
+
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
@@ -146,7 +155,6 @@ class StreamTracer:
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
-            vs = np.array([vi[:ni, :] for vi, ni in zip(vs, self.ns)])
 
             # Save the Reason of Termination
             self.ROT = ROT
@@ -161,14 +169,10 @@ class StreamTracer:
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
-            vs_f = np.array([vi[:ni, :] for vi, ni in zip(vs_f, ns_f)])
-
             xs_r = np.array([xi[ni - 1:0:-1, :] for xi, ni in zip(xs_r, ns_r)])
-            vs_r = np.array([vi[ni - 1:0:-1, :] for vi, ni in zip(vs_r, ns_r)])
 
             # Stack the forward and reverse arrays
             self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)])
-            vs = np.array([np.vstack([vri, vfi]) for vri, vfi in zip(vs_r, vs_f)])
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
@@ -178,5 +182,4 @@ class StreamTracer:
         # Filter out nans
         xi = self.xs[0]
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]
-
-        del vs
+        self.xs = [xi + grid.origin_coord for xi in self.xs]
