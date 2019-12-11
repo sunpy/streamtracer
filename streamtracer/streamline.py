@@ -3,7 +3,55 @@ from streamtracer.fortran.streamtracer import streamtracer
 from scipy.interpolate import RegularGridInterpolator as interpolate
 
 
-__all__ = ['StreamTracer']
+__all__ = ['StreamTracer', 'VectorGrid']
+
+
+class VectorGrid:
+    """
+    A grid of vectors.
+
+    Parameters
+    ----------
+    vectors : array
+        A (nx, ny, nz, 3) shaped array. The three values at (i, j, k, :)
+        specify the (x, y, z) components of the vector at index (i, j, k).
+    grid_spacing : array
+        A (3,) shaped array, that contains the grid spacings in the (x, y, z)
+        directions.
+    cyclic : [bool, bool, bool], optional
+        Whether to have cyclic boundary conditions in each of the (x, y, z)
+        directions.
+    """
+    def __init__(self, vectors, grid_spacing, cyclic=[False, False, False]):
+        grid_spacing = np.array(grid_spacing)
+        self._validate_vectors(vectors)
+        self._validate_spacing(grid_spacing)
+
+        self.vectors = vectors
+        self.grid_spacing = grid_spacing
+        self.cyclic = cyclic
+
+    @staticmethod
+    def _validate_vectors(vectors):
+        if len(vectors.shape) != 4:
+            raise ValueError('vectors must be a 4D array')
+        if vectors.shape[-1] != 3:
+            raise ValueError('vectors must have shape (nx, ny, nz, 3), '
+                             f'got {vectors.shape}')
+
+    @staticmethod
+    def _validate_spacing(grid_spacing):
+        if grid_spacing.shape != (3,):
+            raise ValueError(f'grid spacing must have shape (3,), got '
+                             f'{grid_spacing.shape}')
+
+    @property
+    def cyclic(self):
+        return self._cyclic
+
+    @cyclic.setter
+    def cyclic(self, val):
+        self._cyclic = np.array(val, dtype=int)
 
 
 class StreamTracer:
@@ -25,14 +73,12 @@ class StreamTracer:
         An array of the streamlines, which in general can have varying
         numbers of points.
     """
-    def __init__(self, max_steps, step_size,
-                 cyclic=[False, False, False]):
+    def __init__(self, max_steps, step_size):
         self.max_steps = max_steps
         self.ds = step_size
-        self.cyclic = np.array(cyclic, dtype=int)
 
     # Calculate the streamline from a vector array
-    def trace(self, seeds, field, grid_spacing, direction=0):
+    def trace(self, seeds, grid, direction=0):
         """
         Trace streamlines.
 
@@ -43,19 +89,24 @@ class StreamTracer:
         ----------
         seeds : (n, 3) array
             Seed points.
-        field : (nx, ny, nz, 3) array
-            Box of field vectors.
-        grid_spacing : (3,) array
-            Box gridpoint spacing in (x, y, z) directions.
+        grid : VectorGrid
+            Grid of field vectors.
         direction : int, optional
-            Integration direction. ``0`` for both directions, ``1`` for forward, or
-            ``-1`` for backwards.
+            Integration direction. ``0`` for both directions, ``1`` for
+            forward, or ``-1`` for backwards.
         """
+        if not isinstance(grid, VectorGrid):
+            raise ValueError('grid must be an instance of StreamTracer')
+        self.grid = grid
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
+
+        # Set the step size (this is a module level variable for streamtracer)
         streamtracer.ds = self.ds
 
-        grid_spacing = np.array(grid_spacing)
+        field = grid.vectors
+        grid_spacing = grid.grid_spacing
+        cyclic = grid.cyclic
         seeds = np.atleast_2d(seeds)
 
         # Validate shapes
@@ -64,18 +115,10 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
-        if len(field.shape) != 4:
-            raise ValueError('field must be a 4D array')
-        if field.shape[-1] != 3:
-            raise ValueError(f'field must have shape (nx, ny, nz, 3), got {field.shape}')
-
-        if grid_spacing.shape != (3,):
-            raise ValueError(f'grid spacing must have shape (3,), got {grid_spacing.shape}')
-
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid_spacing, direction, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, direction, self.max_steps, cyclic)
 
             # Reduce the size of the array
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -87,10 +130,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid_spacing, 1, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, 1, self.max_steps, cyclic)
             # Calculate backward streamline
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid_spacing, -1, self.max_steps, self.cyclic)
+                seeds, field, grid_spacing, -1, self.max_steps, cyclic)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
             xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
