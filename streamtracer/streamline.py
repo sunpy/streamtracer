@@ -23,9 +23,27 @@ class VectorGrid:
         directions.
     """
     def __init__(self, vectors, grid_spacing, cyclic=[False, False, False]):
+        grid_spacing = np.array(grid_spacing)
+        self._validate_vectors(vectors)
+        self._validate_spacing(grid_spacing)
+
         self.vectors = vectors
-        self.grid_spacing = np.array(grid_spacing)
+        self.grid_spacing = grid_spacing
         self.cyclic = cyclic
+
+    @staticmethod
+    def _validate_vectors(vectors):
+        if len(vectors.shape) != 4:
+            raise ValueError('vectors must be a 4D array')
+        if vectors.shape[-1] != 3:
+            raise ValueError('vectors must have shape (nx, ny, nz, 3), '
+                             f'got {vectors.shape}')
+
+    @staticmethod
+    def _validate_spacing(grid_spacing):
+        if grid_spacing.shape != (3,):
+            raise ValueError(f'grid spacing must have shape (3,), got '
+                             f'{grid_spacing.shape}')
 
     @property
     def cyclic(self):
@@ -96,14 +114,6 @@ class StreamTracer:
             raise ValueError('seeds must be a 2D array')
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
-
-        if len(field.shape) != 4:
-            raise ValueError('field must be a 4D array')
-        if field.shape[-1] != 3:
-            raise ValueError(f'field must have shape (nx, ny, nz, 3), got {field.shape}')
-
-        if grid_spacing.shape != (3,):
-            raise ValueError(f'grid spacing must have shape (3,), got {grid_spacing.shape}')
 
         if direction == 1 or direction == -1:
             # Calculate streamlines

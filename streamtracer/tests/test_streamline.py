@@ -93,3 +93,12 @@ def test_bad_input(tracer, uniform_x_field):
 
     with pytest.raises(ValueError, match='Direction must be -1, 1 or 0'):
         tracer.trace(seed, uniform_x_field, direction=2)
+
+    with pytest.raises(ValueError, match='vectors must be a 4D array'):
+        VectorGrid(np.array([1]), [1, 1, 1])
+
+    with pytest.raises(ValueError, match='vectors must have shape'):
+        VectorGrid(np.zeros((1, 1, 1, 2)), [1, 1, 1])
+
+    with pytest.raises(ValueError, match='grid spacing must have shape'):
+        VectorGrid(np.zeros((1, 1, 1, 3)), [1, 1])
