@@ -21,11 +21,18 @@ class VectorGrid:
     cyclic : [bool, bool, bool], optional
         Whether to have cyclic boundary conditions in each of the (x, y, z)
         directions.
+
+    Notes
+    -----
+    If any of *cyclic* are ``True``, then the grid values on each side of the
+    cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
+    ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
     def __init__(self, vectors, grid_spacing, cyclic=[False, False, False]):
         grid_spacing = np.array(grid_spacing)
         self._validate_vectors(vectors)
         self._validate_spacing(grid_spacing)
+        self._validate_cyclic(vectors, cyclic)
 
         self.vectors = vectors
         self.grid_spacing = grid_spacing
@@ -44,6 +51,22 @@ class VectorGrid:
         if grid_spacing.shape != (3,):
             raise ValueError(f'grid spacing must have shape (3,), got '
                              f'{grid_spacing.shape}')
+
+    @staticmethod
+    def _validate_cyclic(vectors, cyclic):
+        s = [slice(None)] * 4
+        for i, c in enumerate(cyclic):
+            if c:
+                slc = s.copy()
+                slc[i] = slice(0)
+                side1 = vectors[tuple(slc)]
+                slc[i] = slice(-1)
+                side2 = vectors[tuple(slc)]
+
+                np.testing.assert_equal(
+                    side1, side2,
+                    err_msg=f'grid values in dimension {i} '
+                    'do not match on each side of the cube')
 
     @property
     def cyclic(self):
