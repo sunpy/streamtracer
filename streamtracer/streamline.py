@@ -83,6 +83,31 @@ class VectorGrid:
     def cyclic(self, val):
         self._cyclic = np.array(val, dtype=int)
 
+    def _coords(self, i):
+        return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) -
+                self.origin_coord[i])
+
+    @property
+    def xcoords(self):
+        """
+        Coordinates of the x grid points.
+        """
+        return self._coords(0)
+
+    @property
+    def ycoords(self):
+        """
+        Coordinates of the x grid points.
+        """
+        return self._coords(1)
+
+    @property
+    def zcoords(self):
+        """
+        Coordinates of the x grid points.
+        """
+        return self._coords(2)
+
 
 class StreamTracer:
     """
