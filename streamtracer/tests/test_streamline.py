@@ -108,6 +108,26 @@ def test_cyclic_field():
     VectorGrid(v, spacing, cyclic=cyclic)
 
 
+def test_grid_points():
+    # A uniform field pointing in the x direction
+    v = np.zeros((100, 100, 100, 3))
+    # Make all vectors point in the x-direction
+    spacing = [2, 3, 4]
+    origin_coord = [4, 9, 16]
+    grid = VectorGrid(v, spacing, origin_coord=origin_coord)
+    assert grid.xcoords[0] == -4
+    assert grid.xcoords[1] == -2
+    assert grid.xcoords[-1] == 2 * 100 - 6
+
+    assert grid.ycoords[0] == -9
+    assert grid.ycoords[1] == -6
+    assert grid.ycoords[-1] == 3 * 100 - 12
+
+    assert grid.zcoords[0] == -16
+    assert grid.zcoords[1] == -12
+    assert grid.zcoords[-1] == 4 * 100 - 20
+
+
 def test_bad_input(tracer, uniform_x_field):
     # Check input validation
     seed = np.array([0, 0, 0])
