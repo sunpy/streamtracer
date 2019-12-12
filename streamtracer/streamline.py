@@ -20,10 +20,10 @@ class VectorGrid:
         directions.
     origin_coord = [float, float, float], optional
         The coordinate of the ``vectors[0, 0, 0, :]`` vector at the corner of
-        the box.
+        the box. Defaults to ``[0, 0, 0]``.
     cyclic : [bool, bool, bool], optional
         Whether to have cyclic boundary conditions in each of the (x, y, z)
-        directions.
+        directions. Defaults to ``[False, False, False]``.
 
     Notes
     -----
@@ -32,8 +32,13 @@ class VectorGrid:
     ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
     def __init__(self, vectors, grid_spacing,
-                 origin_coord=[0, 0, 0],
-                 cyclic=[False, False, False]):
+                 origin_coord=None,
+                 cyclic=None):
+        if cyclic is None:
+            cyclic = [False, False, False]
+        if origin_coord is None:
+            origin_coord = [0, 0, 0]
+
         grid_spacing = np.array(grid_spacing)
         self._validate_vectors(vectors)
         self._validate_spacing(grid_spacing)
@@ -42,6 +47,7 @@ class VectorGrid:
         self.vectors = vectors
         self.grid_spacing = grid_spacing
         self.cyclic = cyclic
+
         self.origin_coord = np.array(origin_coord)
 
     @staticmethod
@@ -127,6 +133,13 @@ class StreamTracer:
     xs : array of (n, 3) arrays
         An array of the streamlines, which in general can have varying
         numbers of points.
+    ROT : integer array
+        Reason(s) of termination. Shape ``len(xs)`` if traced in one direction,
+        or ``(len(xs), 2)`` if traced in both directions.
+        Can take the following values:
+        - -1: Encountered a NaN
+        - 1: Reached maximum available steps
+        - 2: Out of bounds
     """
     def __init__(self, max_steps, step_size):
         self.max_steps = max_steps
@@ -178,7 +191,7 @@ class StreamTracer:
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
                 seeds, field, grid_spacing, direction, self.max_steps, cyclic)
 
-            # Reduce the size of the array
+            # Reduce the size of the arrays
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
 
             # Save the Reason of Termination

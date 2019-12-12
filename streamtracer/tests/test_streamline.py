@@ -19,6 +19,18 @@ def uniform_x_field():
     return VectorGrid(v, spacing)
 
 
+@pytest.mark.parametrize('direction, ROTs', [[1, np.array([2, 2, 2])],
+                                             [-1, np.array([2, 2, 2])],
+                                             [0, np.array([[2, 2],
+                                                           [2, 2],
+                                                           [2, 2]])]
+                                             ])
+def test_rot(tracer, uniform_x_field, direction, ROTs):
+    seeds = np.array([[50, 50, 50], [50, 50, 50], [50, 50, 50]])
+    tracer.trace(seeds, uniform_x_field, direction=direction)
+    np.testing.assert_equal(tracer.ROT, ROTs)
+
+
 @pytest.mark.parametrize('x0', [0, 50])
 def test_different_seeds(tracer, uniform_x_field, x0):
     # Check that different seed points give sensible results
