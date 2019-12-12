@@ -8,23 +8,12 @@
     ! If  ROT = 0: Still running
     !     ROT = 1: Out of steps
     !     ROT = 2: Out of domain
-    !     ROT = 3: In inner boundary
     !     ROT = -1: vmag = 0
     !     ROT = -2: NaN present
-    ! Link: Connectivity in MS
-    ! If  Link = 1: SW
-    !     Link = 2: Closed
-    !     Link = 3: North Open
-    !     Link = 4: South Open
-    !     Link = 5: SW Inc
-    !     Link = 6: North Inc
-    !     Link = 7: South Inc
-    !     Link = 8: Inc Inc
 
     integer :: ns, openmp_enabled = 0, debug = 0
     double precision :: ds, r_IB=1.
     double precision, dimension(3) :: xc
-    logical :: inner_boundary=.false.
 
     contains
 
@@ -237,7 +226,6 @@
     ! cyclic: bool, if true then don't terminate at edge of box
     double precision, intent(in), dimension(3) :: d
     integer, intent(in) :: nx, ny, nz
-    double precision :: ri
     integer, intent(in), dimension(3) :: cyclic
     double precision, intent(out), dimension(3) :: xi
     integer, intent(out) :: ROT
@@ -264,11 +252,6 @@
       else
         ROT = 2
       end if
-    elseif(inner_boundary) then
-        ri = sqrt((xi(1)-xc(1))**2+(xi(2)-xc(2))**2+(xi(3)-xc(3))**2)
-        if(ri.le.r_IB) then
-            ROT = 3
-        end if
     end if
 
     end subroutine check_bounds
