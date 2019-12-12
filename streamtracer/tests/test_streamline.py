@@ -69,13 +69,34 @@ def test_cyclic(uniform_x_field):
     seed = np.array([99.9, 50, 50])
 
     uniform_x_field.cyclic = [True, False, False]
-    tracer.trace(seed, uniform_x_field)
-    assert len(tracer.xs[0]) == (2 * maxsteps - 1)
-    assert tracer.max_steps == maxsteps
-
-    uniform_x_field.cyclic = [False, False, False]
-    # Check that turning cyclic off interrupts the tracing
     tracer.trace(seed, uniform_x_field, direction=1)
+    fline = tracer.xs[0]
+    # Check that the tracer uses all the steps available
+    assert len(fline) == maxsteps
+    assert tracer.max_steps == maxsteps
+    # Check that the cyclic boundary works properly
+    np.testing.assert_equal(fline[0, :], seed)
+    np.testing.assert_almost_equal(fline[1, :], np.array([100, 50, 50]))
+    np.testing.assert_almost_equal(fline[2, :], np.array([0.1, 50, 50]))
+
+    # Check that going the other way across the boundary (through zero) works
+    seed = np.array([0.1, 50, 50])
+    tracer.trace(seed, uniform_x_field, direction=-1)
+    fline = tracer.xs[0]
+    np.testing.assert_equal(fline[0, :], seed)
+    np.testing.assert_almost_equal(fline[1, :], np.array([0, 50, 50]))
+    np.testing.assert_almost_equal(fline[2, :], np.array([99.9, 50, 50]))
+
+    # Check that turning cyclic off interrupts the tracing
+    uniform_x_field.cyclic = [False, False, False]
+    # Going forwards
+    seed = np.array([99.9, 50, 50])
+    tracer.trace(seed, uniform_x_field, direction=1)
+    assert len(tracer.xs[0]) == 2
+
+    # Going backwards
+    seed = np.array([0.1, 50, 50])
+    tracer.trace(seed, uniform_x_field, direction=-1)
     assert len(tracer.xs[0]) == 2
 
 
