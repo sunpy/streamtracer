@@ -59,7 +59,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-   python -m pip install -e .
+   python -m pip install -ev .
   displayName: 'Install package'
 
 - script: |
