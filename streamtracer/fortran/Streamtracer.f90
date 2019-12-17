@@ -12,7 +12,7 @@
     !     ROT = -2: NaN present
 
     integer :: ns, openmp_enabled = 0, debug = 0
-    double precision :: ds, r_IB=1.
+    double precision :: ds
     double precision, dimension(3) :: xc
 
     contains
