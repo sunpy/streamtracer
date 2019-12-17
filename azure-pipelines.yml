@@ -29,6 +29,9 @@ jobs:
         vmImage: 'xcode9-macOS10.13'
         python.version: '3.7'
 
+pool:
+  vmImage: '$(vmImage)'
+
 steps:
 - task: UsePythonVersion@0
   inputs:
