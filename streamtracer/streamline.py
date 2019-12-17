@@ -1,6 +1,5 @@
 import numpy as np
 from streamtracer.fortran.streamtracer import streamtracer
-from scipy.interpolate import RegularGridInterpolator as interpolate
 
 
 __all__ = ['StreamTracer', 'VectorGrid']

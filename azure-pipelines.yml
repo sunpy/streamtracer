@@ -6,14 +6,29 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python36:
+    Python36_windows:
       python.version: '3.6'
-    Python37:
+      vmImage: 'vs2017-win2016'
+    Python37_windows:
       python.version: '3.7'
+      vmImage: 'vs2017-win2016'
+    Python36_linux:
+      python.version: '3.6'
+      vmImage: 'ubuntu-latest'
+    Python37_linux:
+      python.version: '3.7'
+      vmImage: 'ubuntu-latest'
+    macOS_py36:
+      vmImage: 'xcode9-macOS10.13'
+      python.version: '3.6'
+    macOS_py37:
+      vmImage: 'xcode9-macOS10.13'
+      python.version: '3.7'
+
+pool:
+  vmImage: '$(vmImage)'
 
 steps:
 - task: UsePythonVersion@0
@@ -21,15 +36,30 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
+- bash: |
+    case "$(python -c 'import sys; print(sys.platform)')" in
+    linux)
+      sudo apt update
+      sudo apt install -y gfortran
+      ;;
+    darwin)
+      brew cask install gfortran
+      ;;
+    win32)
+      ;;
+    *)
+      exit 1
+      ;;
+    esac
+  displayName: 'Install fortran compiler'
+
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements/testing.txt
-    sudo apt update
-    sudo apt install -y gfortran
   displayName: 'Install dependencies'
 
 - script: |
-   python -m pip install -e .
+   python -m pip install -ve .
   displayName: 'Install package'
 
 - script: |

@@ -17,7 +17,7 @@ if __name__ == "__main__":
           url='https://github.com/dstansby/streamtracer',
           author='David Stansby, Lars Mejnertsen',
           author_email='dstansby@gmail.com',
-          install_requires=['numpy', 'scipy'],
+          install_requires=['numpy'],
           python_requires='>=3.6',
           packages=['streamtracer'],
           ext_modules=exts,
