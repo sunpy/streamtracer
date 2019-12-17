@@ -43,7 +43,7 @@ steps:
       sudo apt install -y gfortran
       ;;
     darwin)
-      brew install gfortran
+      brew cask install gfortran
       ;;
     win32)
       ;;
