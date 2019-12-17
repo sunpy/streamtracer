@@ -10,16 +10,16 @@ strategy:
   matrix:
     Python36_windows:
       python.version: '3.6'
-      vmImage: vs2017-win2016
+      vmImage: 'vs2017-win2016'
     Python37_windows:
       python.version: '3.7'
-      vmImage: vs2017-win2016
+      vmImage: 'vs2017-win2016'
     Python36_linux:
       python.version: '3.6'
-      vmImage: ubuntu:16.04
+      vmImage: 'ubuntu:16.04'
     Python37_linux:
       python.version: '3.7'
-      vmImage: ubuntu:16.04
+      vmImage: 'ubuntu:16.04'
     macOS_py36:
       vmImage: 'xcode9-macOS10.13'
       python.version: '3.6'
