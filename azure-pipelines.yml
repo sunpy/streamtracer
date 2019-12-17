@@ -6,28 +6,26 @@
 trigger:
 - master
 
-jobs:
-- job: Test
-  strategy:
-    matrix:
-      Python36_windows:
-        python.version: '3.6'
-        vmImage: 'vs2017-win2016'
-      Python37_windows:
-        python.version: '3.7'
-        vmImage: 'vs2017-win2016'
-      Python36_linux:
-        python.version: '3.6'
-        vmImage: 'ubuntu:16.04'
-      Python37_linux:
-        python.version: '3.7'
-        vmImage: 'ubuntu:16.04'
-      macOS_py36:
-        vmImage: 'xcode9-macOS10.13'
-        python.version: '3.6'
-      macOS_py37:
-        vmImage: 'xcode9-macOS10.13'
-        python.version: '3.7'
+strategy:
+  matrix:
+    Python36_windows:
+      python.version: '3.6'
+      vmImage: 'vs2017-win2016'
+    Python37_windows:
+      python.version: '3.7'
+      vmImage: 'vs2017-win2016'
+    Python36_linux:
+      python.version: '3.6'
+      vmImage: 'ubuntu:16.04'
+    Python37_linux:
+      python.version: '3.7'
+      vmImage: 'ubuntu:16.04'
+    macOS_py36:
+      vmImage: 'xcode9-macOS10.13'
+      python.version: '3.6'
+    macOS_py37:
+      vmImage: 'xcode9-macOS10.13'
+      python.version: '3.7'
 
 pool:
   vmImage: '$(vmImage)'
@@ -37,7 +35,6 @@ steps:
   inputs:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
-
 
 - bash: |
     case "$(python -c 'import sys; print(sys.platform)')" in
