@@ -8,22 +8,23 @@ trigger:
 
 strategy:
   matrix:
-    Python36_windows:
-      python.version: '3.6'
-      vmImage: 'vs2017-win2016'
-    Python37_windows:
-      python.version: '3.7'
-      vmImage: 'vs2017-win2016'
-    Python36_linux:
+    # Windows builds are not finding openmp, so do not currently work
+    # Python36_windows:
+    #  python.version: '3.6'
+    #  vmImage: 'vs2017-win2016'
+    #Python37_windows:
+    #  python.version: '3.7'
+    #  vmImage: 'vs2017-win2016'
+    py36_linux:
       python.version: '3.6'
       vmImage: 'ubuntu-latest'
-    Python37_linux:
+    py37_linux:
       python.version: '3.7'
       vmImage: 'ubuntu-latest'
-    macOS_py36:
+    py36_macOS:
       vmImage: 'xcode9-macOS10.13'
       python.version: '3.6'
-    macOS_py37:
+    py37_macOS:
       vmImage: 'xcode9-macOS10.13'
       python.version: '3.7'
 
