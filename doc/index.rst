@@ -24,8 +24,17 @@ This can then be used to trace lines through a 3D cartesian vector field::
 
 For more information see the :mod:`streamtracer` API docs.
 
-Caveats
-=======
+Installing
+==========
+
+In theory, it should be possible to build and install streamtracer in one
+go with::
+
+  pip install streamtracer
+
+Note that this requires a fortran compiler; currently known to work is gfortran.
+If you have problems installing, please open an issue at
+https://github.com/dstansby/streamtracer/issues
 
 Code reference
 ==============
