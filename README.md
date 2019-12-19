@@ -1,5 +1,5 @@
-streamtracer
-============
+# streamtracer
+
 Fast streamline tracing in python
 
 [![Documentation Status](https://readthedocs.org/projects/streamtracer/badge/?version=latest)](https://streamtracer.readthedocs.io/en/latest/?badge=latest)
@@ -7,8 +7,7 @@ Fast streamline tracing in python
 [![codecov](https://codecov.io/gh/dstansby/streamtracer/branch/master/graph/badge.svg)](https://codecov.io/gh/dstansby/streamtracer)
 
 
-Documentation
--------------
+## Documentation
 
 For full documentation, including installation instructions, see
 https://streamtracer.readthedocs.io/en/latest/
