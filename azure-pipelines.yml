@@ -60,6 +60,10 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
+   python setup.py sdist
+  displayName: 'Build source distribution'
+
+- script: |
    python -m pip install -ve .
   displayName: 'Install package'
 
