@@ -43,15 +43,18 @@ def test_different_seeds(tracer, uniform_x_field, x0):
     np.testing.assert_equal(sline[:, 2], x0)
 
 
-def test_uniform_field(tracer, uniform_x_field):
+@pytest.mark.parametrize('vec_len', [1, 2])
+def test_uniform_field(tracer, uniform_x_field, vec_len):
     # Check that tracing thought a uniform field gives sensible results
     seed = np.array([0, 0, 0])
+    uniform_x_field.vectors *= vec_len
     tracer.trace(seed, uniform_x_field)
     assert isinstance(tracer.xs[0], np.ndarray)
     assert len(tracer.xs) == len(tracer.ROT)
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
+    np.testing.assert_almost_equal(sline[:, 0], np.linspace(0, 99.9, 1000))
     np.testing.assert_equal(sline[:, 1], 0)
     np.testing.assert_equal(sline[:, 2], 0)
 
