@@ -44,6 +44,18 @@ Code reference
 
    streamtracer
 
+Changelog
+=========
+
+0.1.1
+-----
+- Added validation for the ``max_steps`` argument to
+  :class:`~streamtracer.StreamTracer`.
+
+0.1.0
+-----
+First streamtracer release.
+
 
 Indices and tables
 ==================
