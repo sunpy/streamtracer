@@ -144,6 +144,21 @@ class StreamTracer:
         self.max_steps = max_steps
         self.ds = step_size
 
+    @property
+    def max_steps(self):
+        return self._max_steps
+
+    @max_steps.setter
+    def max_steps(self, val):
+        if not isinstance(val, int):
+            raise ValueError(f'max_steps must be an integer (got {type(val)})')
+
+        if not val > 0:
+            raise ValueError('max_steps must be greater than zero '
+                             f'(got {val})')
+
+        self._max_steps = val
+
     # Calculate the streamline from a vector array
     def trace(self, seeds, grid, direction=0):
         """
