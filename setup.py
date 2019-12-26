@@ -14,7 +14,7 @@ if not os.environ.get('READTHEDOCS', None):
 
 if __name__ == "__main__":
     setup(name='streamtracer',
-          version='0.1',
+          version='0.1.1',
           description='Python wrapped fortran to calculate streamlines',
           url='https://github.com/dstansby/streamtracer',
           author='David Stansby, Lars Mejnertsen',
