@@ -187,3 +187,12 @@ def test_bad_input(tracer, uniform_x_field):
 
     with pytest.raises(ValueError, match='grid spacing must have shape'):
         VectorGrid(np.zeros((1, 1, 1, 3)), [1, 1])
+
+
+@pytest.mark.parametrize('val, errstr',
+                         [(0.1, 'max_steps must be an integer'),
+                          (0, 'max_steps must be greater than zero'),
+                          (-1, 'max_steps must be greater than zero')])
+def test_invalid_max_steps(val, errstr):
+    with pytest.raises(ValueError, match=errstr):
+        StreamTracer(val, 0.1)
