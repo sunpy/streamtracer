@@ -47,6 +47,10 @@ Code reference
 Changelog
 =========
 
+0.1.2
+-----
+- Make sure to install numpy before trying to install streamtracer.
+
 0.1.1
 -----
 - Added validation for the ``max_steps`` argument to
