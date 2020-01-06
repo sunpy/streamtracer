@@ -1,2 +1,4 @@
 coverage:
   range: 100..100
+codecov:
+  token: 4847529e-2a8f-4bf0-912f-ec8f5f98b3f8

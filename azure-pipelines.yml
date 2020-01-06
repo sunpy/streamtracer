@@ -1,76 +1,42 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+resources:
+  repositories:
+  - repository: OpenAstronomy
+    type: github
+    endpoint: github
+    name: OpenAstronomy/azure-pipelines-templates
+    ref: master
 
 trigger:
-- master
+  branches:
+    include:
+    - 'master'
+  tags:
+    include:
+    - 'v*'
+    exclude:
+    - '*dev*'
+    - '*pre*'
+    - '*post*'
 
-strategy:
-  matrix:
-    # Windows builds are not finding openmp, so do not currently work
-    # Python36_windows:
-    #  python.version: '3.6'
-    #  vmImage: 'vs2017-win2016'
-    #Python37_windows:
-    #  python.version: '3.7'
-    #  vmImage: 'vs2017-win2016'
-    py36_linux:
-      python.version: '3.6'
-      vmImage: 'ubuntu-latest'
-    py37_linux:
-      python.version: '3.7'
-      vmImage: 'ubuntu-latest'
-    py36_macOS:
-      vmImage: 'xcode9-macOS10.13'
-      python.version: '3.6'
-    py37_macOS:
-      vmImage: 'xcode9-macOS10.13'
-      python.version: '3.7'
+jobs:
+- template: run-tox-env.yml@OpenAstronomy
+  parameters:
+    libraries:
+      apt: gfortran
+      brew: gfortran
+    coverage: codecov
+    envs:
+    - linux: py36
+    - linux: py37
+    - linux: py38
+    - macos: py36
+    - macos: py37
+    - macos: py38
+    - linux: build_docs
 
-pool:
-  vmImage: '$(vmImage)'
-
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
-
-- bash: |
-    case "$(python -c 'import sys; print(sys.platform)')" in
-    linux)
-      sudo apt update
-      sudo apt install -y gfortran
-      ;;
-    darwin)
-      brew cask install gfortran
-      ;;
-    win32)
-      ;;
-    *)
-      exit 1
-      ;;
-    esac
-  displayName: 'Install fortran compiler'
-
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements/testing.txt
-  displayName: 'Install dependencies'
-
-- script: |
-   python setup.py sdist
-  displayName: 'Build source distribution'
-
-- script: |
-   python -m pip install -ve .
-  displayName: 'Install package'
-
-- script: |
-    pip install pytest pytest-azurepipelines codecov pytest-cov
-    pytest --cov=streamtracer
-  displayName: 'Run tests'
-
-- script: codecov --token=4847529e-2a8f-4bf0-912f-ec8f5f98b3f8
-  displayName: 'Upload code coverage'
+- template: publish.yml@OpenAstronomy
+  parameters:
+    targets:
+    - sdist
+    - wheels_linux
+    - wheels_macos
