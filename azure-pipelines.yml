@@ -1,3 +1,11 @@
+name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
+variables:
+  CI_NAME: Azure Pipelines
+  CI_BUILD_ID: $(Build.BuildId)
+  CI_BUILD_URL: "https://dev.azure.com/dstansby/streamtracer/_build/results?buildId=$(Build.BuildId)"
+  CIBW_BUILD: cp36-* cp37-* cp38-*
+  CIBW_SKIP: "*-win32 *-manylinux1_i686"
+
 resources:
   repositories:
   - repository: OpenAstronomy
