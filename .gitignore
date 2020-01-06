@@ -6,6 +6,7 @@ dist/*
 *.pyc
 .coverage
 *.so
+pip-wheel-metadata/**
 
 doc/_build/*
 doc/api/*
