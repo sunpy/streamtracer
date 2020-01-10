@@ -10,7 +10,7 @@ resources:
   repositories:
   - repository: OpenAstronomy
     type: github
-    endpoint: github
+    endpoint: dstansby
     name: OpenAstronomy/azure-pipelines-templates
     ref: master
 
