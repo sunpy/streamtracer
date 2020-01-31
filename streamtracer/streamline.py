@@ -224,7 +224,8 @@ class StreamTracer:
             xs_r = np.array([xi[ni - 1:0:-1, :] for xi, ni in zip(xs_r, ns_r)])
 
             # Stack the forward and reverse arrays
-            self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)])
+            self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in
+                                zip(xs_r, xs_f)])
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
