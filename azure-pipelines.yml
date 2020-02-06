@@ -32,7 +32,7 @@ jobs:
     libraries:
       apt:
         - gfortran
-      brew:
+      brew-cask:
         - gfortran
     coverage: codecov
     envs:
