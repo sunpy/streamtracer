@@ -220,11 +220,11 @@ class StreamTracer:
                 seeds, field, grid_spacing, -1, self.max_steps, cyclic)
 
             # Reduce the size of the arrays, and flip the reverse streamlines
-            xs_f = np.array([xi[:ni, :] for xi, ni in zip(xs_f, ns_f)])
-            xs_r = np.array([xi[ni - 1:0:-1, :] for xi, ni in zip(xs_r, ns_r)])
+            xs_f = [xi[:ni, :] for xi, ni in zip(xs_f, ns_f)]
+            xs_r = [xi[ni - 1:0:-1, :] for xi, ni in zip(xs_r, ns_r)]
 
             # Stack the forward and reverse arrays
-            self.xs = np.array([np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)])
+            self.xs = [np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)]
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
