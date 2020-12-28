@@ -72,7 +72,7 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines codecov pytest-cov
-    pytest --cov=streamtracer
+    pytest --cov=streamtracer --cov-report=xml
   displayName: 'Run tests'
 
 - script: codecov --token=4847529e-2a8f-4bf0-912f-ec8f5f98b3f8
