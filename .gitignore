@@ -6,6 +6,7 @@ dist/*
 *.pyc
 .coverage
 *.so
+MANIFEST
 
 doc/_build/*
 doc/api/*
