@@ -1,13 +1,6 @@
 import os
-import setuptools
-
-# Need to install numpy first
-import subprocess
-import sys
-subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
-
-
 from numpy.distutils.core import setup, Extension
+
 # Don't want to build the fortran on readthedocs
 exts = []
 if not os.environ.get('READTHEDOCS', None):
