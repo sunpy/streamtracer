@@ -47,6 +47,14 @@ Code reference
 Changelog
 =========
 
+1.0.1
+-----
+- Fix compilation issues on MacOS Big Sur.
+
+1.0.0
+-----
+- Nothing major, just re-versioning to a stable release number.
+
 0.1.2
 -----
 - Make sure to install numpy before trying to install streamtracer.
