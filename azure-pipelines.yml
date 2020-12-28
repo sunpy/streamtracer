@@ -77,3 +77,7 @@ steps:
 
 - script: codecov --token=4847529e-2a8f-4bf0-912f-ec8f5f98b3f8
   displayName: 'Upload code coverage'
+
+- script: |
+    python setup.py sdist
+  displayName: 'Build source distribution'
