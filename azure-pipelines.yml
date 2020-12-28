@@ -17,12 +17,15 @@ strategy:
     #  vmImage: 'vs2017-win2016'
     py37_linux:
       python.version: '3.7'
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-18.04'
     py38_linux:
       python.version: '3.8'
       vmImage: 'ubuntu-latest'
+    py39_linux:
+      python.version: '3.9'
+      vmImage: 'ubuntu-latest'
     py37_macOS:
-      vmImage: 'macOS-latest'
+      vmImage: 'macOS-10.14'
       python.version: '3.7'
     py38_macOS:
       vmImage: 'macOS-latest'
