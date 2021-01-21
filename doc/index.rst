@@ -47,6 +47,10 @@ Code reference
 Changelog
 =========
 
+1.0.2
+-----
+- Added numpy to setup_requires.
+
 1.0.1
 -----
 - Fix compilation issues on MacOS Big Sur.
