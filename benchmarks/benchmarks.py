@@ -18,6 +18,7 @@ class TimeSuite:
     def time_uniform_grid(self):
         # Check that tracing thought a uniform field gives sensible results
         seed = np.array([0, 0, 0])
+        seed = np.tile(seed, (1000, 1))
         self.tracer.trace(seed, self.grid)
 
 
