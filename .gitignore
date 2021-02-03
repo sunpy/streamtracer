@@ -6,6 +6,7 @@ dist/*
 *.pyc
 .coverage
 *.so
+.asv/*
 MANIFEST
 
 doc/_build/*
