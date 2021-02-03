@@ -47,7 +47,7 @@ steps:
       sudo apt install -y gfortran
       ;;
     darwin)
-      brew install --cask gfortran
+      brew install gcc
       ;;
     win32)
       ;;
