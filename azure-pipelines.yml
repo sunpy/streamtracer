@@ -48,6 +48,7 @@ steps:
       ;;
     darwin)
       brew install gcc
+      which gfortran
       ;;
     win32)
       ;;
