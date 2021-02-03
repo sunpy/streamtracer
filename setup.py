@@ -17,11 +17,12 @@ if not os.environ.get('READTHEDOCS', None):
 
 if __name__ == "__main__":
     setup(name='streamtracer',
-          version='1.0.1',
+          version='1.0.2',
           description='Python wrapped fortran to calculate streamlines',
           url='https://github.com/dstansby/streamtracer',
           author='David Stansby, Lars Mejnertsen',
           author_email='dstansby@gmail.com',
+          setup_requires=['numpy'],
           install_requires=['numpy'],
           python_requires='>=3.6',
           packages=['streamtracer'],
