@@ -81,7 +81,7 @@ def test_cyclic(uniform_x_field):
     # Check the cyclic option
     maxsteps = 4
     tracer = StreamTracer(maxsteps, 0.1)
-    seed = np.array([99.9, 50, 50])
+    seed = np.array([99.95, 50, 50])
 
     uniform_x_field.cyclic = [True, False, False]
     tracer.trace(seed, uniform_x_field, direction=1)
@@ -91,8 +91,8 @@ def test_cyclic(uniform_x_field):
     assert tracer.max_steps == maxsteps
     # Check that the cyclic boundary works properly
     np.testing.assert_equal(fline[0, :], seed)
-    np.testing.assert_almost_equal(fline[1, :], np.array([100, 50, 50]))
-    np.testing.assert_almost_equal(fline[2, :], np.array([0.1, 50, 50]))
+    np.testing.assert_almost_equal(fline[1, :], np.array([0.05, 50, 50]))
+    np.testing.assert_almost_equal(fline[2, :], np.array([0.15, 50, 50]))
 
     # Check that going the other way across the boundary (through zero) works
     seed = np.array([0.1, 50, 50])

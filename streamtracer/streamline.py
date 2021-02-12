@@ -233,6 +233,5 @@ class StreamTracer:
             raise ValueError(f'Direction must be -1, 1 or 0 (got {direction})')
 
         # Filter out nans
-        xi = self.xs[0]
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]
         self.xs = [xi + grid.origin_coord for xi in self.xs]
