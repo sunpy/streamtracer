@@ -24,6 +24,11 @@ This can then be used to trace lines through a 3D cartesian vector field::
 
 For more information see the :mod:`streamtracer` API docs.
 
+Boundary handling
+=================
+When the stream tracer steps outside the boundary of the grid, the first point
+outside the grid is saved in the traced stream line.
+
 Installing
 ==========
 
@@ -50,6 +55,11 @@ Changelog
 1.0.2
 -----
 - Added numpy to setup_requires.
+- Fixed handling of steps going out of bounds. Previously, in the forward
+  direction a single step would be saved out of bounds, but in the backwards
+  direction the streamline ended before going out of bounds. Now both the forward
+  and negative directions both save a single out of bounds step in each stream
+  line.
 
 1.0.1
 -----
