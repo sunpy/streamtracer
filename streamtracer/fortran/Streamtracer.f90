@@ -168,6 +168,7 @@
 
     if (ROT.eq.0) then
       ROT = 1
+      ns_out = ns
     end if
 
     end subroutine streamline
