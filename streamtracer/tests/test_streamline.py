@@ -196,3 +196,24 @@ def test_bad_input(tracer, uniform_x_field):
 def test_invalid_max_steps(val, errstr):
     with pytest.raises(ValueError, match=errstr):
         StreamTracer(val, 0.1)
+
+
+# Paramatrize to make sure behaviour is same in x,y,z directions
+@pytest.mark.parametrize('dir', [0, 1, 2])
+def test_bounds(dir):
+    # A uniform field pointing in the x direction
+    v = np.zeros((2, 2, 2, 3))
+    # Make all vectors point in the x-direction
+    v[:, :, :, dir] = 1
+    spacing = [1, 1, 1]
+    grid = VectorGrid(v, spacing)
+
+    seed = np.array([[0.5, 0.5, 0.5]])
+    tracer = StreamTracer(10, 1.0)
+    tracer.trace(seed, grid, direction=0)
+    # Check that one step is out of bounds in the positive direction
+    expected = np.roll(np.array([1.5, 0.5, 0.5]), dir)
+    assert (tracer.xs[0][-1, :] == expected).all()
+    # Check that one step is out of bounds in the negative direction
+    expected = np.roll(np.array([-0.5, 0.5, 0.5]), dir)
+    assert (tracer.xs[0][0, :] == expected).all()
