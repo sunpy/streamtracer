@@ -121,7 +121,8 @@ class StreamTracer:
     Parameters
     ----------
     max_steps : int
-        Number of steps available for each line.
+        Number of steps available for each line. The maximum number of points
+        on a single stream line is ``max_steps``.
     step_size : float
         Step size as a the fraction of cell size.
     cyclic : [bool, bool, bool], optional
