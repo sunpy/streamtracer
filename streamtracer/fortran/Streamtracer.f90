@@ -150,7 +150,6 @@
     call interpolate(xi, v, nx, ny, nz, d, vs(1 ,:))
 
     do i=2,ns
-        print *, i
 
         ! Do a single step
         call RK4_update(xi, v, nx, ny, nz, d, dir)
