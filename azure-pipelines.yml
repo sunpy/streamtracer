@@ -48,6 +48,7 @@ steps:
       ;;
     darwin)
       brew install gcc
+      brew link gcc
       ;;
     win32)
       ;;
