@@ -121,7 +121,8 @@ class StreamTracer:
     Parameters
     ----------
     max_steps : int
-        Number of steps available for each line.
+        Number of steps available for each line. The maximum number of points
+        on a single stream line is ``max_steps``.
     step_size : float
         Step size as a the fraction of cell size.
     cyclic : [bool, bool, bool], optional
@@ -232,6 +233,5 @@ class StreamTracer:
             raise ValueError(f'Direction must be -1, 1 or 0 (got {direction})')
 
         # Filter out nans
-        xi = self.xs[0]
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]
         self.xs = [xi + grid.origin_coord for xi in self.xs]

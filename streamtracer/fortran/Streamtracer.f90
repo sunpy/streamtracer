@@ -233,23 +233,27 @@
 
     ROT = 0
     if ( isnan(xi(1)).or.isnan(xi(2)).or.isnan(xi(3)) ) then
+        ! Encountered a NaN
         ROT = -2
-    elseif(xi(1).lt.0.or.xi(1).gt.d(1)*nx) then
+    elseif(xi(1).lt.0.or.xi(1).gt.d(1)*(nx-1)) then
         if(cyclic(1).ne.0) then
-          xi(1) = MOD(xi(1) + d(1)*nx, d(1)*nx)
+          xi(1) = MOD(xi(1) + d(1)*(nx-1), d(1)*(nx-1))
         else
+          ! Out of bounds
           ROT = 2
         end if
-    elseif(xi(2).lt.0.or.xi(2).gt.d(2)*ny) then
+    elseif(xi(2).lt.0.or.xi(2).gt.d(2)*(ny-1)) then
       if(cyclic(2).ne.0) then
-        xi(2) = MOD(xi(2) + d(2)*ny, d(2)*ny)
+        xi(2) = MOD(xi(2) + d(2)*(ny-1), d(2)*(ny-1))
       else
+        ! Out of bounds
         ROT = 2
       end if
-    elseif(xi(3).lt.0.or.xi(3).gt.d(3)*nz) then
+    elseif(xi(3).lt.0.or.xi(3).gt.d(3)*(nz-1)) then
       if(cyclic(3).ne.0) then
-        xi(3) = MOD(xi(3) + d(3)*nz, d(3)*nz)
+        xi(3) = MOD(xi(3) + d(3)*(nz-1), d(3)*(nz-1))
       else
+        ! Out of bounds
         ROT = 2
       end if
     end if
