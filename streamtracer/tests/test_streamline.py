@@ -6,13 +6,13 @@ from streamtracer import StreamTracer, VectorGrid
 
 @pytest.fixture
 def tracer():
-    return StreamTracer(1000, 0.1)
+    return StreamTracer(2000, 0.1)
 
 
 @pytest.fixture
 def uniform_x_field():
     # A uniform field pointing in the x direction
-    v = np.zeros((100, 100, 100, 3))
+    v = np.zeros((101, 101, 101, 3))
     # Make all vectors point in the x-direction
     v[:, :, :, 0] = 1
     spacing = [1, 1, 1]
@@ -54,14 +54,14 @@ def test_uniform_field(tracer, uniform_x_field, vec_len):
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
-    np.testing.assert_almost_equal(sline[:, 0], np.linspace(0, 99.9, 1000))
+    np.testing.assert_almost_equal(sline[:, 0], np.linspace(-0.1, 100.1, 1003))
     np.testing.assert_equal(sline[:, 1], 0)
     np.testing.assert_equal(sline[:, 2], 0)
 
     # Check that streamline always goes in a positive direction
     assert np.all(np.diff(sline[:, 0]) > 0)
     # Check that there are 100 * 0.1 = 1000 steps in the streamline
-    assert sline.shape[0] == 1000
+    assert sline.shape[0] == 1003
 
 
 def test_trace_direction(tracer, uniform_x_field):
@@ -107,12 +107,12 @@ def test_cyclic(uniform_x_field):
     # Going forwards
     seed = np.array([99.9, 50, 50])
     tracer.trace(seed, uniform_x_field, direction=1)
-    assert len(tracer.xs[0]) == 2
+    assert len(tracer.xs[0]) == 3
 
     # Going backwards
     seed = np.array([0.1, 50, 50])
     tracer.trace(seed, uniform_x_field, direction=-1)
-    assert len(tracer.xs[0]) == 2
+    assert len(tracer.xs[0]) == 3
 
 
 @pytest.mark.parametrize('origin_coord', [[0, 0, 0], [1, 1, 1]])
@@ -122,7 +122,7 @@ def test_origin(uniform_x_field, tracer, origin_coord):
     tracer.trace(seed, uniform_x_field, direction=1)
 
     np.testing.assert_equal(tracer.xs[0][0, :], seed)
-    end_coord = np.array([100 + origin_coord[0], 50, 50])
+    end_coord = np.array([100 + origin_coord[0] + 0.1, 50, 50])
     np.testing.assert_almost_equal(tracer.xs[0][-1, :], end_coord)
 
 
