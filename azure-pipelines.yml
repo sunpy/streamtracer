@@ -49,7 +49,7 @@ steps:
     darwin)
       brew install gcc
       brew link gcc
-      ls /usr/local/bin/gf*
+      ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
       ;;
     win32)
       ;;
