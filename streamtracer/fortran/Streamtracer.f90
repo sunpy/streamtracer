@@ -150,26 +150,27 @@
     call interpolate(xi, v, nx, ny, nz, d, vs(1 ,:))
 
     do i=2,ns
+        print *, i
 
         ! Do a single step
         call RK4_update(xi, v, nx, ny, nz, d, dir)
         ! Check if we are out of bounds, and move if cyclic is on
         call check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
-        if(ROT.ne.0) exit
         ! Save the step value
         xs(i,:) = xi
 
+        if(ROT.ne.0) exit
         ! Calculate the local B vector
         call interpolate(xi, v, nx, ny, nz, d, vs(i,:))
 
     end do
 
-    ns_out = i-1
+    ns_out = i
 
     if (ROT.eq.0) then
-    ROT = 1
-    ns_out = ns
-  end if
+      ROT = 1
+      ns_out = ns
+    end if
 
     end subroutine streamline
 
