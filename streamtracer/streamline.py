@@ -203,7 +203,7 @@ class StreamTracer:
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
-            self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
+            self.xs, ROT, self.ns = streamtracer.streamline_array(
                 seeds, field, grid_spacing, direction, self.max_steps, cyclic)
 
             self.xs += grid.origin_coord
@@ -215,10 +215,10 @@ class StreamTracer:
 
         elif direction == 0:
             # Calculate forward streamline
-            xs_f, vs_f, ROT_f, ns_f = streamtracer.streamline_array(
+            xs_f, ROT_f, ns_f = streamtracer.streamline_array(
                 seeds, field, grid_spacing, 1, self.max_steps, cyclic)
             # Calculate backward streamline
-            xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
+            xs_r, ROT_r, ns_r = streamtracer.streamline_array(
                 seeds, field, grid_spacing, -1, self.max_steps, cyclic)
 
             xs_f += grid.origin_coord

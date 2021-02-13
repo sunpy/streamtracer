@@ -60,7 +60,7 @@
 
     end function get_max_threads
 
-    subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, vs, ROT, ns_out)
+    subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, ROT, ns_out)
     ! INPUT:
     ! x0: seed points
     ! v: vector field
@@ -71,7 +71,6 @@
     !
     ! OUTPUT:
     ! xs: traced streamlines
-    ! vs:
     ! ROT: reason of termination
     ! ns_out: number of steps taken
     double precision, dimension(nlines,3), intent(in) :: x0
@@ -79,15 +78,15 @@
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
     integer, intent(in) :: ns, nx, ny, nz, dir, nlines
     integer, intent(in), dimension(3) :: cyclic
-    double precision, dimension(nlines, ns, 3), intent(out) :: xs, vs
+    double precision, dimension(nlines, ns, 3), intent(out) :: xs
     integer, intent(out), dimension(nlines) :: ROT, ns_out
     double precision, dimension(3) :: x0_i
-    double precision, dimension(ns, 3) :: xs_i, vs_i
+    double precision, dimension(ns, 3) :: xs_i
     integer :: i, j
 
     !$ openmp_enabled = 1
 
-    !$omp parallel default(firstprivate) shared(v, xs, vs, x0, ROT, ns_out)
+    !$omp parallel default(firstprivate) shared(v, xs, x0, ROT, ns_out)
 
     if(debug.gt.0) call thread_count('streamline_array')
 
@@ -95,10 +94,9 @@
     do i=1,nlines
         !DIR$ NOUNROLL
         x0_i = x0(i,:)
-        call streamline(x0_i, v, nx, ny, nz, d, dir, ns, cyclic, xs_i, vs_i, ROT(i), ns_out(i))
+        call streamline(x0_i, v, nx, ny, nz, d, dir, ns, cyclic, xs_i, ROT(i), ns_out(i))
         do j=1,ns_out(i)
             xs(i,j,:) = xs_i(j,:)
-            vs(i,j,:) = vs_i(j,:)
         end do
     end do
   !$omp end do
@@ -107,7 +105,7 @@
 
     end subroutine streamline_array
 
-    subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, cyclic, xs, vs, ROT, ns_out)
+    subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, cyclic, xs, ROT, ns_out)
       ! INPUT:
       ! x0: seed point
       ! v: vector field
@@ -119,7 +117,6 @@
       !
       ! OUTPUT:
       ! xs: traced streamline
-      ! vs:
       ! ROT: reason of termination
       ! ns_out: number of steps taken
     implicit none
@@ -127,7 +124,7 @@
     double precision, dimension(nx,ny,nz,3), intent(in) :: v
     integer, intent(in) :: ns_in, nx, ny, nz, dir
     integer, intent(in), dimension(3) :: cyclic
-    double precision, dimension(ns_in, 3), intent(out) :: xs, vs
+    double precision, dimension(ns_in, 3), intent(out) :: xs
     integer, intent(out) :: ROT, ns_out
     double precision, dimension(3) :: xi
     integer :: i
@@ -140,14 +137,9 @@
 
     ! Set all streamline points to (0, 0, 0) to start
     xs = 0
-    ! Set all the output vectors to (1,1,1) to start
-    vs = 1.
-
     ! Set the initial point to be the seed
     xs(1, :) = x0
     xi = x0
-
-    call interpolate(xi, v, nx, ny, nz, d, vs(1 ,:))
 
     do i=2,ns
 
@@ -159,9 +151,6 @@
         xs(i,:) = xi
 
         if(ROT.ne.0) exit
-        ! Calculate the local B vector
-        call interpolate(xi, v, nx, ny, nz, d, vs(i,:))
-
     end do
 
     ns_out = i
