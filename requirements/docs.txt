@@ -1,6 +1,0 @@
--r base.txt
-
-numpydoc
-sphinx
-sphinx-automodapi
-sphinx_rtd_theme
