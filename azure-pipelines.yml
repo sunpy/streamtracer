@@ -61,19 +61,11 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    pip install -r requirements/testing.txt
-  displayName: 'Install dependencies'
-
-- script: |
-   python setup.py sdist
-  displayName: 'Build source distribution'
-
-- script: |
-   python -m pip install -ve .
+    python -m pip install -ve .[tests]
+    python -m pip install pytest-azurepipelines codecov
   displayName: 'Install package'
 
 - script: |
-    pip install pytest pytest-azurepipelines codecov pytest-cov
     pytest --cov=streamtracer
   displayName: 'Run tests'
 
