@@ -206,6 +206,7 @@ class StreamTracer:
             self.xs, vs, ROT, self.ns = streamtracer.streamline_array(
                 seeds, field, grid_spacing, direction, self.max_steps, cyclic)
 
+            self.xs += grid.origin_coord
             # Reduce the size of the arrays
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
 
@@ -220,12 +221,12 @@ class StreamTracer:
             xs_r, vs_r, ROT_r, ns_r = streamtracer.streamline_array(
                 seeds, field, grid_spacing, -1, self.max_steps, cyclic)
 
-            # Reduce the size of the arrays, and flip the reverse streamlines
-            xs_f = [xi[:ni, :] for xi, ni in zip(xs_f, ns_f)]
-            xs_r = [xi[ni - 1:0:-1, :] for xi, ni in zip(xs_r, ns_r)]
+            xs_f += grid.origin_coord
+            xs_r += grid.origin_coord
 
             # Stack the forward and reverse arrays
-            self.xs = [np.vstack([xri, xfi]) for xri, xfi in zip(xs_r, xs_f)]
+            self.xs = [np.vstack([xri[nr - 1:0:-1, :], xfi[:nf]]) for
+                       xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)]
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
@@ -234,4 +235,3 @@ class StreamTracer:
 
         # Filter out nans
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]
-        self.xs = [xi + grid.origin_coord for xi in self.xs]
