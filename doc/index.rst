@@ -52,14 +52,17 @@ Code reference
 Changelog
 =========
 
-1.0.2
+1.1.0
 -----
-- Added numpy to setup_requires.
 - Fixed handling of steps going out of bounds. Previously, in the forward
   direction a single step would be saved out of bounds, but in the backwards
   direction the streamline ended before going out of bounds. Now both the forward
   and negative directions both save a single out of bounds step in each stream
   line.
+- Linux and macOS binary distributions (wheels) are now automatically built and
+  uploaded, meaning you should no longer need a FORTRAN compiler installed
+  locally to use streamtracer.
+- Minor performance and memory improvements have been made.
 
 1.0.1
 -----
