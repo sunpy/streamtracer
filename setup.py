@@ -1,4 +1,5 @@
 import os
+from setuptools import setup
 from numpy.distutils.core import setup, Extension
 
 # Don't want to build the fortran on readthedocs
@@ -15,5 +16,4 @@ if not os.environ.get('READTHEDOCS', None):
                        ),
              ]
 
-if __name__ == "__main__":
-    setup(ext_modules=exts)
+setup(ext_modules=exts)
