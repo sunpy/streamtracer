@@ -52,6 +52,13 @@ Code reference
 Changelog
 =========
 
+1.1.1
+-----
+Fixed wheel building to use the oldest supported version of numpy for each
+major version of python. This fixes errors like
+"module compiled against API version 0xe but this version of numpy is 0xd"
+that were in the 1.1.0 wheels.
+
 1.1.0
 -----
 - Fixed handling of steps going out of bounds. Previously, in the forward

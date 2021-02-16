@@ -8,7 +8,9 @@ on:
 
 env:
   CIBW_BUILD: cp37-* cp38-* cp39-*
-  CIBW_BEFORE_TEST: pip install pytest
+  # Upgrade numpy to make sure the binary is compatible with latest version
+  # See https://github.com/numpy/numpy/issues/5888 for more info
+  CIBW_BEFORE_TEST: pip install pytest numpy --upgrade
   CIBW_TEST_COMMAND: pytest {package}
 
 jobs:
