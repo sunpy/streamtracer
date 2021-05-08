@@ -67,12 +67,12 @@ class VectorGrid:
     def _validate_cyclic(vectors, cyclic):
         dims = {0: 'x', 1: 'y', 2: 'z'}
         s = [slice(None)] * 4
-        for i, c in enumerate(cyclic):
-            if c:
+        for dim, is_cyclic in enumerate(cyclic):
+            if is_cyclic:
                 slc = s.copy()
-                slc[i] = slice(0, 1)
+                slc[dim] = slice(0, 1)
                 side1 = vectors[tuple(slc)]
-                slc[i] = slice(-1, None)
+                slc[dim] = slice(-1, None)
                 side2 = vectors[tuple(slc)]
 
                 np.testing.assert_equal(
