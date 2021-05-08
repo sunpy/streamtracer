@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from streamtracer.fortran.streamtracer import streamtracer
 from streamtracer import StreamTracer, VectorGrid
 
 
@@ -217,3 +218,12 @@ def test_bounds(dir):
     # Check that one step is out of bounds in the negative direction
     expected = np.roll(np.array([-0.5, 0.5, 0.5]), dir)
     assert (tracer.xs[0][0, :] == expected).all()
+
+
+def test_nthreads():
+    # assert streamtracer.openmp_enabled
+    streamtracer.set_num_threads(4)
+    assert streamtracer.get_num_threads() == 4
+
+    streamtracer.set_num_threads(2)
+    assert streamtracer.get_num_threads() == 2

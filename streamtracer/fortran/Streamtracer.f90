@@ -21,44 +21,41 @@
     character(len=*), intent(in) :: message
     integer :: num_threads, max_threads
 
-    num_threads = get_num_threads()
-    max_threads = get_max_threads()
+      num_threads = get_num_threads()
+      max_threads = get_max_threads()
 
-    !$ openmp_enabled = 1
+      !$ openmp_enabled = 1
 
-    !$omp single
-    open(unit=500, file='threads.txt', access='append')
-    write(500,200) message, num_threads, max_threads
-    close(500)
+      !$omp single
+      open(unit=500, file='threads.txt', access='append')
+      write(500, 200) message, num_threads, max_threads
+      close(500)
 200 format(A, ': ', I4, ', ', I4)
-    !$omp end single
+      !$omp end single
 
     end subroutine thread_count
 
+
     subroutine set_num_threads(n_threads)
-    integer, intent(in) :: n_threads
-
-    !$ openmp_enabled = 1
-
-    call omp_set_num_threads(n_threads)
-
+      integer, intent(in) :: n_threads
+      !$ openmp_enabled = 1
+      call omp_set_num_threads(n_threads)
     end subroutine set_num_threads
 
+
     integer function get_num_threads()
-
-    !$ openmp_enabled = 1
-
-    get_num_threads = omp_get_num_threads()
-
+      !$ openmp_enabled = 1
+      !$omp parallel
+      get_num_threads = omp_get_num_threads()
+      !$omp end parallel
     end function get_num_threads
 
+
     integer function get_max_threads()
-
-    !$ openmp_enabled = 1
-
-    get_max_threads = omp_get_max_threads()
-
+      !$ openmp_enabled = 1
+      get_max_threads = omp_get_max_threads()
     end function get_max_threads
+
 
     subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, ROT, ns_out)
     ! INPUT:
