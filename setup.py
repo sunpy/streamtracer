@@ -12,6 +12,7 @@ if not os.environ.get('READTHEDOCS', None):
     ]
     exts += [Extension(name='streamtracer.fortran.streamtracer',
                        sources=['streamtracer/fortran/Streamtracer.f90'],
+                       extra_compile_args=extra_args,
                        extra_f90_compile_args=extra_args,
                        extra_link_args=extra_args
                        ),
