@@ -6,6 +6,7 @@ from numpy.distutils.core import setup, Extension
 exts = []
 if not os.environ.get('READTHEDOCS', None):
     extra_args = [
+        '-lgomp',
         '-fopenmp',
         '-L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib'
     ]
