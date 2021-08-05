@@ -5,22 +5,32 @@ streamtracer is a python package for rapid streamline tracing. It is a wrapper
 to compiled fortran code that does the heavy lifting, and is therefore
 relatively fast.
 
-To use, create a :class:`streamtracer.StreamTracer` object::
+To use, create a :class:`streamtracer.StreamTracer` object
+
+.. jupyter-execute::
+
+  import numpy as np
+  from streamtracer import StreamTracer, VectorGrid
 
   nsteps = 10000
   step_size = 0.1
   tracer = StreamTracer(nsteps, step_size)
 
-and a :class:`streamtracer.VectorGrid`::
+and a :class:`streamtracer.VectorGrid`
+
+.. jupyter-execute::
 
   field = np.ones((10, 10, 10, 3))
   grid_spacing = [1, 2, 1]
   grid = VectorGrid(field, grid_spacing)
 
-This can then be used to trace lines through a 3D cartesian vector field::
+This can then be used to trace lines through a 3D cartesian vector field
+
+.. jupyter-execute::
 
   seeds = np.array([[0, 0, 0], [0, 0, 1]])
-  streamlines = StreamTracer.trace(seeds, grid)
+  streamlines = tracer.trace(seeds, grid)
+  print(streamlines)
 
 For more information see the :mod:`streamtracer` API docs.
 

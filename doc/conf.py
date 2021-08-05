@@ -24,7 +24,7 @@ for module in modules:
 # -- Project information -----------------------------------------------------
 
 project = 'streamtracer'
-copyright = '2019, David Stansby'
+copyright = '2019-2021, David Stansby'
 author = 'David Stansby'
 
 # The full version, including alpha/beta/rc tags
@@ -40,6 +40,7 @@ master_doc = 'index'
 # ones.
 extensions = ['sphinx_automodapi.automodapi',
               'numpydoc',
+              'jupyter_sphinx',
               ]
 numpydoc_show_class_members = False
 
