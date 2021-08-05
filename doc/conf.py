@@ -24,7 +24,7 @@ for module in modules:
 # -- Project information -----------------------------------------------------
 
 project = 'streamtracer'
-copyright = '2019, David Stansby'
+copyright = '2019-2021, David Stansby'
 author = 'David Stansby'
 
 # The full version, including alpha/beta/rc tags
@@ -40,6 +40,7 @@ master_doc = 'index'
 # ones.
 extensions = ['sphinx_automodapi.automodapi',
               'numpydoc',
+              'jupyter_sphinx',
               ]
 numpydoc_show_class_members = False
 
@@ -57,7 +58,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

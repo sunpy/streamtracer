@@ -144,6 +144,7 @@ class StreamTracer:
     def __init__(self, max_steps, step_size):
         self.max_steps = max_steps
         self.ds = step_size
+        self.xs = None
 
     @property
     def max_steps(self):
