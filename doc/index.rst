@@ -62,6 +62,10 @@ Code reference
 Changelog
 =========
 
+1.1.2
+-----
+Fixed the example code listed above.
+
 1.1.1
 -----
 Fixed wheel building to use the oldest supported version of numpy for each
