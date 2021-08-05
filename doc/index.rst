@@ -30,7 +30,14 @@ This can then be used to trace lines through a 3D cartesian vector field
 
   seeds = np.array([[0, 0, 0], [0, 0, 1]])
   tracer.trace(seeds, grid)
-  print(tracer.xs)
+
+and the traced field lines can be accessed via. the ``.xs`` attribute
+
+.. jupyter-execute::
+
+  print(f'Number of traced lines: {len(tracer.xs)}')
+  line_lengths = [len(x) for x in tracer.xs]
+  print(f'Line lengths: {line_lengths}')
 
 For more information see the :mod:`streamtracer` API docs.
 
