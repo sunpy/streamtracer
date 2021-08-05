@@ -29,8 +29,8 @@ This can then be used to trace lines through a 3D cartesian vector field
 .. jupyter-execute::
 
   seeds = np.array([[0, 0, 0], [0, 0, 1]])
-  streamlines = tracer.trace(seeds, grid)
-  print(streamlines)
+  tracer.trace(seeds, grid)
+  print(tracer.xs)
 
 For more information see the :mod:`streamtracer` API docs.
 
