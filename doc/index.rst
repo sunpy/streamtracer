@@ -49,12 +49,15 @@ outside the grid is saved in the traced stream line.
 Installing
 ==========
 
-In theory, it should be possible to build and install streamtracer in one
-go with::
+It should be possible to build and install streamtracer in one go with::
 
   pip install streamtracer
 
-Note that this requires a fortran compiler; currently known to work is gfortran.
+This requires a fortran compiler; currently known to work is gfortran. On
+macOS this can be installed with `brew <https://brew.sh/>`_  using
+``brew install gfortran``
+
+
 If you have problems installing, please open an issue at
 https://github.com/dstansby/streamtracer/issues
 
