@@ -121,13 +121,20 @@ contains
     integer, intent(in), dimension(3) :: cyclic
     double precision, dimension(ns_in, 3), intent(out) :: xs
     integer, intent(out) :: ROT, ns_out
+
     double precision, dimension(3) :: xi
+    double precision, dimension(3) :: bounds
     integer :: i
 
     !$ openmp_enabled = 1
 
     ns = ns_in
     ROT = 0
+
+    ! Calculate bounds
+    bounds(1) = d(1) * (nx - 1)
+    bounds(2) = d(2) * (ny - 1)
+    bounds(3) = d(3) * (nz - 1)
 
     ! Set all streamline points to (0, 0, 0) to start
     xs = 0
@@ -139,7 +146,7 @@ contains
       ! Do a single step
       call RK4_update(xi, v, nx, ny, nz, d, dir)
       ! Check if we are out of bounds, and move if cyclic is on
-      call check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
+      call check_bounds(xi, bounds, cyclic, ROT)
       ! Save the step value
       xs(i,:) = xi
 
@@ -203,16 +210,14 @@ contains
 
   end subroutine RK4_update
 
-  subroutine check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
+  subroutine check_bounds(xi, bounds, cyclic, ROT)
     ! INPUT
     ! xi: current coordinate
-    ! nx, ny, nz: number of grid points in (x, y, z)
-    ! d: vector of grid spacings in (x, y, z)
+    ! bounds: vector of grid bounds in (x, y, z)
     ! cyclic: bool, if true then don't terminate at edge of box
     ! OUTPUT
     ! ROT: reason of termination
-    double precision, intent(in), dimension(3) :: d
-    integer, intent(in) :: nx, ny, nz
+    double precision, intent(in), dimension(3) :: bounds
     integer, intent(in), dimension(3) :: cyclic
     double precision, intent(out), dimension(3) :: xi
     integer, intent(out) :: ROT
@@ -221,23 +226,23 @@ contains
     if ( isnan(xi(1)) .or. isnan(xi(2)) .or. isnan(xi(3)) ) then
       ! Encountered a NaN
       ROT = - 2
-    elseif (xi(1) < 0 .or. xi(1) > d(1) * (nx - 1)) then
+    elseif (xi(1) < 0 .or. xi(1) > bounds(1)) then
       if (cyclic(1) /= 0) then
-        xi(1) = MOD(xi(1) + d(1) * (nx - 1), d(1) * (nx - 1))
+        xi(1) = MOD(xi(1) + bounds(1), bounds(1))
       else
         ! Out of bounds
         ROT = 2
       end if
-    elseif (xi(2) < 0 .or. xi(2) > d(2) * (ny - 1)) then
+    elseif (xi(2) < 0 .or. xi(2) > bounds(2)) then
       if (cyclic(2) /= 0) then
-        xi(2) = MOD(xi(2) + d(2) * (ny - 1), d(2) * (ny - 1))
+        xi(2) = MOD(xi(2) + bounds(2), bounds(2))
       else
         ! Out of bounds
         ROT = 2
       end if
-    elseif (xi(3) < 0 .or. xi(3) > d(3) * (nz - 1)) then
+    elseif (xi(3) < 0 .or. xi(3) > bounds(3)) then
       if (cyclic(3) /= 0) then
-        xi(3) = MOD(xi(3) + d(3) * (nz - 1), d(3) * (nz - 1))
+        xi(3) = MOD(xi(3) + bounds(3), bounds(3))
       else
         ! Out of bounds
         ROT = 2
