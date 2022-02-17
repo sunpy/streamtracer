@@ -60,9 +60,10 @@ contains
   subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, ROT, ns_out)
     ! INPUT:
     ! x0: seed points
+    ! nlines: number of field lines being traced
     ! v: vector field
-    ! nx, ny, nz: grid spacing in (x, y, z) directions
-    ! d:
+    ! nx, ny, nz: grid size in (x, y, z) directions
+    ! d: grid spacing in (x, y, z) directions
     ! dir: direction to trace (1=forwards, -1=backwards)
     ! ns: max steps
     !
@@ -102,12 +103,12 @@ contains
   subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, cyclic, xs, ROT, ns_out)
     ! INPUT:
     ! x0: seed point
+    ! nlines: number of field lines being traced
     ! v: vector field
-    ! nx, ny, nz: grid spacing in (x, y, z) directions
-    ! d:
+    ! nx, ny, nz: grid size in (x, y, z) directions
+    ! d: grid spacing in (x, y, z) directions
     ! dir: direction to trace (1=forwards, -1=backwards)
-    ! ns_in: max steps
-    ! cyclic: if true, cyclic boundaries (instead of terminating)
+    ! ns: max steps
     !
     ! OUTPUT:
     ! xs: traced streamline
@@ -165,6 +166,14 @@ contains
   end function vector_mag
 
   subroutine RK4_update(xi, v, nx, ny, nz, d, dir)
+    ! Update xi by taking a single RK4 step
+    !
+    ! INPUT:
+    ! xi: current coordinate
+    ! v: vector field
+    ! nx, ny, nz: grid size in (x, y, z) directions
+    ! d: grid spacing in (x, y, z) directions
+    ! dir: direction to step (1=forwards, -1=backwards)
     double precision, dimension(3), intent(inout) :: xi
     double precision, dimension(3), intent(in) :: d
     double precision, dimension(nx, ny, nz, 3), intent(in) :: v
@@ -196,16 +205,17 @@ contains
 
   subroutine check_bounds(xi, nx, ny, nz, d, cyclic, ROT)
     ! INPUT
-    ! xi: vector position
+    ! xi: current coordinate
     ! nx, ny, nz: number of grid points in (x, y, z)
     ! d: vector of grid spacings in (x, y, z)
     ! cyclic: bool, if true then don't terminate at edge of box
+    ! OUTPUT
+    ! ROT: reason of termination
     double precision, intent(in), dimension(3) :: d
     integer, intent(in) :: nx, ny, nz
     integer, intent(in), dimension(3) :: cyclic
     double precision, intent(out), dimension(3) :: xi
     integer, intent(out) :: ROT
-
 
     ROT = 0
     if ( isnan(xi(1)) .or. isnan(xi(2)) .or. isnan(xi(3)) ) then
