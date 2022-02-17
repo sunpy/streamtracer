@@ -70,9 +70,9 @@
     ! xs: traced streamlines
     ! ROT: reason of termination
     ! ns_out: number of steps taken
-    double precision, dimension(nlines,3), intent(in) :: x0
+    double precision, dimension(nlines, 3), intent(in) :: x0
     double precision, dimension(3), intent(in) :: d
-    double precision, dimension(nx,ny,nz,3), intent(in) :: v
+    double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     integer, intent(in) :: ns, nx, ny, nz, dir, nlines
     integer, intent(in), dimension(3) :: cyclic
     double precision, dimension(nlines, ns, 3), intent(out) :: xs
@@ -85,15 +85,15 @@
 
     !$omp parallel default(firstprivate) shared(v, xs, x0, ROT, ns_out)
 
-    if(debug.gt.0) call thread_count('streamline_array')
+    if (debug > 0) call thread_count('streamline_array')
 
     !$omp do schedule(dynamic)
-    do i=1,nlines
         !DIR$ NOUNROLL
+    do i = 1, nlines
         x0_i = x0(i,:)
         call streamline(x0_i, v, nx, ny, nz, d, dir, ns, cyclic, xs_i, ROT(i), ns_out(i))
-        do j=1,ns_out(i)
-            xs(i,j,:) = xs_i(j,:)
+        do j = 1, ns_out(i)
+            xs(i, j,:) = xs_i(j,:)
         end do
     end do
   !$omp end do
@@ -118,7 +118,7 @@
       ! ns_out: number of steps taken
     implicit none
     double precision, dimension(3), intent(in) :: x0, d
-    double precision, dimension(nx,ny,nz,3), intent(in) :: v
+    double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     integer, intent(in) :: ns_in, nx, ny, nz, dir
     integer, intent(in), dimension(3) :: cyclic
     double precision, dimension(ns_in, 3), intent(out) :: xs
@@ -138,7 +138,7 @@
     xs(1, :) = x0
     xi = x0
 
-    do i=2,ns
+    do i = 2, ns
 
         ! Do a single step
         call RK4_update(xi, v, nx, ny, nz, d, dir)
@@ -147,12 +147,12 @@
         ! Save the step value
         xs(i,:) = xi
 
-        if(ROT.ne.0) exit
+        if (ROT /= 0) exit
     end do
 
     ns_out = i
 
-    if (ROT.eq.0) then
+    if (ROT == 0) then
       ROT = 1
       ns_out = ns
     end if
@@ -163,7 +163,7 @@
   double precision function vector_dot(v1, v2)
     double precision, dimension(3), intent(in) :: v1, v2
 
-  vector_dot = v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3)
+  vector_dot = v1(1) * v2(1) + v1(2) * v2(2) + v1(3) * v2(3)
 
   end function vector_dot
 
@@ -177,30 +177,30 @@
     subroutine RK4_update(xi, v, nx, ny, nz, d, dir)
     double precision, dimension(3), intent(inout) :: xi
     double precision, dimension(3), intent(in) :: d
-    double precision, dimension(nx,ny,nz,3), intent(in) :: v
+    double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     double precision, dimension(3) :: xu
     integer, intent(in) :: nx, ny, nz, dir
     double precision, dimension(3) :: k1, k2, k3, k4
 
-    !--- RK4 K parameters ---------------------------------------------------------------------
+    ! --- RK4 K parameters ---------------------------------------------------------------------
     call stream_function(xi, v, nx, ny, nz, d, dir, k1)
 
-    !DIR$ NOUNROLL
-    xu = xi+0.5*k1
+    ! DIR$ NOUNROLL
+    xu = xi + 0.5 * k1
     call stream_function(xu, v, nx, ny, nz, d, dir, k2)
 
     !DIR$ NOUNROLL
-    xu = xi+0.5*k2
+    xu = xi + 0.5 * k2
     call stream_function(xu, v, nx, ny, nz, d, dir, k3)
 
     !DIR$ NOUNROLL
-    xu = xi+k3
+    xu = xi + k3
     call stream_function(xu, v, nx, ny, nz, d, dir, k4)
 
-    !--- Step ---------------------------------------------------------------------------------
+    ! --- Step ---------------------------------------------------------------------------------
 
     !DIR$ NOUNROLL
-    xi = xi + (k1 + 2*k2 + 2*k3 + k4)/6.
+    xi = xi + (k1 + 2 * k2 + 2 * k3 + k4) / 6.
 
     end subroutine RK4_update
 
@@ -218,26 +218,26 @@
 
 
     ROT = 0
-    if ( isnan(xi(1)).or.isnan(xi(2)).or.isnan(xi(3)) ) then
+    if ( isnan(xi(1)) .or. isnan(xi(2)) .or. isnan(xi(3)) ) then
         ! Encountered a NaN
-        ROT = -2
-    elseif(xi(1).lt.0.or.xi(1).gt.d(1)*(nx-1)) then
-        if(cyclic(1).ne.0) then
-          xi(1) = MOD(xi(1) + d(1)*(nx-1), d(1)*(nx-1))
+        ROT = - 2
+    elseif (xi(1) < 0 .or. xi(1) > d(1) * (nx - 1)) then
+        if (cyclic(1) /= 0) then
+          xi(1) = MOD(xi(1) + d(1) * (nx - 1), d(1) * (nx - 1))
         else
           ! Out of bounds
           ROT = 2
         end if
-    elseif(xi(2).lt.0.or.xi(2).gt.d(2)*(ny-1)) then
-      if(cyclic(2).ne.0) then
-        xi(2) = MOD(xi(2) + d(2)*(ny-1), d(2)*(ny-1))
+    elseif (xi(2) < 0 .or. xi(2) > d(2) * (ny - 1)) then
+      if (cyclic(2) /= 0) then
+        xi(2) = MOD(xi(2) + d(2) * (ny - 1), d(2) * (ny - 1))
       else
         ! Out of bounds
         ROT = 2
       end if
-    elseif(xi(3).lt.0.or.xi(3).gt.d(3)*(nz-1)) then
-      if(cyclic(3).ne.0) then
-        xi(3) = MOD(xi(3) + d(3)*(nz-1), d(3)*(nz-1))
+    elseif (xi(3) < 0 .or. xi(3) > d(3) * (nz - 1)) then
+      if (cyclic(3) /= 0) then
+        xi(3) = MOD(xi(3) + d(3) * (nz - 1), d(3) * (nz - 1))
       else
         ! Out of bounds
         ROT = 2
@@ -257,18 +257,18 @@
     double precision :: vmag
     double precision, dimension(3) :: vI, distI
     integer, dimension(3) :: i0, i1
-    double precision, dimension(2,2,2) :: cell
+    double precision, dimension(2, 2, 2) :: cell
 
     !DIR$ NOUNROLL
-    i0 = floor(xI/d)+1
-    i0(1) = min(max(1,i0(1)), nx-1)
-    i0(2) = min(max(1,i0(2)), ny-1)
-    i0(3) = min(max(1,i0(3)), nz-1)
+    i0 = floor(xI / d) + 1
+    i0(1) = min(max(1, i0(1)), nx - 1)
+    i0(2) = min(max(1, i0(2)), ny - 1)
+    i0(3) = min(max(1, i0(3)), nz - 1)
 
-    i1 = i0+1
+    i1 = i0 + 1
 
     !DIR$ NOUNROLL
-    distI = xI/d+1-i0
+    distI = xI / d + 1 - i0
 
     cell = v(i0(1):i1(1), i0(2):i1(2), i0(3):i1(3), 1)
     call interp_trilinear(distI, cell, vI(1))
@@ -279,27 +279,27 @@
     cell = v(i0(1):i1(1), i0(2):i1(2), i0(3):i1(3), 3)
     call interp_trilinear(distI, cell, vI(3))
 
-    !call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),1), v(i0(1),i0(2),i1(3),1), &
-    !                              v(i0(1),i1(2),i0(3),1), v(i0(1),i1(2),i1(3),1), &
-    !                              v(i1(1),i0(2),i0(3),1), v(i1(1),i0(2),i1(3),1), &
-    !                              v(i1(1),i1(2),i0(3),1), v(i1(1),i1(2),i1(3),1), &
-    !                              vI(1))
+    ! call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),1), v(i0(1),i0(2),i1(3),1), &
+    ! v(i0(1),i1(2),i0(3),1), v(i0(1),i1(2),i1(3),1), &
+    ! v(i1(1),i0(2),i0(3),1), v(i1(1),i0(2),i1(3),1), &
+    ! v(i1(1),i1(2),i0(3),1), v(i1(1),i1(2),i1(3),1), &
+    ! vI(1))
     !
-    !call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),2), v(i0(1),i0(2),i1(3),2), &
-    !                              v(i0(1),i1(2),i0(3),2), v(i0(1),i1(2),i1(3),2), &
-    !                              v(i1(1),i0(2),i0(3),2), v(i1(1),i0(2),i1(3),2), &
-    !                              v(i1(1),i1(2),i0(3),2), v(i1(1),i1(2),i1(3),2), &
-    !                              vI(2))
+    ! call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),2), v(i0(1),i0(2),i1(3),2), &
+    ! v(i0(1),i1(2),i0(3),2), v(i0(1),i1(2),i1(3),2), &
+    ! v(i1(1),i0(2),i0(3),2), v(i1(1),i0(2),i1(3),2), &
+    ! v(i1(1),i1(2),i0(3),2), v(i1(1),i1(2),i1(3),2), &
+    ! vI(2))
     !
-    !call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),3), v(i0(1),i0(2),i1(3),3), &
-    !                              v(i0(1),i1(2),i0(3),3), v(i0(1),i1(2),i1(3),3), &
-    !                              v(i1(1),i0(2),i0(3),3), v(i1(1),i0(2),i1(3),3), &
-    !                              v(i1(1),i1(2),i0(3),3), v(i1(1),i1(2),i1(3),3), &
-    !                              vI(3))
+    ! call interp_trilinear2(distI, v(i0(1),i0(2),i0(3),3), v(i0(1),i0(2),i1(3),3), &
+    ! v(i0(1),i1(2),i0(3),3), v(i0(1),i1(2),i1(3),3), &
+    ! v(i1(1),i0(2),i0(3),3), v(i1(1),i0(2),i1(3),3), &
+    ! v(i1(1),i1(2),i0(3),3), v(i1(1),i1(2),i1(3),3), &
+    ! vI(3))
 
-  vmag  = sqrt(vI(1)**2+vI(2)**2+vI(3)**2)
     !DIR$ NOUNROLL
-    f = dir*vI/vmag*ds
+  vmag  = sqrt(vI(1) ** 2 + vI(2) ** 2 + vI(3) ** 2)
+    f = dir * vI / vmag * ds
 
     end subroutine stream_function
 
@@ -312,18 +312,18 @@
     double precision, dimension(3), intent(out) :: vI
     double precision, dimension(3) :: distI
     integer, dimension(3) :: i0, i1
-    double precision, dimension(2,2,2) :: cell
+    double precision, dimension(2, 2, 2) :: cell
 
     !DIR$ NOUNROLL
-    i0 = floor(xI/d)+1
-    i0(1) = min(max(1,i0(1)), nx-1)
-    i0(2) = min(max(1,i0(2)), ny-1)
-    i0(3) = min(max(1,i0(3)), nz-1)
+    i0 = floor(xI / d) + 1
+    i0(1) = min(max(1, i0(1)), nx - 1)
+    i0(2) = min(max(1, i0(2)), ny - 1)
+    i0(3) = min(max(1, i0(3)), nz - 1)
 
-    i1 = i0+1
+    i1 = i0 + 1
 
     !DIR$ NOUNROLL
-    distI = xI/d+1-i0
+    distI = xI / d + 1 - i0
 
     cell = v(i0(1):i1(1), i0(2):i1(2), i0(3):i1(3), 1)
     call interp_trilinear(distI, cell, vI(1))
@@ -336,35 +336,35 @@
 
     end subroutine interpolate
 
-    !--- Trilinear interpolation function -------------------------------------------------------------
+    ! --- Trilinear interpolation function -------------------------------------------------------------
 
     subroutine interp_trilinear(xd, f, fI)
     implicit none
     double precision, intent(in), dimension(3) :: xd
-    double precision, intent(in), dimension(0:1,0:1,0:1) :: f
+    double precision, intent(in), dimension(0:1, 0:1, 0:1) :: f
     double precision, intent(out) :: fI
-    double precision, dimension(0:1,0:1) :: c
+    double precision, dimension(0:1, 0:1) :: c
     double precision, dimension(3) :: m_xd
     double precision :: c0, c1
 
     !DIR$ NOUNROLL
-    m_xd = 1-xd
+    m_xd = 1 - xd
 
-    !--- Interpolate over x -----------------------------------------------------------------------
+    ! --- Interpolate over x -----------------------------------------------------------------------
 
-    c(0,0) = f(0,0,0)*m_xd(1) + f(1,0,0)*xd(1)
-    c(1,0) = f(0,1,0)*m_xd(1) + f(1,1,0)*xd(1)
-    c(0,1) = f(0,0,1)*m_xd(1) + f(1,0,1)*xd(1)
-    c(1,1) = f(0,1,1)*m_xd(1) + f(1,1,1)*xd(1)
+    c(0, 0) = f(0, 0, 0) * m_xd(1) + f(1, 0, 0) * xd(1)
+    c(1, 0) = f(0, 1, 0) * m_xd(1) + f(1, 1, 0) * xd(1)
+    c(0, 1) = f(0, 0, 1) * m_xd(1) + f(1, 0, 1) * xd(1)
+    c(1, 1) = f(0, 1, 1) * m_xd(1) + f(1, 1, 1) * xd(1)
 
-    !--- Interpolate over y -----------------------------------------------------------------------
+    ! --- Interpolate over y -----------------------------------------------------------------------
 
-    c0 = c(0,0)*m_xd(2) + c(1,0)*xd(2)
-    c1 = c(0,1)*m_xd(2) + c(1,1)*xd(2)
+    c0 = c(0, 0) * m_xd(2) + c(1, 0) * xd(2)
+    c1 = c(0, 1) * m_xd(2) + c(1, 1) * xd(2)
 
-    !--- Interpolate over z -----------------------------------------------------------------------
+    ! --- Interpolate over z -----------------------------------------------------------------------
 
-    fI = c0*m_xd(3) + c1*xd(3)
+    fI = c0 * m_xd(3) + c1 * xd(3)
 
     end subroutine interp_trilinear
 
@@ -377,23 +377,23 @@
     double precision, dimension(3) :: m_xd
 
     !DIR$ NOUNROLL
-    m_xd = 1-xd
+    m_xd = 1 - xd
 
-    !--- Interpolate over x -----------------------------------------------------------------------
+    ! --- Interpolate over x -----------------------------------------------------------------------
 
-    c00 = f000*m_xd(1) + f100*xd(1)
-    c01 = f001*m_xd(1) + f101*xd(1)
-    c10 = f010*m_xd(1) + f110*xd(1)
-    c11 = f011*m_xd(1) + f111*xd(1)
+    c00 = f000 * m_xd(1) + f100 * xd(1)
+    c01 = f001 * m_xd(1) + f101 * xd(1)
+    c10 = f010 * m_xd(1) + f110 * xd(1)
+    c11 = f011 * m_xd(1) + f111 * xd(1)
 
-    !--- Interpolate over y -----------------------------------------------------------------------
+    ! --- Interpolate over y -----------------------------------------------------------------------
 
-    c0 = c00*m_xd(2) + c10*xd(2)
-    c1 = c01*m_xd(2) + c11*xd(2)
+    c0 = c00 * m_xd(2) + c10 * xd(2)
+    c1 = c01 * m_xd(2) + c11 * xd(2)
 
-    !--- Interpolate over z -----------------------------------------------------------------------
+    ! --- Interpolate over z -----------------------------------------------------------------------
 
-    fI = c0*m_xd(3) + c1*xd(3)
+    fI = c0 * m_xd(3) + c1 * xd(3)
 
     end subroutine interp_trilinear2
 
