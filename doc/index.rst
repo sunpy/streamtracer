@@ -72,6 +72,14 @@ Code reference
 Changelog
 =========
 
+1.2.0
+-----
+Bug fixes
+~~~~~~~~~
+Fixed coordinate values returned by `streamtracer.Grid.xcoords` etc. Previously
+the origin coordinate was interpreted negative what it should be. This doesn't
+affect any traced streamlines.
+
 1.1.2
 -----
 Fixed the example code listed above.

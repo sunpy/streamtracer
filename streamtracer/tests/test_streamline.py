@@ -152,17 +152,17 @@ def test_grid_points():
     spacing = [2, 3, 4]
     origin_coord = [4, 9, 16]
     grid = VectorGrid(v, spacing, origin_coord=origin_coord)
-    assert grid.xcoords[0] == -4
-    assert grid.xcoords[1] == -2
-    assert grid.xcoords[-1] == 2 * 100 - 6
+    assert grid.xcoords[0] == 4
+    assert grid.xcoords[1] == 6
+    assert grid.xcoords[-1] == 4 + 99 * 2
 
-    assert grid.ycoords[0] == -9
-    assert grid.ycoords[1] == -6
-    assert grid.ycoords[-1] == 3 * 100 - 12
+    assert grid.ycoords[0] == 9
+    assert grid.ycoords[1] == 12
+    assert grid.ycoords[-1] == 9 + 99 * 3
 
-    assert grid.zcoords[0] == -16
-    assert grid.zcoords[1] == -12
-    assert grid.zcoords[-1] == 4 * 100 - 20
+    assert grid.zcoords[0] == 16
+    assert grid.zcoords[1] == 20
+    assert grid.zcoords[-1] == 16 + 99 * 4
 
 
 def test_bad_input(tracer, uniform_x_field):

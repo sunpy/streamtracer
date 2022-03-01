@@ -89,7 +89,7 @@ class VectorGrid:
         self._cyclic = np.array(val, dtype=int)
 
     def _coords(self, i):
-        return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) -
+        return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) +
                 self.origin_coord[i])
 
     @property
