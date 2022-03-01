@@ -54,6 +54,6 @@ jobs:
       run: |
         pytest --cov=streamtracer --cov-report=xml
     - name: Upload coverage
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
       with:
         fail_ci_if_error: true
