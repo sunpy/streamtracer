@@ -72,6 +72,20 @@ Code reference
 Changelog
 =========
 
+1.2.0
+-----
+
+New features
+~~~~~~~~~~~~
+Added the ability to trace field lines through non-uniformly spaced grids.
+To do this pass a list of grid coordinates to the new ``grid_coords``
+argument in `~streamtracer.Grid`.
+
+Bug fixes
+~~~~~~~~~
+Fixed a major bug where the origin coordinate was incorrectly interpreted as
+negative what it should be.
+
 1.1.2
 -----
 Fixed the example code listed above.
