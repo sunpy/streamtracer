@@ -14,15 +14,18 @@ class VectorGrid:
     vectors : array
         A (nx, ny, nz, 3) shaped array. The three values at (i, j, k, :)
         specify the (x, y, z) components of the vector at index (i, j, k).
-    grid_spacing : array
+    grid_spacing : array, optional
         A (3,) shaped array, that contains the grid spacings in the (x, y, z)
-        directions.
+        directions. If not specified ``grid_coords`` must be specified.
     origin_coord = [float, float, float], optional
         The coordinate of the ``vectors[0, 0, 0, :]`` vector at the corner of
         the box. Defaults to ``[0, 0, 0]``.
     cyclic : [bool, bool, bool], optional
         Whether to have cyclic boundary conditions in each of the (x, y, z)
         directions. Defaults to ``[False, False, False]``.
+    grid_coords : list[array], optional
+        A len(3) list storing the {x, y, z} coordinates of the grid. If not
+        specified ``grid_spacing`` must be specified.
 
     Notes
     -----
@@ -30,24 +33,35 @@ class VectorGrid:
     cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
     ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
-    def __init__(self, vectors, grid_spacing,
-                 origin_coord=None,
-                 cyclic=None):
+    def __init__(self, vectors, grid_spacing=None, origin_coord=None,
+                 cyclic=None, *, grid_coords=None):
+        if grid_spacing is not None and grid_coords is not None:
+            raise ValueError('Only one of "grid_spacing" and "grid_coords" '
+                             'can be specified.')
+        if grid_spacing is None and grid_coords is None:
+            raise ValueError('One of "grid_spacing" and "grid_coords" must '
+                             'be specified.')
+
         if cyclic is None:
             cyclic = [False, False, False]
         if origin_coord is None:
             origin_coord = [0, 0, 0]
 
-        grid_spacing = np.array(grid_spacing)
+        if grid_spacing is not None:
+            grid_spacing = np.array(grid_spacing)
+            self._validate_spacing(grid_spacing)
+        elif grid_coords is not None:
+            self._validate_coords(grid_coords, vectors)
+
         self._validate_vectors(vectors)
-        self._validate_spacing(grid_spacing)
         self._validate_cyclic(vectors, cyclic)
 
         self.vectors = vectors
-        self.grid_spacing = grid_spacing.astype(float)
+        self.grid_spacing = grid_spacing
+        self.coords = grid_coords
         self.cyclic = cyclic
 
-        self.origin_coord = np.array(origin_coord)
+        self._origin_coord = np.array(origin_coord)
 
     @staticmethod
     def _validate_vectors(vectors):
@@ -62,6 +76,16 @@ class VectorGrid:
         if grid_spacing.shape != (3,):
             raise ValueError(f'grid spacing must have shape (3,), got '
                              f'{grid_spacing.shape}')
+
+    @staticmethod
+    def _validate_coords(coords, vectors):
+        if len(coords) != 3:
+            raise ValueError('coords must be len(3)')
+        for i, dim in zip(range(3), ['x', 'y', 'z']):
+            shape = np.array(coords[i]).shape
+            if shape != (vectors.shape[i], ):
+                raise ValueError(f'Expected {vectors.shape[i]} {dim} '
+                                 f'coordinates but got {shape}')
 
     @staticmethod
     def _validate_cyclic(vectors, cyclic):
@@ -88,30 +112,42 @@ class VectorGrid:
     def cyclic(self, val):
         self._cyclic = np.array(val, dtype=int)
 
-    def _coords(self, i):
-        return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) +
-                self.origin_coord[i])
+    @property
+    def origin_coord(self):
+        if self.grid_spacing is not None:
+            return self._origin_coord
+        else:
+            return np.array([self.xcoords[0],
+                             self.ycoords[0],
+                             self.zcoords[0]])
+
+    def _get_coords(self, i):
+        if self.grid_spacing is not None:
+            return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) +
+                    self.origin_coord[i])
+        else:
+            return self.coords[i]
 
     @property
     def xcoords(self):
         """
         Coordinates of the x grid points.
         """
-        return self._coords(0)
+        return self._get_coords(0)
 
     @property
     def ycoords(self):
         """
         Coordinates of the x grid points.
         """
-        return self._coords(1)
+        return self._get_coords(1)
 
     @property
     def zcoords(self):
         """
         Coordinates of the x grid points.
         """
-        return self._coords(2)
+        return self._get_coords(2)
 
 
 class StreamTracer:
@@ -189,7 +225,7 @@ class StreamTracer:
         streamtracer.ds = self.ds
 
         field = grid.vectors
-        grid_spacing = grid.grid_spacing
+
         cyclic = grid.cyclic
         seeds = np.atleast_2d(seeds)
 
@@ -199,13 +235,15 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
-        # Put seeds relative to box centre
         seeds = seeds - grid.origin_coord
+        xcoords = grid.xcoords - grid.origin_coord[0]
+        ycoords = grid.ycoords - grid.origin_coord[1]
+        zcoords = grid.zcoords - grid.origin_coord[2]
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid_spacing, direction, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, direction, self.max_steps, cyclic)
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
@@ -217,10 +255,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid_spacing, 1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic)
             # Calculate backward streamline
             xs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid_spacing, -1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic)
 
             xs_f += grid.origin_coord
             xs_r += grid.origin_coord
