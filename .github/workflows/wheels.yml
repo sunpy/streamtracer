@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  CIBW_BUILD: cp37-* cp38-* cp39-* cp310-*
+  CIBW_BUILD: cp37-* cp38-* cp39-*
   # Upgrade numpy to make sure the binary is compatible with latest version
   # See https://github.com/numpy/numpy/issues/5888 for more info
   CIBW_BEFORE_TEST: pip install pytest numpy --upgrade
@@ -38,7 +38,7 @@ jobs:
             ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.3.1
+        uses: joerick/cibuildwheel@v1.12.0
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
