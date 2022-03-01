@@ -55,14 +55,14 @@ def test_uniform_field(tracer, uniform_x_field, vec_len):
 
     sline = tracer.xs[0]
     # Check that y, z coordinates are all zero
-    np.testing.assert_almost_equal(sline[:, 0], np.linspace(-0.1, 100.1, 1003))
+    np.testing.assert_almost_equal(sline[:, 0], np.linspace(0, 100, 1001))
     np.testing.assert_equal(sline[:, 1], 0)
     np.testing.assert_equal(sline[:, 2], 0)
 
     # Check that streamline always goes in a positive direction
     assert np.all(np.diff(sline[:, 0]) > 0)
     # Check that there are 100 * 0.1 = 1000 steps in the streamline
-    assert sline.shape[0] == 1003
+    assert sline.shape[0] == 1001
 
 
 def test_trace_direction(tracer, uniform_x_field):
@@ -108,12 +108,12 @@ def test_cyclic(uniform_x_field):
     # Going forwards
     seed = np.array([99.9, 50, 50])
     tracer.trace(seed, uniform_x_field, direction=1)
-    assert len(tracer.xs[0]) == 3
+    assert len(tracer.xs[0]) == 2
 
     # Going backwards
     seed = np.array([0.1, 50, 50])
     tracer.trace(seed, uniform_x_field, direction=-1)
-    assert len(tracer.xs[0]) == 3
+    assert len(tracer.xs[0]) == 2
 
 
 @pytest.mark.parametrize('ds', [0.1, 0.2])
@@ -133,9 +133,9 @@ def test_origin(tracer, origin_coord, ds):
     fline = tracer.xs[0]
     # Check first field line coordinate is the seed
     np.testing.assert_equal(fline[0, :], seed)
-    # Should stop at the edge of the box
+    # Should stop before the edge of the box
     end_coord = seed
-    end_coord[0] = grid.xcoords[-1]
+    end_coord[0] = grid.xcoords[-1] - ds
     np.testing.assert_almost_equal(fline[-1, :], end_coord)
 
 
@@ -214,21 +214,18 @@ def test_invalid_max_steps(val, errstr):
 # Paramatrize to make sure behaviour is same in x,y,z directions
 @pytest.mark.parametrize('dir', [0, 1, 2])
 def test_bounds(dir):
-    # A uniform field pointing in the x direction
-    v = np.zeros((2, 2, 2, 3))
-    # Make all vectors point in the x-direction
+    v = np.zeros((3, 3, 3, 3))
+    # Make all vectors point along the specified dimension
     v[:, :, :, dir] = 1
     spacing = [1, 1, 1]
     grid = VectorGrid(v, spacing)
 
     seed = np.array([[0.5, 0.5, 0.5]])
-    tracer = StreamTracer(10, 1.0)
-    tracer.trace(seed, grid, direction=0)
-    # Check that one step is out of bounds in the positive direction
+    tracer = StreamTracer(max_steps=10, step_size=1.0)
+    tracer.trace(seed, grid)
     expected = np.roll(np.array([1.5, 0.5, 0.5]), dir)
     assert (tracer.xs[0][-1, :] == expected).all()
-    # Check that one step is out of bounds in the negative direction
-    expected = np.roll(np.array([-0.5, 0.5, 0.5]), dir)
+    expected = np.array([0.5, 0.5, 0.5])
     assert (tracer.xs[0][0, :] == expected).all()
 
 
@@ -252,7 +249,8 @@ def test_direction_change():
     grid = VectorGrid(v, grid_spacing=[1, 1, 1])
 
     seed = np.array([0, 0, 0])
-    tracer = StreamTracer(100, 0.1)
+    step_size = 0.1
+    tracer = StreamTracer(100, step_size)
     tracer.trace(seed, grid)
 
     sline = tracer.xs[0]
@@ -265,5 +263,31 @@ def test_direction_change():
     # Check that field line changes direction
     assert sline[0, 1] == 0
     # Check that fline leaves box in y-direction
-    assert sline[-1, 1] > 3
+    assert sline[-1, 1] > 3 - step_size
     assert 0 < sline[-1, 0] < 3
+
+
+def test_coords():
+    # Test custom (non-uniform) grid coordinates
+    # A uniform field pointing in the x direction
+    v = np.zeros((4, 4, 4, 3))
+    # Make all vectors point diagonally from one corner to the other
+    v[:, :, :, :] = 1
+    xcoords = [0, 1, 2, 10]
+    ycoords = [0, 3, 6, 10]
+    zcoords = [0, 8, 9, 10]
+    grid = VectorGrid(v, grid_coords=[xcoords, ycoords, zcoords])
+
+    seed = np.array([0, 0, 0])
+    tracer = StreamTracer(100, 1)
+    tracer.trace(seed, grid)
+
+    # Check that step sizes are all 1
+    sline = tracer.xs[0]
+    ds = np.diff(np.linalg.norm(sline, axis=1))
+    np.testing.assert_equal(ds[0], 1)
+    np.testing.assert_almost_equal(ds[1:], 1)
+
+    # Check that first/last steps are outside box
+    assert np.all(sline[0] < 0 + tracer.ds)
+    assert np.all(sline[-1] > 10 - tracer.ds)
