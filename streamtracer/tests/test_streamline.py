@@ -116,15 +116,27 @@ def test_cyclic(uniform_x_field):
     assert len(tracer.xs[0]) == 3
 
 
+@pytest.mark.parametrize('ds', [0.1, 0.2])
 @pytest.mark.parametrize('origin_coord', [[0, 0, 0], [1, 1, 1]])
-def test_origin(uniform_x_field, tracer, origin_coord):
-    uniform_x_field.origin_coord = origin_coord
-    seed = np.array([50, 50, 50])
-    tracer.trace(seed, uniform_x_field, direction=1)
+def test_origin(tracer, origin_coord, ds):
+    # A uniform field pointing in the x direction
+    v = np.zeros((4, 4, 4, 3))
+    # Make all vectors point in the x-direction
+    v[:, :, :, 0] = 1
+    spacing = [1, 1, 1]
+    grid = VectorGrid(v, spacing, origin_coord=origin_coord)
 
-    np.testing.assert_equal(tracer.xs[0][0, :], seed)
-    end_coord = np.array([100 + origin_coord[0] + 0.1, 50, 50])
-    np.testing.assert_almost_equal(tracer.xs[0][-1, :], end_coord)
+    seed = np.array([2., 2., 2.])
+    tracer = StreamTracer(100, ds)
+    tracer.trace(seed, grid, direction=1)
+
+    fline = tracer.xs[0]
+    # Check first field line coordinate is the seed
+    np.testing.assert_equal(fline[0, :], seed)
+    # Should stop at the edge of the box
+    end_coord = seed
+    end_coord[0] = grid.xcoords[-1]
+    np.testing.assert_almost_equal(fline[-1, :], end_coord)
 
 
 def test_cyclic_field():

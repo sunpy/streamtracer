@@ -44,7 +44,7 @@ class VectorGrid:
         self._validate_cyclic(vectors, cyclic)
 
         self.vectors = vectors
-        self.grid_spacing = grid_spacing
+        self.grid_spacing = grid_spacing.astype(float)
         self.cyclic = cyclic
 
         self.origin_coord = np.array(origin_coord)
