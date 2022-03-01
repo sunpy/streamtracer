@@ -28,7 +28,7 @@ copyright = '2019-2021, David Stansby'
 author = 'David Stansby'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.2.0rc1'
 
 # Home page
 master_doc = 'index'
