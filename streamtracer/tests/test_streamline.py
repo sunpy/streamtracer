@@ -239,3 +239,31 @@ def test_nthreads():
 
     streamtracer.set_num_threads(2)
     assert streamtracer.get_num_threads() == 2
+
+
+def test_direction_change():
+    # Test custom (non-uniform) grid coordinates
+    # A uniform field pointing in the x direction
+    v = np.zeros((4, 4, 4, 3))
+    # Make first layer of vectors point in x-direction
+    v[0:2, :, :, 0] = 1
+    # After that layer, make vectors point in y-direction
+    v[2:4, :, :, 1] = 1
+    grid = VectorGrid(v, grid_spacing=[1, 1, 1])
+
+    seed = np.array([0, 0, 0])
+    tracer = StreamTracer(100, 0.1)
+    tracer.trace(seed, grid)
+
+    sline = tracer.xs[0]
+    # Check that initial steps are in x-direction
+    # Check diff in y/z directions is zero
+    assert np.allclose(np.diff(sline[0:10, 1:2]), 0)
+    # Check there's a diff in x direction
+    assert np.allclose(np.diff(sline[0:10, 0]), 0.1)
+
+    # Check that field line changes direction
+    assert sline[0, 1] == 0
+    # Check that fline leaves box in y-direction
+    assert sline[-1, 1] > 3
+    assert 0 < sline[-1, 0] < 3
