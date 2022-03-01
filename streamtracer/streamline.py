@@ -120,6 +120,10 @@ class VectorGrid:
             return self.coords[i]
 
     @property
+    def _origin_coord(self):
+        return np.array([self.xcoords[0], self.ycoords[0], self.zcoords[0]])
+
+    @property
     def xcoords(self):
         """
         Coordinates of the x grid points.
@@ -226,10 +230,17 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
 
+        # The FORTRAN code expects the corner to be at [0, 0, 0]
+        origin = grid._origin_coord
+        xcoords = grid.xcoords - origin[0]
+        ycoords = grid.ycoords - origin[1]
+        zcoords = grid.zcoords - origin[2]
+        seeds = seeds - origin
+
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, grid.xcoords, grid.ycoords, grid.zcoords, direction, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, direction, self.max_steps, cyclic)
 
             # Reduce the size of the arrays
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
@@ -240,10 +251,10 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, grid.xcoords, grid.ycoords, grid.zcoords, 1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic)
             # Calculate backward streamline
             xs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, grid.xcoords, grid.ycoords, grid.zcoords, -1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic)
 
             # Stack the forward and reverse arrays
             self.xs = [np.vstack([xri[nr - 1:0:-1, :], xfi[:nf]]) for
@@ -256,3 +267,5 @@ class StreamTracer:
 
         # Filter out nans
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]
+        # Add origin coord back
+        self.xs = [xi + origin for xi in self.xs]
