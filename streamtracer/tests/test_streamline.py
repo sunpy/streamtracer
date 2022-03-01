@@ -152,17 +152,17 @@ def test_grid_points():
     spacing = [2, 3, 4]
     origin_coord = [4, 9, 16]
     grid = VectorGrid(v, spacing, origin_coord=origin_coord)
-    assert grid.xcoords[0] == -4
-    assert grid.xcoords[1] == -2
-    assert grid.xcoords[-1] == 2 * 100 - 6
+    assert grid.xcoords[0] == 4
+    assert grid.xcoords[1] == 6
+    assert grid.xcoords[-1] == 4 + 99 * 2
 
-    assert grid.ycoords[0] == -9
-    assert grid.ycoords[1] == -6
-    assert grid.ycoords[-1] == 3 * 100 - 12
+    assert grid.ycoords[0] == 9
+    assert grid.ycoords[1] == 12
+    assert grid.ycoords[-1] == 9 + 99 * 3
 
-    assert grid.zcoords[0] == -16
-    assert grid.zcoords[1] == -12
-    assert grid.zcoords[-1] == 4 * 100 - 20
+    assert grid.zcoords[0] == 16
+    assert grid.zcoords[1] == 20
+    assert grid.zcoords[-1] == 16 + 99 * 4
 
 
 def test_bad_input(tracer, uniform_x_field):
@@ -202,16 +202,15 @@ def test_invalid_max_steps(val, errstr):
 # Paramatrize to make sure behaviour is same in x,y,z directions
 @pytest.mark.parametrize('dir', [0, 1, 2])
 def test_bounds(dir):
-    # A uniform field pointing in the x direction
     v = np.zeros((2, 2, 2, 3))
-    # Make all vectors point in the x-direction
+    # Make all vectors point along the specified dimension
     v[:, :, :, dir] = 1
     spacing = [1, 1, 1]
     grid = VectorGrid(v, spacing)
 
     seed = np.array([[0.5, 0.5, 0.5]])
-    tracer = StreamTracer(10, 1.0)
-    tracer.trace(seed, grid, direction=0)
+    tracer = StreamTracer(max_steps=10, step_size=1.0)
+    tracer.trace(seed, grid)
     # Check that one step is out of bounds in the positive direction
     expected = np.roll(np.array([1.5, 0.5, 0.5]), dir)
     assert (tracer.xs[0][-1, :] == expected).all()
@@ -227,3 +226,25 @@ def test_nthreads():
 
     streamtracer.set_num_threads(2)
     assert streamtracer.get_num_threads() == 2
+
+
+def test_coords():
+    # Test custom (non-uniform) grid coordinates
+    # A uniform field pointing in the x direction
+    v = np.zeros((4, 4, 4, 3))
+    # Make all vectors point diagonally from one corner to the other
+    v[:, :, :, :] = 1
+    xcoords = [0, 1, 2, 10]
+    ycoords = [0, 3, 6, 10]
+    zcoords = [0, 8, 9, 10]
+    grid = VectorGrid(v, grid_coords=[xcoords, ycoords, zcoords])
+
+    seed = np.array([0, 0, 0])
+    tracer = StreamTracer(100, 1)
+    tracer.trace(seed, grid)
+
+    # Check that step sizes are all 1
+    sline = tracer.xs[0]
+    ds = np.diff(np.linalg.norm(sline, axis=1))
+    np.testing.assert_equal(ds[0], -1)
+    np.testing.assert_almost_equal(ds[1:], 1)

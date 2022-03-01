@@ -57,13 +57,13 @@ contains
   end function get_max_threads
 
 
-  subroutine streamline_array(x0, nlines, v, nx, ny, nz, d, dir, ns, cyclic, xs, ROT, ns_out)
+  subroutine streamline_array(x0, nlines, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, ns, cyclic, xs, ROT, ns_out)
     ! INPUT:
     ! x0: seed points
     ! nlines: number of field lines being traced
     ! v: vector field
     ! nx, ny, nz: grid size in (x, y, z) directions
-    ! d: grid spacing in (x, y, z) directions
+    ! xgrid, ygrid, zgrid: grid coordinates
     ! dir: direction to trace (1=forwards, -1=backwards)
     ! ns: max steps
     !
@@ -72,12 +72,16 @@ contains
     ! ROT: reason of termination
     ! ns_out: number of steps taken
     double precision, dimension(nlines, 3), intent(in) :: x0
-    double precision, dimension(3), intent(in) :: d
+    double precision, dimension(nx), intent(in) :: xgrid
+    double precision, dimension(ny), intent(in) :: ygrid
+    double precision, dimension(nz), intent(in) :: zgrid
     double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     integer, intent(in) :: ns, nx, ny, nz, dir, nlines
     integer, intent(in), dimension(3) :: cyclic
+
     double precision, dimension(nlines, ns, 3), intent(out) :: xs
     integer, intent(out), dimension(nlines) :: ROT, ns_out
+
     double precision, dimension(3) :: x0_i
     double precision, dimension(ns, 3) :: xs_i
     integer :: i, j
@@ -90,7 +94,7 @@ contains
       !DIR$ NOUNROLL
       do i = 1, nlines
         x0_i = x0(i,:)
-        call streamline(x0_i, v, nx, ny, nz, d, dir, ns, cyclic, xs_i, ROT(i), ns_out(i))
+        call streamline(x0_i, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, ns, cyclic, xs_i, ROT(i), ns_out(i))
         do j = 1, ns_out(i)
           xs(i, j,:) = xs_i(j,:)
         end do
@@ -100,13 +104,14 @@ contains
 
   end subroutine streamline_array
 
-  subroutine streamline(x0, v, nx, ny, nz, d, dir, ns_in, cyclic, xs, ROT, ns_out)
+  subroutine streamline(x0, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, ns_in, cyclic, xs, ROT, ns_out)
     ! INPUT:
     ! x0: seed point
     ! nlines: number of field lines being traced
     ! v: vector field
-    ! nx, ny, nz: grid size in (x, y, z) directions
-    ! d: grid spacing in (x, y, z) directions
+    ! nx, ny, nz: grid sizes
+    ! xgrid, ygrid, zgrid: grid coordinates
+    ! spacings: grid spacings in (x, y, z) directions
     ! dir: direction to trace (1=forwards, -1=backwards)
     ! ns: max steps
     !
@@ -115,7 +120,10 @@ contains
     ! ROT: reason of termination
     ! ns_out: number of steps taken
     implicit none
-    double precision, dimension(3), intent(in) :: x0, d
+    double precision, dimension(3), intent(in) :: x0
+    double precision, dimension(nx), intent(in) :: xgrid
+    double precision, dimension(ny), intent(in) :: ygrid
+    double precision, dimension(nz), intent(in) :: zgrid
     double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     integer, intent(in) :: ns_in, nx, ny, nz, dir
     integer, intent(in), dimension(3) :: cyclic
@@ -132,9 +140,9 @@ contains
     ROT = 0
 
     ! Calculate bounds
-    bounds(1) = d(1) * (nx - 1)
-    bounds(2) = d(2) * (ny - 1)
-    bounds(3) = d(3) * (nz - 1)
+    bounds(1) = xgrid(nx)
+    bounds(2) = ygrid(ny)
+    bounds(3) = zgrid(nz)
 
     ! Set all streamline points to (0, 0, 0) to start
     xs = 0
@@ -144,7 +152,7 @@ contains
 
     do i = 2, ns
       ! Do a single step
-      call RK4_update(xi, v, nx, ny, nz, d, dir)
+      call RK4_update(xi, v, nx, ny, nz, xgrid, ygrid, zgrid, dir)
       ! Check if we are out of bounds, and move if cyclic is on
       call check_bounds(xi, bounds, cyclic, ROT)
       ! Save the step value
@@ -172,36 +180,40 @@ contains
     vector_mag = sqrt(vector_dot(v, v))
   end function vector_mag
 
-  subroutine RK4_update(xi, v, nx, ny, nz, d, dir)
+  subroutine RK4_update(xi, v, nx, ny, nz, xgrid, ygrid, zgrid, dir)
     ! Update xi by taking a single RK4 step
     !
     ! INPUT:
     ! xi: current coordinate
     ! v: vector field
     ! nx, ny, nz: grid size in (x, y, z) directions
-    ! d: grid spacing in (x, y, z) directions
+    ! xgrid, ygrid, zgrid: grid coordinates
     ! dir: direction to step (1=forwards, -1=backwards)
     double precision, dimension(3), intent(inout) :: xi
-    double precision, dimension(3), intent(in) :: d
-    double precision, dimension(nx, ny, nz, 3), intent(in) :: v
-    double precision, dimension(3) :: xu
+
     integer, intent(in) :: nx, ny, nz, dir
+    double precision, dimension(nx), intent(in) :: xgrid
+    double precision, dimension(ny), intent(in) :: ygrid
+    double precision, dimension(nz), intent(in) :: zgrid
+    double precision, dimension(nx, ny, nz, 3), intent(in) :: v
+
+    double precision, dimension(3) :: xu
     double precision, dimension(3) :: k1, k2, k3, k4
 
     ! --- RK4 K parameters ---------------------------------------------------------------------
-    call stream_function(xi, v, nx, ny, nz, d, dir, k1)
+    call stream_function(xi, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, k1)
 
     ! DIR$ NOUNROLL
     xu = xi + 0.5 * k1
-    call stream_function(xu, v, nx, ny, nz, d, dir, k2)
+    call stream_function(xu, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, k2)
 
     !DIR$ NOUNROLL
     xu = xi + 0.5 * k2
-    call stream_function(xu, v, nx, ny, nz, d, dir, k3)
+    call stream_function(xu, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, k3)
 
     !DIR$ NOUNROLL
     xu = xi + k3
-    call stream_function(xu, v, nx, ny, nz, d, dir, k4)
+    call stream_function(xu, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, k4)
 
     ! --- Step ---------------------------------------------------------------------------------
 
@@ -251,29 +263,87 @@ contains
 
   end subroutine check_bounds
 
-  subroutine stream_function(xI, v, nx, ny, nz, d, dir, f)
+  subroutine get_cell_idx(xi, nx, ny, nz, xgrid, ygrid, zgrid, idx)
+    ! Get cell index such that grid(i) <= xi < grid(i+1)
+    !
+    ! INPUT
+    ! xi: coordinate
+    ! nx, ny, nz: grid size in (x, y, z) directions
+    ! xgrid, ygrid, zgrid: grid coordinates
+    !
+    ! OUTPUT
+    ! idx: cell index
+    double precision, dimension(3), intent(in) :: xi
+    integer, intent(in) :: nx, ny, nz
+    double precision, dimension(nx), intent(in) :: xgrid
+    double precision, dimension(ny), intent(in) :: ygrid
+    double precision, dimension(nz), intent(in) :: zgrid
+
+    integer, dimension(3), intent(out) :: idx
+
+    integer :: i
+
+    idx(1) = nx - 1
+    idx(2) = ny - 1
+    idx(3) = nz - 1
+
+    do i = 1, nx - 1
+      if (xi(1) >= xgrid(i)) then
+        idx(1) = i
+        exit
+      endif
+    enddo
+
+    do i = 1, ny - 1
+      if (xi(2) >= ygrid(i)) then
+        idx(2) = i
+        exit
+      endif
+    enddo
+
+    do i = 1, nz - 1
+      if (xi(3) >= zgrid(i)) then
+        idx(3) = i
+        exit
+      endif
+    enddo
+  end subroutine get_cell_idx
+
+  subroutine stream_function(xI, v, nx, ny, nz, xgrid, ygrid, zgrid, dir, f)
     implicit none
+
     double precision, dimension(3), intent(in) :: xI
     double precision, dimension(nx, ny, nz, 3), intent(in) :: v
     integer, intent(in) :: nx, ny, nz
-    double precision, dimension(3), intent(in) :: d
+    double precision, dimension(nx), intent(in) :: xgrid
+    double precision, dimension(ny), intent(in) :: ygrid
+    double precision, dimension(nz), intent(in) :: zgrid
     integer, intent(in) :: dir
+
     double precision, dimension(3), intent(out) :: f
+
     double precision :: vmag
     double precision, dimension(3) :: vI, distI
     integer, dimension(3) :: i0, i1
+    double precision, dimension(3) :: cell_size, cell_origin
     double precision, dimension(2, 2, 2) :: cell
 
     !DIR$ NOUNROLL
-    i0 = floor(xI / d) + 1
-    i0(1) = min(max(1, i0(1)), nx - 1)
-    i0(2) = min(max(1, i0(2)), ny - 1)
-    i0(3) = min(max(1, i0(3)), nz - 1)
-
+    call get_cell_idx(xi, nx, ny, nz, xgrid, ygrid, zgrid, i0)
     i1 = i0 + 1
 
+    cell_origin(1) = xgrid(i0(1))
+    cell_origin(2) = ygrid(i0(2))
+    cell_origin(3) = zgrid(i0(3))
+    ! Get upper cell coordinate
+    cell_size(1) = xgrid(i1(1))
+    cell_size(2) = ygrid(i1(2))
+    cell_size(3) = zgrid(i1(3))
+    ! Get cell size
+    cell_size = cell_size - cell_origin
+
     !DIR$ NOUNROLL
-    distI = xI / d + 1 - i0
+    distI = (xI - cell_origin) / cell_size
 
     cell = v(i0(1):i1(1), i0(2):i1(2), i0(3):i1(3), 1)
     call interp_trilinear(distI, cell, vI(1))
@@ -304,7 +374,7 @@ contains
 
     !DIR$ NOUNROLL
     vmag  = sqrt(vI(1) ** 2 + vI(2) ** 2 + vI(3) ** 2)
-    f = dir * vI / vmag * ds
+    f = dir * ds * vI / vmag
 
   end subroutine stream_function
 
