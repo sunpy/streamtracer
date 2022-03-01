@@ -12,6 +12,7 @@ env:
   # See https://github.com/numpy/numpy/issues/5888 for more info
   CIBW_BEFORE_TEST: pip install pytest numpy --upgrade
   CIBW_TEST_COMMAND: pytest {package}
+  CIBW_BUILD_VERBOSITY_LINUX: 3
 
 jobs:
   build_wheels:
