@@ -13,6 +13,7 @@ env:
   CIBW_BEFORE_TEST: pip install pytest numpy --upgrade
   CIBW_TEST_COMMAND: pytest {package}
   CIBW_BUILD_VERBOSITY_LINUX: 3
+  CIBW_ARCHS: native
 
 jobs:
   build_wheels:
