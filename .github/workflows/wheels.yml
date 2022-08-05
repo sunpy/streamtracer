@@ -39,7 +39,7 @@ jobs:
             ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v1.12.0
+        uses: joerick/cibuildwheel@v2.8.1
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
