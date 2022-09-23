@@ -11,3 +11,6 @@ MANIFEST
 
 doc/_build/*
 doc/api/*
+
+target/*
+Cargo.lock
