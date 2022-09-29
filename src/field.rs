@@ -1,25 +1,25 @@
 //! Structure for representing a 3D vector field defined on the corners
 //! of a rectilinear grid.
 
-use ndarray::{array, Array1, Array4, s};
+use ndarray::{array, Array1, Array4, s, ArrayView1};
 
 use crate::interp::interp_trilinear;
 
 /// A 3D vector field defined at grid corners.
-pub struct VectorField<'a> {
+pub struct VectorField {
     /// Grid points along x dimension.
-    pub xgrid: &'a Array1<f64>,
+    pub xgrid: Array1<f64>,
     /// Grid points along y dimension.
-    pub ygrid: &'a Array1<f64>,
+    pub ygrid: Array1<f64>,
     /// Grid points along z dimension.
-    pub zgrid: &'a Array1<f64>,
+    pub zgrid: Array1<f64>,
     /// Vector values at each grid point. Must be shape
     /// (nx, ny, ny, 3), where (nx, ny, nz) are the number
     /// of coordinates along dimension.
-    pub values: &'a Array4<f64>,
+    pub values: Array4<f64>,
     /// Whether each dimension should be treated as cyclic
     /// or not. Must be shape (3,).
-    cyclic: &'a Array1<bool>,
+    cyclic: Array1<bool>,
     /// Number of x coordinates.
     nx: usize,
     /// Number of y coordinates.
@@ -28,14 +28,14 @@ pub struct VectorField<'a> {
     nz: usize
 }
 
-impl<'a> VectorField<'a> {
+impl VectorField {
     /// Create a new VectorField, checking for appropriate array shapes.
     pub fn new(
-        xgrid: &'a Array1<f64>,
-        ygrid: &'a Array1<f64>,
-        zgrid: &'a Array1<f64>,
-        values: &'a Array4<f64>,
-        cyclic: &'a Array1<bool>
+        xgrid: Array1<f64>,
+        ygrid: Array1<f64>,
+        zgrid: Array1<f64>,
+        values: Array4<f64>,
+        cyclic: Array1<bool>
     ) -> Self{
         // Do some shape checking
         let nx = xgrid.shape()[0];
@@ -56,27 +56,27 @@ impl<'a> VectorField<'a> {
     /// Return grid index of the cell containing `x`.
     pub fn grid_idx(
         &self,
-        x: &Array1<f64>
+        x: ArrayView1<f64>
     ) -> Array1<usize>{
 
         let mut grid_idx = array![self.nx, self.ny, self.nz];
 
         // x
-        for i in 0..self.nx{
+        for i in 0..self.nx-1{
             if x[0] >= self.xgrid[[i]] && x[0] < self.xgrid[[i+1]]{
                 grid_idx[0] = i;
                 break;
             }
         }
         // y
-        for i in 0..self.ny{
+        for i in 0..self.ny-1{
             if x[1] >= self.ygrid[[i]] && x[1] < self.ygrid[[i+1]]{
                 grid_idx[1] = i;
                 break;
             }
         }
         // z
-        for i in 0..self.nz{
+        for i in 0..self.nz-1{
             if x[2] >= self.zgrid[[i]] && x[2] < self.zgrid[[i+1]]{
                 grid_idx[2] = i;
                 break;
@@ -89,7 +89,7 @@ impl<'a> VectorField<'a> {
     /// Get vector at position `x` using tri-linear interpolation.
     pub fn vector_at_position(
         &self,
-        x0: &Array1<f64>
+        x0: ArrayView1<f64>
     ) -> Array1<f64>{
         let cell_idx = self.grid_idx(x0);
         let cell_origin = array![
@@ -104,14 +104,14 @@ impl<'a> VectorField<'a> {
         ];
 
         // Distance along each cell edge in normalised units
-        let cell_dist: Array1<f64> = (x0 - cell_origin) / cell_size;
+        let cell_dist: Array1<f64> = (x0.to_owned() - cell_origin) / cell_size;
 
         // Eight corners of the cube that the position vector is
         // currently in
         let vec_cube = self.values.slice(s![
-            cell_idx[0]..(cell_idx[0] + 1),
-            cell_idx[1]..(cell_idx[1] + 1),
-            cell_idx[2]..(cell_idx[3] + 1),
+            cell_idx[0]..(cell_idx[0] + 2),
+            cell_idx[1]..(cell_idx[1] + 2),
+            cell_idx[2]..(cell_idx[2] + 2),
             ..
         ]);
 
