@@ -17,6 +17,9 @@ pub fn interp_trilinear<S>(
 where
     S: Data<Elem=f64>
 {
+    if values.dim() != (2, 2, 2) {
+        panic!("Interp values are not the right shape {:?}", values.shape());
+    }
     let m_x = 1. - x;
 
     let mut c = Array::zeros((2, 2));
