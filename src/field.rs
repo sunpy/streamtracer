@@ -1,17 +1,25 @@
 //! Structure for representing a 3D vector field defined on the corners
 //! of a rectilinear grid.
-
 use ndarray::{array, Array1, Array4, s, ArrayView1};
 
 use crate::interp::interp_trilinear;
 
+/// Enum denoting whether a point is in or out of the bounds
+/// of a VectorField grid.
+pub enum Bounds {
+    /// A position vector is in bounds.
+    In,
+    /// A position vector is out of bounds.
+    Out
+}
+
 /// A 3D vector field defined at grid corners.
 pub struct VectorField {
-    /// Grid points along x dimension.
+    /// Grid points along x dimension. Must start at 0.
     pub xgrid: Array1<f64>,
-    /// Grid points along y dimension.
+    /// Grid points along y dimension. Must start at 0.
     pub ygrid: Array1<f64>,
-    /// Grid points along z dimension.
+    /// Grid points along z dimension. Must start at 0.
     pub zgrid: Array1<f64>,
     /// Vector values at each grid point. Must be shape
     /// (nx, ny, ny, 3), where (nx, ny, nz) are the number
@@ -25,7 +33,10 @@ pub struct VectorField {
     /// Number of y coordinates.
     ny: usize,
     /// Number of z coordinates.
-    nz: usize
+    nz: usize,
+
+    /// Upper boundaries
+    upper_bounds: Array1<f64>
 }
 
 impl VectorField {
@@ -50,7 +61,18 @@ impl VectorField {
 
         assert_eq!(cyclic.shape()[0], 3);
 
-        Self{xgrid, ygrid, zgrid, values, cyclic, nx, ny, nz}
+        // Check first coordinates are zero.
+        assert_eq!(xgrid[0], 0.);
+        assert_eq!(ygrid[0], 0.);
+        assert_eq!(zgrid[0], 0.);
+
+        let upper_bounds = array![
+            xgrid[nx - 1],
+            ygrid[ny - 1],
+            zgrid[nz - 1]
+        ];
+
+        Self{xgrid, ygrid, zgrid, values, cyclic, nx, ny, nz, upper_bounds}
     }
 
     /// Return grid index of the cell containing `x`.
@@ -124,5 +146,40 @@ impl VectorField {
                 &cell_dist);
         }
         return vector_at_pos;
+    }
+
+    /// If any of the dimensions of the grid are cyclic, wrap a coordinate.
+    pub fn wrap_cyclic(
+        &self,
+        mut x: Array1<f64>
+    ) -> Array1<f64> {
+        if self.cyclic[0] {
+            x[0] = (x[0] + self.xgrid[self.nx - 1]) % self.upper_bounds[0];
+        }
+        if self.cyclic[1] {
+            x[1] = (x[1] + self.ygrid[self.ny - 1]) % self.upper_bounds[1];
+        }
+        if self.cyclic[2] {
+            x[2] = (x[2] + self.zgrid[self.nz - 1]) % self.upper_bounds[2];
+        }
+
+        return x;
+    }
+
+    /// Check whether a coordinate is in bounds of the grid.
+    pub fn check_bounds(
+        &self,
+        x: ArrayView1<f64>
+    ) -> Bounds {
+        if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]){
+            return Bounds::Out;
+        }
+        else if x[1] < self.ygrid[0] || x[1] > self.ygrid[self.ny - 1] {
+            return Bounds::Out;
+        }
+        else if x[2] < self.zgrid[0] || x[2] > self.zgrid[self.nz - 1] {
+            return Bounds::Out;
+        }
+        return Bounds::In;
     }
 }
