@@ -1,6 +1,6 @@
 //! Structure for representing a 3D vector field defined on the corners
 //! of a rectilinear grid.
-use ndarray::{array, Array1, Array4, s, ArrayView1};
+use numpy::ndarray::{array, Array1, ArrayView1, ArrayView4, s};
 
 use crate::interp::interp_trilinear;
 
@@ -14,20 +14,20 @@ pub enum Bounds {
 }
 
 /// A 3D vector field defined at grid corners.
-pub struct VectorField {
+pub struct VectorField<'a> {
     /// Grid points along x dimension. Must start at 0.
-    pub xgrid: Array1<f64>,
+    pub xgrid: ArrayView1<'a, f64>,
     /// Grid points along y dimension. Must start at 0.
-    pub ygrid: Array1<f64>,
+    pub ygrid: ArrayView1<'a, f64>,
     /// Grid points along z dimension. Must start at 0.
-    pub zgrid: Array1<f64>,
+    pub zgrid: ArrayView1<'a, f64>,
     /// Vector values at each grid point. Must be shape
     /// (nx, ny, ny, 3), where (nx, ny, nz) are the number
     /// of coordinates along dimension.
-    pub values: Array4<f64>,
+    pub values: ArrayView4<'a, f64>,
     /// Whether each dimension should be treated as cyclic
     /// or not. Must be shape (3,).
-    cyclic: Array1<bool>,
+    cyclic: ArrayView1<'a, bool>,
     /// Number of x coordinates.
     nx: usize,
     /// Number of y coordinates.
@@ -39,15 +39,15 @@ pub struct VectorField {
     upper_bounds: Array1<f64>
 }
 
-impl VectorField {
+impl VectorField<'_> {
     /// Create a new VectorField, checking for appropriate array shapes.
-    pub fn new(
-        xgrid: Array1<f64>,
-        ygrid: Array1<f64>,
-        zgrid: Array1<f64>,
-        values: Array4<f64>,
-        cyclic: Array1<bool>
-    ) -> Self{
+    pub fn new<'a>(
+        xgrid: ArrayView1<'a, f64>,
+        ygrid: ArrayView1<'a, f64>,
+        zgrid: ArrayView1<'a, f64>,
+        values: ArrayView4<'a, f64>,
+        cyclic: ArrayView1<'a, bool>
+    ) -> VectorField<'a> {
         // Do some shape checking
         let nx = xgrid.shape()[0];
         let ny = ygrid.shape()[0];
@@ -72,7 +72,7 @@ impl VectorField {
             zgrid[nz - 1]
         ];
 
-        Self{xgrid, ygrid, zgrid, values, cyclic, nx, ny, nz, upper_bounds}
+        VectorField{xgrid, ygrid, zgrid, values, cyclic, nx, ny, nz, upper_bounds}
     }
 
     /// Return grid index of the cell containing `x`.

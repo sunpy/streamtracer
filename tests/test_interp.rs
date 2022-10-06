@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests{
     use streamtracer::interp;
-    use ndarray::{array};
+    use numpy::ndarray::array;
 
     #[test]
     fn test_interp_trilin() {

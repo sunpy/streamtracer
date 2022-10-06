@@ -1,28 +1,19 @@
 #[cfg(test)]
 mod tests{
-    use ndarray::{array, Array, s};
+    use numpy::ndarray::{array, Array, s};
     use float_eq::assert_float_eq;
 
     use streamtracer::field::VectorField;
 
-
-    /// Get a simple vector field
-    /// This implicitly tests `new()`.
-    fn get_field() -> VectorField {
-        let xcoords = array![0., 0.2, 0.3];
-        let ycoords = array![0., 1.1, 1.2, 1.3];
-        let zcoords = array![0.0, 1.0, 50.0, 56.0, 100.0];
-        let mut field = Array::zeros((3, 4, 5, 3));
-
-        field.slice_mut(s![2, 2.., 2.., 0]).fill(1.);
-        let cyclic = array![true, false, true];
-
-        return VectorField::new(xcoords, ycoords, zcoords, field, cyclic);
-    }
-
     #[test]
     fn test_grid_idx() {
-        let f = get_field();
+        let xgrid = array![0., 0.2, 0.3];
+        let ygrid = array![0., 1.1, 1.2, 1.3];
+        let zgrid = array![0.0, 1.0, 50.0, 56.0, 100.0];
+        let mut field = Array::zeros((3, 4, 5, 3));
+        field.slice_mut(s![2, 2.., 2.., 0]).fill(1.);
+        let cyclic = array![true, false, true];
+        let f = VectorField::new(xgrid.view(), ygrid.view(), zgrid.view(), field.view(), cyclic.view());
 
         let x = array![0.15, 1.05, 0.05];
         assert_eq!(f.grid_idx(x.view()), array![0, 0, 0]);
@@ -36,7 +27,13 @@ mod tests{
 
     #[test]
     fn test_vector_at_position() {
-        let f = get_field();
+        let xgrid = array![0., 0.2, 0.3];
+        let ygrid = array![0., 1.1, 1.2, 1.3];
+        let zgrid = array![0.0, 1.0, 50.0, 56.0, 100.0];
+        let mut field = Array::zeros((3, 4, 5, 3));
+        field.slice_mut(s![2, 2.., 2.., 0]).fill(1.);
+        let cyclic = array![true, false, true];
+        let f = VectorField::new(xgrid.view(), ygrid.view(), zgrid.view(), field.view(), cyclic.view());
 
         let mut x = array![0.15, 1.05, 0.05];
 

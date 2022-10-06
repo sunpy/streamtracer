@@ -1,6 +1,6 @@
 //! Helper functions for interpolation.
 
-use ndarray::{Array1, Array, ArrayBase, Ix3, Data};
+use numpy::ndarray::{Array1, Array, ArrayBase, Ix3, Data};
 
 
 /// Trilinear-interpolation of a scalar defined on
