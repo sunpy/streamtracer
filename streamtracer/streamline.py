@@ -1,6 +1,5 @@
 import numpy as np
-
-from streamtracer.fortran.streamtracer import streamtracer
+from streamtracer._streamtracer_rust import trace_streamlines
 
 __all__ = ["StreamTracer", "VectorGrid"]
 
@@ -69,7 +68,7 @@ class VectorGrid:
         self.vectors = vectors
         self.grid_spacing = grid_spacing
         self.coords = grid_coords
-        self.cyclic = cyclic
+        self.cyclic = np.array(cyclic, dtype=bool)
 
         self._origin_coord = np.array(origin_coord)
 
@@ -125,7 +124,7 @@ class VectorGrid:
 
     @cyclic.setter
     def cyclic(self, val):
-        self._cyclic = np.array(val, dtype=int)
+        self._cyclic = np.array(val, dtype=bool)
 
     @property
     def origin_coord(self):
@@ -236,12 +235,10 @@ class StreamTracer:
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
 
-        # Set the step size (this is a module level variable for streamtracer)
-        streamtracer.ds = self.ds
-
         field = grid.vectors
 
         cyclic = grid.cyclic
+        print(cyclic)
         seeds = np.atleast_2d(seeds)
 
         # Validate shapes
@@ -250,23 +247,16 @@ class StreamTracer:
         if seeds.shape[1] != 3:
             raise ValueError(f"seeds must have shape (n, 3), got {seeds.shape}")
 
-        seeds = seeds - grid.origin_coord
-        xcoords = grid.xcoords - grid.origin_coord[0]
-        ycoords = grid.ycoords - grid.origin_coord[1]
-        zcoords = grid.zcoords - grid.origin_coord[2]
+        seeds = (seeds - grid.origin_coord).astype(np.float64)
+        xcoords = (grid.xcoords - grid.origin_coord[0]).astype(np.float64)
+        ycoords = (grid.ycoords - grid.origin_coord[1]).astype(np.float64)
+        zcoords = (grid.zcoords - grid.origin_coord[2]).astype(np.float64)
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
-            self.xs, ROT, self.ns = streamtracer.streamline_array(
-                seeds,
-                field,
-                xcoords,
-                ycoords,
-                zcoords,
-                direction,
-                self.max_steps,
-                cyclic,
-            )
+            # self.xs, ROT, self.ns = streamtracer.streamline_array(
+            #     seeds, field, xcoords, ycoords, zcoords, direction, self.max_steps, cyclic)
+            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, direction, self.ds, self.max_steps)
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
@@ -277,13 +267,13 @@ class StreamTracer:
 
         elif direction == 0:
             # Calculate forward streamline
-            xs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic
-            )
+            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, 1, self.ds, self.max_steps)
+            # xs_f, ROT_f, ns_f = streamtracer.streamline_array(
+            #    seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic)
             # Calculate backward streamline
-            xs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic
-            )
+            # xs_r, ROT_r, ns_r = streamtracer.streamline_array(
+            #     seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic)
+            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, -1, self.ds, self.max_steps)
 
             xs_f += grid.origin_coord
             xs_r += grid.origin_coord

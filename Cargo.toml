@@ -1,12 +1,19 @@
 [package]
 name = "streamtracer"
-version = "0.1.0"
+version = "2.0.0"
 edition = "2021"
 
+[package.metadata.maturin]
+name = "streamtracer._streamtracer_rust"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "streamtracer"
+crate-type = ["cdylib"]
 
 [dependencies]
-ndarray = "0.15.6"
+pyo3 = {version = "0.17", features = ["extension-module"]}
+numpy = "0.17"
 
 [dev-dependencies]
 float_eq = "1.0.0"
