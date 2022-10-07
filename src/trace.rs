@@ -68,9 +68,7 @@ pub fn trace_streamlines<'a>(
 /// - `field`: Vector field to trace through
 /// - `direction`: Direction to trace in. Can be 1 for forwards or -1 for backwards.
 /// - `step_size`: Step size to take.
-/// - `max_steps`: Maximum number of steps to take before terminating.
-///
-/// - `xs`: Output streamline array
+/// - `xs`: Output array. Maximum number of steps to take is set by this.
 pub fn trace_streamline(
     x0: ArrayView1<f64>,
     field: &VectorField,
