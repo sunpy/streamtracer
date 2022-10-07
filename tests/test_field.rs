@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests{
-    use numpy::ndarray::{array, Array, s};
+    use numpy::ndarray::{array, Array, Array4, s};
     use float_eq::assert_float_eq;
 
     use streamtracer::field::VectorField;
@@ -10,7 +10,7 @@ mod tests{
         let xgrid = array![0., 0.2, 0.3];
         let ygrid = array![0., 1.1, 1.2, 1.3];
         let zgrid = array![0.0, 1.0, 50.0, 56.0, 100.0];
-        let mut field = Array::zeros((3, 4, 5, 3));
+        let mut field: Array4<f64> = Array::zeros((3, 4, 5, 3));
         field.slice_mut(s![2, 2.., 2.., 0]).fill(1.);
         let cyclic = array![true, false, true];
         let f = VectorField::new(xgrid.view(), ygrid.view(), zgrid.view(), field.view(), cyclic.view());
@@ -30,7 +30,7 @@ mod tests{
         let xgrid = array![0., 0.2, 0.3];
         let ygrid = array![0., 1.1, 1.2, 1.3];
         let zgrid = array![0.0, 1.0, 50.0, 56.0, 100.0];
-        let mut field = Array::zeros((3, 4, 5, 3));
+        let mut field: Array4<f64> = Array::zeros((3, 4, 5, 3));
         field.slice_mut(s![2, 2.., 2.., 0]).fill(1.);
         let cyclic = array![true, false, true];
         let f = VectorField::new(xgrid.view(), ygrid.view(), zgrid.view(), field.view(), cyclic.view());
