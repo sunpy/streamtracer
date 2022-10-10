@@ -3,6 +3,7 @@ name: Build wheels
 on:
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 env:
   CIBW_BUILD: cp38-* cp39-* cp310-*
