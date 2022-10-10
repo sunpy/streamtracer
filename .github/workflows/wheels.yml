@@ -1,8 +1,6 @@
 name: Build wheels
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -19,7 +17,7 @@ env:
   # Upgrade numpy to make sure the binary is compatible with latest version
   # See https://github.com/numpy/numpy/issues/5888 for more info
   CIBW_BEFORE_TEST: python -m pip install pytest numpy --upgrade
-  CIBW_TEST_COMMAND: python -m pippytest {package}
+  CIBW_TEST_COMMAND: python -m pytest {package}
 
 jobs:
   build_wheels:
