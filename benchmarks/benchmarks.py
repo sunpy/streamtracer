@@ -1,7 +1,6 @@
 # Write the benchmarking functions here.
 # See "Writing benchmarks" in the asv docs for more information.
 import numpy as np
-
 from streamtracer import StreamTracer, VectorGrid
 
 
