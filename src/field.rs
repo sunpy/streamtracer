@@ -49,9 +49,9 @@ impl VectorField<'_> {
         cyclic: ArrayView1<'a, bool>
     ) -> VectorField<'a> {
         // Do some shape checking
-        let nx = xgrid.shape()[0];
-        let ny = ygrid.shape()[0];
-        let nz = zgrid.shape()[0];
+        let nx = xgrid.len();
+        let ny = ygrid.len();
+        let nz = zgrid.len();
         let field_shape = values.shape();
 
         assert_eq!(field_shape[0], nx);
@@ -81,7 +81,8 @@ impl VectorField<'_> {
         x: ArrayView1<f64>
     ) -> Array1<usize>{
 
-        let mut grid_idx = array![self.nx, self.ny, self.nz];
+        // Output array
+        let mut grid_idx = array![self.nx-2, self.ny-2, self.nz-2];
 
         // x
         for i in 0..self.nx-1{
@@ -171,6 +172,7 @@ impl VectorField<'_> {
         &self,
         x: ArrayView1<f64>
     ) -> Bounds {
+        print!["{}\n", x];
         if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]){
             return Bounds::Out;
         }
