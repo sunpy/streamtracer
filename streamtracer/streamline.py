@@ -1,8 +1,8 @@
 import numpy as np
+
 from streamtracer.fortran.streamtracer import streamtracer
 
-
-__all__ = ['StreamTracer', 'VectorGrid']
+__all__ = ["StreamTracer", "VectorGrid"]
 
 
 class VectorGrid:
@@ -33,14 +33,24 @@ class VectorGrid:
     cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
     ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
-    def __init__(self, vectors, grid_spacing=None, origin_coord=None,
-                 cyclic=None, *, grid_coords=None):
+
+    def __init__(
+        self,
+        vectors,
+        grid_spacing=None,
+        origin_coord=None,
+        cyclic=None,
+        *,
+        grid_coords=None,
+    ):
         if grid_spacing is not None and grid_coords is not None:
-            raise ValueError('Only one of "grid_spacing" and "grid_coords" '
-                             'can be specified.')
+            raise ValueError(
+                'Only one of "grid_spacing" and "grid_coords" ' "can be specified."
+            )
         if grid_spacing is None and grid_coords is None:
-            raise ValueError('One of "grid_spacing" and "grid_coords" must '
-                             'be specified.')
+            raise ValueError(
+                'One of "grid_spacing" and "grid_coords" must ' "be specified."
+            )
 
         if cyclic is None:
             cyclic = [False, False, False]
@@ -66,30 +76,33 @@ class VectorGrid:
     @staticmethod
     def _validate_vectors(vectors):
         if len(vectors.shape) != 4:
-            raise ValueError('vectors must be a 4D array')
+            raise ValueError("vectors must be a 4D array")
         if vectors.shape[-1] != 3:
-            raise ValueError('vectors must have shape (nx, ny, nz, 3), '
-                             f'got {vectors.shape}')
+            raise ValueError(
+                "vectors must have shape (nx, ny, nz, 3), " f"got {vectors.shape}"
+            )
 
     @staticmethod
     def _validate_spacing(grid_spacing):
         if grid_spacing.shape != (3,):
-            raise ValueError(f'grid spacing must have shape (3,), got '
-                             f'{grid_spacing.shape}')
+            raise ValueError(
+                f"grid spacing must have shape (3,), got " f"{grid_spacing.shape}"
+            )
 
     @staticmethod
     def _validate_coords(coords, vectors):
         if len(coords) != 3:
-            raise ValueError('coords must be len(3)')
-        for i, dim in zip(range(3), ['x', 'y', 'z']):
+            raise ValueError("coords must be len(3)")
+        for i, dim in zip(range(3), ["x", "y", "z"]):
             shape = np.array(coords[i]).shape
-            if shape != (vectors.shape[i], ):
-                raise ValueError(f'Expected {vectors.shape[i]} {dim} '
-                                 f'coordinates but got {shape}')
+            if shape != (vectors.shape[i],):
+                raise ValueError(
+                    f"Expected {vectors.shape[i]} {dim} " f"coordinates but got {shape}"
+                )
 
     @staticmethod
     def _validate_cyclic(vectors, cyclic):
-        dims = {0: 'x', 1: 'y', 2: 'z'}
+        dims = {0: "x", 1: "y", 2: "z"}
         s = [slice(None)] * 4
         for i, c in enumerate(cyclic):
             if c:
@@ -100,9 +113,11 @@ class VectorGrid:
                 side2 = vectors[tuple(slc)]
 
                 np.testing.assert_equal(
-                    side1, side2,
-                    err_msg=f'grid values in dimension {dims[i]} (size {vectors.shape[i]}) '
-                    'do not match on each side of the cube')
+                    side1,
+                    side2,
+                    err_msg=f"grid values in dimension {dims[i]} (size {vectors.shape[i]}) "
+                    "do not match on each side of the cube",
+                )
 
     @property
     def cyclic(self):
@@ -117,14 +132,14 @@ class VectorGrid:
         if self.grid_spacing is not None:
             return self._origin_coord
         else:
-            return np.array([self.xcoords[0],
-                             self.ycoords[0],
-                             self.zcoords[0]])
+            return np.array([self.xcoords[0], self.ycoords[0], self.zcoords[0]])
 
     def _get_coords(self, i):
         if self.grid_spacing is not None:
-            return (self.grid_spacing[i] * np.arange(self.vectors.shape[i]) +
-                    self.origin_coord[i])
+            return (
+                self.grid_spacing[i] * np.arange(self.vectors.shape[i])
+                + self.origin_coord[i]
+            )
         else:
             return self.coords[i]
 
@@ -177,6 +192,7 @@ class StreamTracer:
         - 1: Reached maximum available steps
         - 2: Out of bounds
     """
+
     def __init__(self, max_steps, step_size):
         self.max_steps = max_steps
         self.ds = step_size
@@ -189,11 +205,10 @@ class StreamTracer:
     @max_steps.setter
     def max_steps(self, val):
         if not isinstance(val, int):
-            raise ValueError(f'max_steps must be an integer (got {type(val)})')
+            raise ValueError(f"max_steps must be an integer (got {type(val)})")
 
         if not val > 0:
-            raise ValueError('max_steps must be greater than zero '
-                             f'(got {val})')
+            raise ValueError("max_steps must be greater than zero " f"(got {val})")
 
         self._max_steps = val
 
@@ -216,7 +231,7 @@ class StreamTracer:
             forward, or ``-1`` for backwards.
         """
         if not isinstance(grid, VectorGrid):
-            raise ValueError('grid must be an instance of StreamTracer')
+            raise ValueError("grid must be an instance of StreamTracer")
         self.grid = grid
         self.x0 = seeds.copy()
         self.n_lines = seeds.shape[0]
@@ -231,9 +246,9 @@ class StreamTracer:
 
         # Validate shapes
         if len(seeds.shape) != 2:
-            raise ValueError('seeds must be a 2D array')
+            raise ValueError("seeds must be a 2D array")
         if seeds.shape[1] != 3:
-            raise ValueError(f'seeds must have shape (n, 3), got {seeds.shape}')
+            raise ValueError(f"seeds must have shape (n, 3), got {seeds.shape}")
 
         seeds = seeds - grid.origin_coord
         xcoords = grid.xcoords - grid.origin_coord[0]
@@ -243,7 +258,15 @@ class StreamTracer:
         if direction == 1 or direction == -1:
             # Calculate streamlines
             self.xs, ROT, self.ns = streamtracer.streamline_array(
-                seeds, field, xcoords, ycoords, zcoords, direction, self.max_steps, cyclic)
+                seeds,
+                field,
+                xcoords,
+                ycoords,
+                zcoords,
+                direction,
+                self.max_steps,
+                cyclic,
+            )
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
@@ -255,22 +278,26 @@ class StreamTracer:
         elif direction == 0:
             # Calculate forward streamline
             xs_f, ROT_f, ns_f = streamtracer.streamline_array(
-                seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic
+            )
             # Calculate backward streamline
             xs_r, ROT_r, ns_r = streamtracer.streamline_array(
-                seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic)
+                seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic
+            )
 
             xs_f += grid.origin_coord
             xs_r += grid.origin_coord
 
             # Stack the forward and reverse arrays
-            self.xs = [np.vstack([xri[nr - 1:0:-1, :], xfi[:nf]]) for
-                       xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)]
+            self.xs = [
+                np.vstack([xri[nr - 1 : 0 : -1, :], xfi[:nf]])
+                for xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)
+            ]
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
         else:
-            raise ValueError(f'Direction must be -1, 1 or 0 (got {direction})')
+            raise ValueError(f"Direction must be -1, 1 or 0 (got {direction})")
 
         # Filter out nans
         self.xs = [xi[~np.any(np.isnan(xi), axis=1), :] for xi in self.xs]

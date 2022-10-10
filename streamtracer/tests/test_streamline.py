@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from streamtracer.fortran.streamtracer import streamtracer
 from streamtracer import StreamTracer, VectorGrid
+from streamtracer.fortran.streamtracer import streamtracer
 
 
 @pytest.fixture
@@ -20,19 +20,21 @@ def uniform_x_field():
     return VectorGrid(v, spacing)
 
 
-@pytest.mark.parametrize('direction, ROTs', [[1, np.array([2, 2, 2])],
-                                             [-1, np.array([2, 2, 2])],
-                                             [0, np.array([[2, 2],
-                                                           [2, 2],
-                                                           [2, 2]])]
-                                             ])
+@pytest.mark.parametrize(
+    "direction, ROTs",
+    [
+        [1, np.array([2, 2, 2])],
+        [-1, np.array([2, 2, 2])],
+        [0, np.array([[2, 2], [2, 2], [2, 2]])],
+    ],
+)
 def test_rot(tracer, uniform_x_field, direction, ROTs):
     seeds = np.array([[50, 50, 50], [50, 50, 50], [50, 50, 50]])
     tracer.trace(seeds, uniform_x_field, direction=direction)
     np.testing.assert_equal(tracer.ROT, ROTs)
 
 
-@pytest.mark.parametrize('x0', [0, 50])
+@pytest.mark.parametrize("x0", [0, 50])
 def test_different_seeds(tracer, uniform_x_field, x0):
     # Check that different seed points give sensible results
     seed = np.array([0, x0, x0])
@@ -44,7 +46,7 @@ def test_different_seeds(tracer, uniform_x_field, x0):
     np.testing.assert_equal(sline[:, 2], x0)
 
 
-@pytest.mark.parametrize('vec_len', [1, 2])
+@pytest.mark.parametrize("vec_len", [1, 2])
 def test_uniform_field(tracer, uniform_x_field, vec_len):
     # Check that tracing thought a uniform field gives sensible results
     seed = np.array([0, 0, 0])
@@ -116,8 +118,8 @@ def test_cyclic(uniform_x_field):
     assert len(tracer.xs[0]) == 2
 
 
-@pytest.mark.parametrize('ds', [0.1, 0.2])
-@pytest.mark.parametrize('origin_coord', [[0, 0, 0], [1, 1, 1]])
+@pytest.mark.parametrize("ds", [0.1, 0.2])
+@pytest.mark.parametrize("origin_coord", [[0, 0, 0], [1, 1, 1]])
 def test_origin(tracer, origin_coord, ds):
     # A uniform field pointing in the x direction
     v = np.zeros((4, 4, 4, 3))
@@ -126,7 +128,7 @@ def test_origin(tracer, origin_coord, ds):
     spacing = [1, 1, 1]
     grid = VectorGrid(v, spacing, origin_coord=origin_coord)
 
-    seed = np.array([2., 2., 2.])
+    seed = np.array([2.0, 2.0, 2.0])
     tracer = StreamTracer(100, ds)
     tracer.trace(seed, grid, direction=1)
 
@@ -149,7 +151,7 @@ def test_cyclic_field():
 
     spacing = [1, 1, 1]
     cyclic = [True, False, False]
-    with pytest.raises(AssertionError, match='Arrays are not equal'):
+    with pytest.raises(AssertionError, match="Arrays are not equal"):
         VectorGrid(v, spacing, cyclic=cyclic)
 
     # Check that with cyclic off no error is thrown
@@ -180,39 +182,43 @@ def test_grid_points():
 def test_bad_input(tracer, uniform_x_field):
     # Check input validation
     seed = np.array([0, 0, 0])
-    with pytest.raises(ValueError, match='seeds must be a 2D array'):
+    with pytest.raises(ValueError, match="seeds must be a 2D array"):
         tracer.trace(np.array([[[1], [1]], [[1], [1]]]), uniform_x_field)
 
-    with pytest.raises(ValueError, match='seeds must have shape'):
+    with pytest.raises(ValueError, match="seeds must have shape"):
         tracer.trace(np.array([1, 1]), uniform_x_field)
 
-    with pytest.raises(ValueError, match='grid must be an instance of StreamTracer'):
+    with pytest.raises(ValueError, match="grid must be an instance of StreamTracer"):
         tracer.trace(seed, 1)
 
-    with pytest.raises(ValueError, match='Direction must be -1, 1 or 0'):
+    with pytest.raises(ValueError, match="Direction must be -1, 1 or 0"):
         tracer.trace(seed, uniform_x_field, direction=2)
 
-    with pytest.raises(ValueError, match='vectors must be a 4D array'):
+    with pytest.raises(ValueError, match="vectors must be a 4D array"):
         VectorGrid(np.array([1]), [1, 1, 1])
 
-    with pytest.raises(ValueError, match='vectors must have shape'):
+    with pytest.raises(ValueError, match="vectors must have shape"):
         VectorGrid(np.zeros((1, 1, 1, 2)), [1, 1, 1])
 
-    with pytest.raises(ValueError, match='grid spacing must have shape'):
+    with pytest.raises(ValueError, match="grid spacing must have shape"):
         VectorGrid(np.zeros((1, 1, 1, 3)), [1, 1])
 
 
-@pytest.mark.parametrize('val, errstr',
-                         [(0.1, 'max_steps must be an integer'),
-                          (0, 'max_steps must be greater than zero'),
-                          (-1, 'max_steps must be greater than zero')])
+@pytest.mark.parametrize(
+    "val, errstr",
+    [
+        (0.1, "max_steps must be an integer"),
+        (0, "max_steps must be greater than zero"),
+        (-1, "max_steps must be greater than zero"),
+    ],
+)
 def test_invalid_max_steps(val, errstr):
     with pytest.raises(ValueError, match=errstr):
         StreamTracer(val, 0.1)
 
 
 # Paramatrize to make sure behaviour is same in x,y,z directions
-@pytest.mark.parametrize('dir', [0, 1, 2])
+@pytest.mark.parametrize("dir", [0, 1, 2])
 def test_bounds(dir):
     v = np.zeros((3, 3, 3, 3))
     # Make all vectors point along the specified dimension
