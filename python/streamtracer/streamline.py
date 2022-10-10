@@ -238,7 +238,6 @@ class StreamTracer:
         field = grid.vectors
 
         cyclic = grid.cyclic
-        print(cyclic)
         seeds = np.atleast_2d(seeds)
 
         # Validate shapes
@@ -254,35 +253,26 @@ class StreamTracer:
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
-            # self.xs, ROT, self.ns = streamtracer.streamline_array(
-            #     seeds, field, xcoords, ycoords, zcoords, direction, self.max_steps, cyclic)
-            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, direction, self.ds, self.max_steps)
+            self.xs, self.ns, self.ROT = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, direction, self.ds, self.max_steps)
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
             self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
 
-            # Save the Reason of Termination
-            self.ROT = ROT
-
         elif direction == 0:
             # Calculate forward streamline
             trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, 1, self.ds, self.max_steps)
-            # xs_f, ROT_f, ns_f = streamtracer.streamline_array(
-            #    seeds, field, xcoords, ycoords, zcoords, 1, self.max_steps, cyclic)
+            xs_f, ns_f, ROT_f = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, 1, self.ds, self.max_steps)
             # Calculate backward streamline
-            # xs_r, ROT_r, ns_r = streamtracer.streamline_array(
-            #     seeds, field, xcoords, ycoords, zcoords, -1, self.max_steps, cyclic)
+            xs_r, ns_r, ROT_r = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, -1, self.ds, self.max_steps)
             trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, -1, self.ds, self.max_steps)
 
             xs_f += grid.origin_coord
             xs_r += grid.origin_coord
 
             # Stack the forward and reverse arrays
-            self.xs = [
-                np.vstack([xri[nr - 1 : 0 : -1, :], xfi[:nf]])
-                for xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)
-            ]
+            self.xs = [np.vstack([xri[int(nr) - 1:0:-1, :], xfi[:int(nf)]]) for
+                       xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)]
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T

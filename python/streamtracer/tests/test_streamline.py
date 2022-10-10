@@ -234,15 +234,6 @@ def test_bounds(dir):
     assert (tracer.xs[0][0, :] == expected).all()
 
 
-def test_nthreads():
-    # assert streamtracer.openmp_enabled
-    streamtracer.set_num_threads(4)
-    assert streamtracer.get_num_threads() == 4
-
-    streamtracer.set_num_threads(2)
-    assert streamtracer.get_num_threads() == 2
-
-
 def test_direction_change():
     # Test custom (non-uniform) grid coordinates
     # A uniform field pointing in the x direction

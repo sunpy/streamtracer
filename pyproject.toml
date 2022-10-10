@@ -6,6 +6,11 @@ requires = [
 ]
 build-backend = "maturin"
 
+[tool.maturin]
+python-source = "python"
+
+[tool.setuptools_scm]
+
 [project]
 dynamic =["version"]
 name = "streamtracer"
@@ -37,8 +42,6 @@ docs = [
     "sphinx-automodapi",
     "sphinx_rtd_theme"
 ]
-
-[tool.setuptools_scm]
 
 [tool.pytest.ini_options]
 addopts = "-ra"
