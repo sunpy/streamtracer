@@ -172,7 +172,6 @@ impl VectorField<'_> {
         &self,
         x: ArrayView1<f64>
     ) -> Bounds {
-        print!["{}\n", x];
         if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]){
             return Bounds::Out;
         }
