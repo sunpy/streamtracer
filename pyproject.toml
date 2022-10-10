@@ -45,4 +45,4 @@ docs = [
 
 [tool.pytest.ini_options]
 addopts = "-ra"
-testpaths = ["streamtracer"]
+testpaths = ["doc", "python"]

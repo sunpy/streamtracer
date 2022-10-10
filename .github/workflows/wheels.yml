@@ -24,25 +24,20 @@ jobs:
         os: [ubuntu-20.04, macos-11, windows-2022]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Install fortran
-        if: runner.os == 'Linux'
+      - name: Setup rust
         run: |
-            sudo apt update
-            sudo apt install -y gfortran
-      - name: Install fortran
-        if: runner.os == 'macOS'
-        run: |
-            brew install gcc
-            brew link gcc
-            ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
+          rustup update
+          rustup component add cargo
 
       - name: Build wheels
         uses: joerick/cibuildwheel@v2.8.1
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
+        env:
+          CIBW_BEFORE_BUILD: rustup show
+          CIBW_BEFORE_BUILD_LINUX: >
+            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y &&
+            rustup show
 
       - uses: actions/upload-artifact@v2
         with:
