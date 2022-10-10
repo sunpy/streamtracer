@@ -26,9 +26,6 @@ project = "streamtracer"
 copyright = "2019-2021, David Stansby"
 author = "David Stansby"
 
-# The full version, including alpha/beta/rc tags
-release = "1.2.0"
-
 # Home page
 master_doc = "index"
 
