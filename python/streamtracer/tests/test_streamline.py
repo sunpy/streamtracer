@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from streamtracer import StreamTracer, VectorGrid
-from streamtracer.fortran.streamtracer import streamtracer
+
 
 @pytest.fixture
 def tracer():
