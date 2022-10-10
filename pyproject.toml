@@ -1,7 +1,46 @@
 [build-system]
 requires = [
-         "setuptools",
-         "wheel",
-         "oldest-supported-numpy"
-         ]
+    "setuptools>=45",
+    "oldest-supported-numpy",
+     "setuptools_scm[toml]>=6.2"
+]
 build-backend = 'setuptools.build_meta'
+
+
+[project]
+dynamic =["version"]
+name = "streamtracer"
+description = "Python wrapped fortran to calculate streamlines"
+authors = [
+    {name = "David Stansby", email="dstansby@gmail.com"},
+    {name = "Lars Mejnertsen"}
+]
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "GPL v3"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["numpy>=1.14.5",]
+
+[project.urls]
+homepage = "https://streamtracer.readthedocs.io/en/stable/"
+documentation = "https://streamtracer.readthedocs.io/en/stable/"
+repository = "https://github.com/dstansby/streamtracer"
+
+[project.optional-dependencies]
+tests = ["pytest", "pytest-cov"]
+docs = [
+    "jupyter-sphinx",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinx-automodapi",
+    "sphinx_rtd_theme"
+]
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["streamtracer"]
