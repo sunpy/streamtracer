@@ -253,7 +253,17 @@ class StreamTracer:
 
         if direction == 1 or direction == -1:
             # Calculate streamlines
-            self.xs, self.ns, self.ROT = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, direction, self.ds, self.max_steps)
+            self.xs, self.ns, self.ROT = trace_streamlines(
+                seeds,
+                xcoords,
+                ycoords,
+                zcoords,
+                field,
+                cyclic,
+                direction,
+                self.ds,
+                self.max_steps,
+            )
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
@@ -261,18 +271,60 @@ class StreamTracer:
 
         elif direction == 0:
             # Calculate forward streamline
-            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, 1, self.ds, self.max_steps)
-            xs_f, ns_f, ROT_f = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, 1, self.ds, self.max_steps)
+            trace_streamlines(
+                seeds,
+                xcoords,
+                ycoords,
+                zcoords,
+                field,
+                cyclic,
+                1,
+                self.ds,
+                self.max_steps,
+            )
+            xs_f, ns_f, ROT_f = trace_streamlines(
+                seeds,
+                xcoords,
+                ycoords,
+                zcoords,
+                field,
+                cyclic,
+                1,
+                self.ds,
+                self.max_steps,
+            )
             # Calculate backward streamline
-            xs_r, ns_r, ROT_r = trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, -1, self.ds, self.max_steps)
-            trace_streamlines(seeds, xcoords, ycoords, zcoords, field, cyclic, -1, self.ds, self.max_steps)
+            xs_r, ns_r, ROT_r = trace_streamlines(
+                seeds,
+                xcoords,
+                ycoords,
+                zcoords,
+                field,
+                cyclic,
+                -1,
+                self.ds,
+                self.max_steps,
+            )
+            trace_streamlines(
+                seeds,
+                xcoords,
+                ycoords,
+                zcoords,
+                field,
+                cyclic,
+                -1,
+                self.ds,
+                self.max_steps,
+            )
 
             xs_f += grid.origin_coord
             xs_r += grid.origin_coord
 
             # Stack the forward and reverse arrays
-            self.xs = [np.vstack([xri[int(nr) - 1:0:-1, :], xfi[:int(nf)]]) for
-                       xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)]
+            self.xs = [
+                np.vstack([xri[int(nr) - 1 : 0 : -1, :], xfi[: int(nf)]])
+                for xri, xfi, nr, nf in zip(xs_r, xs_f, ns_r, ns_f)
+            ]
             self.n_lines = np.fromiter([len(xsi) for xsi in self.xs], int)
 
             self.ROT = np.vstack([ROT_f, ROT_r]).T
