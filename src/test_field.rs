@@ -1,9 +1,9 @@
 #[cfg(test)]
-mod tests{
+mod field_tests{
     use numpy::ndarray::{array, Array, Array4, s};
     use float_eq::assert_float_eq;
 
-    use streamtracer::field::VectorField;
+    use super::super::field::VectorField;
 
     #[test]
     fn test_grid_idx() {
