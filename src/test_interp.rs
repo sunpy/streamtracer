@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod tests{
-    use streamtracer::interp;
+mod interp_tests{
+    use super::super::interp;
     use numpy::ndarray::array;
 
     #[test]

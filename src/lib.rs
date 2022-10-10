@@ -5,8 +5,12 @@ pub mod field;
 pub mod interp;
 pub mod trace;
 
+#[cfg(test)]
+mod test_field;
+mod test_interp;
+mod test_tracer;
 
-use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray1, PyArray3, IntoPyArray};
+use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray3, IntoPyArray};
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 
 
@@ -26,7 +30,7 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         step_size: f64,
         max_steps: usize,
     ) -> &'py PyArray3<f64> {
-        let (statuses, xs) = trace::trace_streamlines(
+        let (_statuses, xs) = trace::trace_streamlines(
             seeds.as_array(),
             xgrid.as_array(),
             ygrid.as_array(),
