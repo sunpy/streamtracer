@@ -1,6 +1,8 @@
 import os
-from setuptools import setup
-from numpy.distutils.core import setup, Extension # noqa
+
+import setuptools  # isort:skip
+from numpy.distutils.core import Extension, setup  # isort:skip
+
 
 # Don't want to build the fortran on readthedocs
 exts = []
