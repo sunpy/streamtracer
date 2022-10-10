@@ -72,6 +72,16 @@ Code reference
 Changelog
 =========
 
+2.0.0
+-----
+The low level streamline tracing code has been ported from FORTRAN to Rust.
+This has several benefits on the development side, and from a user perspective brings the first built wheels for Windows 🪟🎉
+
+The new code is **not** *yet* parallelised, so when tracing multiple streamlines on multiple cores runs slower than version 1.
+Version 2.1 (hopefully coming soon!) should implement parallel line tracing.
+
+The minimum supported Python version is now 3.8.
+
 1.2.0
 -----
 
