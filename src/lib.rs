@@ -10,7 +10,7 @@ mod test_field;
 mod test_interp;
 mod test_tracer;
 
-use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray3, IntoPyArray};
+use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray1, PyArray3, IntoPyArray, ndarray::Array};
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 
 
@@ -29,8 +29,8 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         direction: i32,
         step_size: f64,
         max_steps: usize,
-    ) -> &'py PyArray3<f64> {
-        let (_statuses, xs) = trace::trace_streamlines(
+    ) -> (&'py PyArray3<f64>, &'py PyArray1<i64>, &'py PyArray1<i64>) {
+        let (statuses, xs) = trace::trace_streamlines(
             seeds.as_array(),
             xgrid.as_array(),
             ygrid.as_array(),
@@ -42,7 +42,14 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             max_steps
         );
 
-        xs.into_pyarray(py)
+        let mut termination_reasons = Array::zeros(statuses.len());
+        let mut n_points = Array::zeros(statuses.len());
+        for (i, status) in statuses.iter().enumerate() {
+            termination_reasons[[i]] = status.rot as i64;
+            n_points[[i]] = status.n_points as i64;
+        }
+
+        return (xs.into_pyarray(py), n_points.into_pyarray(py), termination_reasons.into_pyarray(py))
     }
 
     Ok(())

@@ -1,17 +1,18 @@
 //! Streamline tracing functionality.
+use num_derive::ToPrimitive;
 use numpy::ndarray::{Array, Array1, Array3, ArrayView1, ArrayView2, ArrayView4, ArrayViewMut2, s};
 
 use crate::field::{VectorField, Bounds};
 
 /// Enum denoting status of the streamline tracer
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, ToPrimitive)]
 pub enum TracerStatus{
     /// Still running
     Running,
     /// Ran out of steps
-    RanOutOfSteps,
+    RanOutOfSteps = 1,
     /// Stepped out of bounds
-    OutOfBounds,
+    OutOfBounds = 2,
 }
 
 /// A single stream line status
