@@ -32,12 +32,12 @@ jobs:
           rustup component add cargo
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.8.1
+        uses: joerick/cibuildwheel@v2.10.2
         env:
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
+          CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_BEFORE_BUILD: rustup show
-          CIBW_BEFORE_BUILD_LINUX: >
-            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y &&
-            rustup show
+
 
       - uses: actions/upload-artifact@v2
         with:
