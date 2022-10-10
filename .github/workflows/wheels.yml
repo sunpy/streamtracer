@@ -39,9 +39,6 @@ jobs:
 
       - name: Build wheels
         uses: joerick/cibuildwheel@v2.10.2
-        env:
-
-
 
       - uses: actions/upload-artifact@v2
         with:
