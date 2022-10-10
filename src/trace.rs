@@ -3,19 +3,25 @@ use numpy::ndarray::{Array, Array1, Array3, ArrayView1, ArrayView2, ArrayView4, 
 
 use crate::field::{VectorField, Bounds};
 
-#[derive(PartialEq)]
-enum TracerStatus{
+/// Enum denoting status of the streamline tracer
+#[derive(PartialEq, Debug)]
+pub enum TracerStatus{
+    /// Still running
     Running,
+    /// Ran out of steps
     RanOutOfSteps,
+    /// Stepped out of bounds
     OutOfBounds,
 }
 
 /// A single stream line status
 pub struct StreamlineStatus{
     /// Reason of termination
-    rot: TracerStatus,
+    pub rot: TracerStatus,
     /// Number of valid coordinates returned
-    n_points: usize
+    /// Can be used to slice away extra bits of the array that were not
+    /// used for tracing using `xs.slice(s![:n_points, ..])`.
+    pub n_points: usize
 }
 
 /// Trace streamlines
@@ -96,7 +102,8 @@ pub fn trace_streamline(
         for j in 0..3 {
             xs[[i, j]] = x[[j]];
         }
-        n_points = i;
+        // +1 to account for the initial point
+        n_points = i+1;
         // Take a single step
         // Updates `x` in place.
         x = rk4_update(x, field, &step);
