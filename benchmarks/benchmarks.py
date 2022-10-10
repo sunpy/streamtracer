@@ -22,8 +22,8 @@ class TimeSuite:
         self.tracer.trace(seed, self.grid)
 
 
-'''
+"""
 class MemSuite:
     def mem_list(self):
         return [0] * 256
-'''
+"""
