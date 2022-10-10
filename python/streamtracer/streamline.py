@@ -271,17 +271,6 @@ class StreamTracer:
 
         elif direction == 0:
             # Calculate forward streamline
-            trace_streamlines(
-                seeds,
-                xcoords,
-                ycoords,
-                zcoords,
-                field,
-                cyclic,
-                1,
-                self.ds,
-                self.max_steps,
-            )
             xs_f, ns_f, ROT_f = trace_streamlines(
                 seeds,
                 xcoords,
@@ -295,17 +284,6 @@ class StreamTracer:
             )
             # Calculate backward streamline
             xs_r, ns_r, ROT_r = trace_streamlines(
-                seeds,
-                xcoords,
-                ycoords,
-                zcoords,
-                field,
-                cyclic,
-                -1,
-                self.ds,
-                self.max_steps,
-            )
-            trace_streamlines(
                 seeds,
                 xcoords,
                 ycoords,
