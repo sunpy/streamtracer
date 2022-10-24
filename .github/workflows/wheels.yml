@@ -41,6 +41,6 @@ jobs:
       - name: Build wheels
         uses: joerick/cibuildwheel@v2.10.2
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
