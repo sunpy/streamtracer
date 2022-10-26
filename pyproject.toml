@@ -14,7 +14,7 @@ python-source = "python"
 
 [project]
 name = "streamtracer"
-version = "2.0.0a1"
+version = "2.0.0"
 description = "Python wrapped fortran to calculate streamlines"
 authors = [
     {name = "David Stansby", email="dstansby@gmail.com"},
