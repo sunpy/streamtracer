@@ -2,7 +2,6 @@ import time
 
 import numpy as np
 import pandas as pd
-
 from streamtracer import StreamTracer, VectorGrid
 
 nsteps = 1000
