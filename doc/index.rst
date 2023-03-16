@@ -72,6 +72,14 @@ Code reference
 Changelog
 =========
 
+2.0.1
+-----
+streamtracer now includes wheels for Python 3.11, and these have now been uploaded to PyPI as a realease (version 2.0.0 was only ever uploaded as an alpha).
+streamtracer still does not work in parallel, if you require parallel stream tracing then for now either:
+
+- Downgrade to version 1.2.0
+- Manually run several instances of the streamtracer in parallel
+
 2.0.0
 -----
 The low level streamline tracing code has been ported from FORTRAN to Rust.
