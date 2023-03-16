@@ -1,6 +1,5 @@
 import numpy as np
 from pyinstrument import Profiler
-
 from streamtracer import StreamTracer, VectorGrid
 
 profiler = Profiler()

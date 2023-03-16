@@ -1,5 +1,4 @@
 import numpy as np
-
 from streamtracer._streamtracer_rust import trace_streamlines
 
 __all__ = ["StreamTracer", "VectorGrid"]
