@@ -1,9 +1,8 @@
 streamtracer
 ============
 
-streamtracer is a python package for rapid streamline tracing. It is a wrapper
-to compiled fortran code that does the heavy lifting, and is therefore
-relatively fast.
+streamtracer is a python package for rapid streamline tracing on regularly spaced grids.
+The actual streamline tracing is done at a low level in Rust, with a nice Python API provided on top.
 
 To use, create a :class:`streamtracer.StreamTracer` object
 
