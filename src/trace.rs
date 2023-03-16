@@ -5,7 +5,7 @@ use numpy::ndarray::{Array, Array1, Array3, ArrayView1, ArrayView2, ArrayView4, 
 use crate::field::{VectorField, Bounds};
 
 /// Enum denoting status of the streamline tracer
-#[derive(PartialEq, Debug, ToPrimitive)]
+#[derive(PartialEq, Debug, ToPrimitive, Clone, Copy)]
 pub enum TracerStatus{
     /// Still running
     Running,
