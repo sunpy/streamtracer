@@ -1,4 +1,3 @@
-
 import numpy as np
 from pyinstrument import Profiler
 
