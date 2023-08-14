@@ -39,7 +39,7 @@ jobs:
           rustup component add cargo
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.14.1
+        uses: joerick/cibuildwheel@v2.15.0
 
       - uses: actions/upload-artifact@v3
         with:
