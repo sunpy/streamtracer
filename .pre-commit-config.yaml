@@ -7,18 +7,18 @@ repos:
           - id: isort
     # Python code formatting
     - repo: https://github.com/psf/black
-      rev: 23.1.0
+      rev: 23.11.0
       hooks:
           - id: black
     # Remove unused Python imports
     - repo: https://github.com/PyCQA/autoflake
-      rev: v2.0.2
+      rev: v2.2.1
       hooks:
         - id: autoflake
           args: ["--in-place", "--remove-all-unused-imports", "--ignore-init-module-imports"]
     # Run mypy type validation
     -   repo: https://github.com/pre-commit/mirrors-mypy
-        rev: 'v1.1.1'
+        rev: 'v1.7.1'
         hooks:
         - id: mypy
           additional_dependencies: [types-setuptools]
