@@ -1,40 +1,42 @@
 [build-system]
 requires = [
-    "setuptools>=45",
-    "setuptools_scm[toml]>=6.2",
-    "oldest-supported-numpy",
-    "maturin>=0.13,<0.14"
+    "maturin>=0.13,<0.14",
 ]
 build-backend = "maturin"
 
 [tool.maturin]
 python-source = "python"
 
-[tool.setuptools_scm]
-
 [project]
 name = "streamtracer"
 version = "2.0.1"
 description = "Python wrapped fortran to calculate streamlines"
 authors = [
+    {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
     {name = "David Stansby", email="dstansby@gmail.com"},
     {name = "Lars Mejnertsen"}
 ]
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 license = {text = "GPL v3"}
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
-dependencies = ["numpy>=1.14.5",]
+dependencies = [
+    "numpy>=1.14.5",
+]
 
 [project.urls]
 homepage = "https://streamtracer.readthedocs.io/en/stable/"
 documentation = "https://streamtracer.readthedocs.io/en/stable/"
-repository = "https://github.com/dstansby/streamtracer"
+repository = "https://github.com/sunpy/streamtracer"
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-cov"]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "pytest-doctestplus",
+]
 docs = [
     "jupyter-sphinx",
     "numpydoc",
@@ -45,5 +47,24 @@ docs = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+addopts = "-ra --doctest-rst"
 testpaths = ["doc", "python"]
+doctest_plus = "enabled"
+text_file_format = "rst"
+
+[tool.coverage.report]
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain about packages we have installed
+  "except ImportError",
+  # Don't complain if tests don't hit assertions
+  "raise AssertionError",
+  "raise NotImplementedError",
+  # Don't complain about script hooks
+  "def main(.*):",
+  # Ignore branches that don't pertain to this version of Python
+  "pragma: py{ignore_python_version}",
+  # Don't complain about IPython completion helper
+  "def _ipython_key_completions_",
+]
