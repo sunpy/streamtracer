@@ -21,6 +21,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hecrj/setup-rust-action@v2
+      - run: cargo test
+
   core:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
@@ -45,7 +52,7 @@ jobs:
       - run: python -m twine check dist/*
 
   test:
-    needs: [core, sdist_verify]
+    needs: [core, sdist_verify, rust]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
