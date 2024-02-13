@@ -1,0 +1,31 @@
+{
+  "template": "https://github.com/sunpy/package-template",
+  "commit": "10f3bbf1a74e7cc431c978430f1f2b8fe285f153",
+  "checkout": "10f3bbf1a74e7cc431c978430f1f2b8fe285f153",
+  "context": {
+    "cookiecutter": {
+      "package_name": "streamtracer",
+      "module_name": "streamtracer",
+      "short_description": "Python wrapped fortran to calculate streamlines",
+      "author_name": "The SunPy Developers",
+      "author_email": "sunpy@googlegroups.com",
+      "project_url": "https://github.com/sunpy/streamtracer",
+      "license": "GNU GPL v3+",
+      "minimum_python_version": "3.9",
+      "use_compiled_extensions": "n",
+      "enable_dynamic_dev_versions": "n",
+      "include_example_code": "n",
+      "include_cruft_update_github_workflow": "y",
+      "_sphinx_theme": "alabaster",
+      "_parent_project": "",
+      "_install_requires": "",
+      "_copy_without_render": [
+        "docs/_templates",
+        "docs/_static",
+        ".github/workflows/sub_package_update.yml"
+      ],
+      "_template": "https://github.com/sunpy/package-template"
+    }
+  },
+  "directory": null
+}
