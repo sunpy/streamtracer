@@ -46,6 +46,16 @@ docs = [
     "sphinx_rtd_theme"
 ]
 
+[tool.cibuildwheel]
+before-build = "rustup show"
+environment = {"PATH" = "$PATH:$HOME/.cargo/bin"}
+
+[tool.cibuildwheel.linux]
+before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
+
+[tool.cibuildwheel.macos]
+before-all = "rustup target add aarch64-apple-darwin"
+
 [tool.pytest.ini_options]
 addopts = "-ra --doctest-rst"
 testpaths = ["doc", "python"]
