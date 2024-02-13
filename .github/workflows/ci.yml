@@ -102,11 +102,6 @@ jobs:
     needs: [test, docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
-      env: |
-        CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
-        CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
-        CIBW_BEFORE_BUILD: "rustup update; rustup component add cargo; rustup show"
-        CIBW_BEFORE_BUILD_MACOS: "rustup target add aarch64-apple-darwin"
       sdist: true
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs streamtracer'
