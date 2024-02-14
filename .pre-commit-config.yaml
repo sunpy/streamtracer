@@ -2,12 +2,12 @@
 repos:
     # Sort order of Python imports
     - repo: https://github.com/pycqa/isort
-      rev: 5.12.0
+      rev: 5.13.2
       hooks:
           - id: isort
     # Python code formatting
     - repo: https://github.com/psf/black
-      rev: 23.11.0
+      rev: 24.2.0
       hooks:
           - id: black
     # Remove unused Python imports
@@ -18,7 +18,7 @@ repos:
           args: ["--in-place", "--remove-all-unused-imports", "--ignore-init-module-imports"]
     # Run mypy type validation
     -   repo: https://github.com/pre-commit/mirrors-mypy
-        rev: 'v1.7.1'
+        rev: 'v1.8.0'
         hooks:
         - id: mypy
           additional_dependencies: [types-setuptools]
