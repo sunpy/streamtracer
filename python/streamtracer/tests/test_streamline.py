@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from streamtracer import StreamTracer, VectorGrid
 
 
@@ -19,7 +20,7 @@ def uniform_x_field():
 
 
 @pytest.mark.parametrize(
-    "direction, ROTs",
+    ("direction", "ROTs"),
     [
         [1, np.array([2, 2, 2])],
         [-1, np.array([2, 2, 2])],
@@ -203,7 +204,7 @@ def test_bad_input(tracer, uniform_x_field):
 
 
 @pytest.mark.parametrize(
-    "val, errstr",
+    ("val", "errstr"),
     [
         (0.1, "max_steps must be an integer"),
         (0, "max_steps must be greater than zero"),
