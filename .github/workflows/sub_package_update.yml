@@ -1,7 +1,5 @@
-"""
-This template is taken from the cruft example code, for further information please see:
-https://cruft.github.io/cruft/#automating-updates-with-github-actions
-"""
+# This template is taken from the cruft example code, for further information please see:
+# https://cruft.github.io/cruft/#automating-updates-with-github-actions
 name: Automatic Update from package template
 permissions:
     contents: write

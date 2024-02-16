@@ -26,11 +26,6 @@ repos:
       hooks:
       - id: mypy
         additional_dependencies: [types-setuptools]
-  # Sort order of Python imports
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-        - id: isort
   # Python code formatting
   - repo: https://github.com/psf/black
     rev: 24.2.0

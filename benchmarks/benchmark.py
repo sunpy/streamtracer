@@ -1,7 +1,9 @@
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from streamtracer import StreamTracer, VectorGrid
 
 nsteps = 1000
@@ -26,8 +28,6 @@ for nseeds in seedlist:
 
 
 pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv("v200.csv")
-
-import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots()
 
