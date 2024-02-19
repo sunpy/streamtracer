@@ -66,7 +66,7 @@ jobs:
           git config --global user.name "${{ github.actor }}"
 
           cruft update --skip-apply-ask --refresh-private-variables
-          git restore --staged
+          git restore --staged .
 
       - name: Create pull request
         if: steps.check.output.has_changes == '1'
