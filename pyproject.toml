@@ -39,11 +39,9 @@ tests = [
 ]
 docs = [
     "jupyter-sphinx",
-    "numpydoc",
-    "pydata-sphinx-theme",
+    "sunpy-sphinx-theme",
     "sphinx",
     "sphinx-automodapi",
-    "sphinx_rtd_theme"
 ]
 
 [tool.cibuildwheel]
