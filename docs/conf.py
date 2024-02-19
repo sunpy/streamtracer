@@ -7,8 +7,8 @@
 # -- Project information -----------------------------------------------------
 
 project = "streamtracer"
-copyright = "2019-2021, David Stansby"
-author = "David Stansby"
+copyright = "2019-2024, The SunPy Developers & David Stansby"
+author = "The SunPy Developers, David Stansby"
 
 # Home page
 master_doc = "index"
@@ -20,10 +20,9 @@ master_doc = "index"
 # ones.
 extensions = [
     "sphinx_automodapi.automodapi",
-    "numpydoc",
+    "sphinx.ext.napoleon",
     "jupyter_sphinx",
 ]
-numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -39,7 +38,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "pydata_sphinx_theme"
+html_theme = "sunpy"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
