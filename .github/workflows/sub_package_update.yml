@@ -35,7 +35,7 @@ jobs:
             title: Reject new updates from package template
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v4
         with:
