@@ -1,7 +1,7 @@
 repos:
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.2.2"
+    rev: "v0.3.2"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -22,7 +22,7 @@ repos:
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
   # Run mypy type validation
   -   repo: https://github.com/pre-commit/mirrors-mypy
-      rev: 'v1.8.0'
+      rev: 'v1.9.0'
       hooks:
       - id: mypy
         additional_dependencies: [types-setuptools]
