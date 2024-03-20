@@ -24,7 +24,7 @@ for nseeds in seedlist:
     dt = time.time() - t
     assert len(tracer.xs) == nseeds
     times += [dt]
-    print(nseeds, dt / nseeds)
+    print(nseeds, dt / nseeds, dt)
 
 
 pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv("v200.csv")
