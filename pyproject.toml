@@ -14,16 +14,17 @@ readme = { file = "README.md", content-type = "text/x-markdown" }
 requires-python = ">=3.10"
 license = {text = "GPL v3"}
 authors = [
-    {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
-    {name = "David Stansby", email="dstansby@gmail.com"},
-    {name = "Lars Mejnertsen"}
+  {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
+  {name = "David Stansby", email="dstansby@gmail.com"},
+  {name = "Lars Mejnertsen"}
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3",
 ]
 version = "2.0.1"
 dependencies = [
-    "numpy>=1.23",
+  "numpy>=1.23",
+  "packaging>=21.3",
 ]
 
 [project.urls]
