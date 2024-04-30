@@ -1,5 +1,6 @@
+************
 streamtracer
-============
+************
 
 streamtracer is a python package for rapid streamline tracing on regularly spaced grids.
 The actual streamline tracing is done at a low level in Rust, with a nice Python API provided on top.

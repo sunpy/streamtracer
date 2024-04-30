@@ -22,6 +22,6 @@ exclude =
     __pycache__
     docs/conf.py
     build
-    streamtracer/__init__.py,
+    streamtracer/__init__.py
 rst-directives =
     plot
