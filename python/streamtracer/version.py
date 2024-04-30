@@ -1,4 +1,5 @@
 import importlib.metadata as _meta
+
 from packaging.version import parse as _parse
 
 version = _meta.version("streamtracer")
