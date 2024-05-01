@@ -1,5 +1,6 @@
+************
 streamtracer
-============
+************
 
 streamtracer is a python package for rapid streamline tracing on regularly spaced grids.
 The actual streamline tracing is done at a low level in Rust, with a nice Python API provided on top.
@@ -73,7 +74,7 @@ Changelog
 
 2.0.1
 -----
-streamtracer now includes wheels for Python 3.11, and these have now been uploaded to PyPI as a realease (version 2.0.0 was only ever uploaded as an alpha).
+streamtracer now includes wheels for Python 3.11, and these have now been uploaded to PyPI as a release (version 2.0.0 was only ever uploaded as an alpha).
 streamtracer still does not work in parallel, if you require parallel stream tracing then for now either:
 
 - Downgrade to version 1.2.0

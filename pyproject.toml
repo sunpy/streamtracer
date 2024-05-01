@@ -9,21 +9,22 @@ python-source = "python"
 
 [project]
 name = "streamtracer"
-version = "2.0.1"
-description = "Python wrapped fortran to calculate streamlines"
-authors = [
-    {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
-    {name = "David Stansby", email="dstansby@gmail.com"},
-    {name = "Lars Mejnertsen"}
-]
-readme = "README.md"
+description = "Python library to calculate streamlines"
+readme = { file = "README.md", content-type = "text/x-markdown" }
 requires-python = ">=3.10"
 license = {text = "GPL v3"}
-classifiers = [
-    "Programming Language :: Python :: 3",
+authors = [
+  {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
+  {name = "David Stansby"},
+  {name = "Lars Mejnertsen"}
 ]
+classifiers = [
+  "Programming Language :: Python :: 3",
+]
+version = "2.0.1"
 dependencies = [
-    "numpy>=1.23",
+  "numpy>=1.23",
+  "packaging>=21.3",
 ]
 
 [project.urls]
@@ -33,15 +34,16 @@ repository = "https://github.com/sunpy/streamtracer"
 
 [project.optional-dependencies]
 tests = [
-    "pytest",
-    "pytest-cov",
-    "pytest-doctestplus",
+  "pytest",
+  "pytest-doctestplus",
+  "pytest-cov",
+  "pytest-xdist",
 ]
 docs = [
-    "jupyter-sphinx",
-    "sunpy-sphinx-theme",
-    "sphinx",
-    "sphinx-automodapi",
+  "sphinx",
+  "sphinx-automodapi",
+  "jupyter-sphinx",
+  "sunpy-sphinx-theme",
 ]
 
 [tool.cibuildwheel]
@@ -53,26 +55,3 @@ before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stab
 
 [tool.cibuildwheel.macos]
 before-all = "rustup target add aarch64-apple-darwin"
-
-[tool.pytest.ini_options]
-addopts = "-ra --doctest-rst"
-testpaths = ["doc", "python"]
-doctest_plus = "enabled"
-text_file_format = "rst"
-
-[tool.coverage.report]
-exclude_lines = [
-  # Have to re-enable the standard pragma
-  "pragma: no cover",
-  # Don't complain about packages we have installed
-  "except ImportError",
-  # Don't complain if tests don't hit assertions
-  "raise AssertionError",
-  "raise NotImplementedError",
-  # Don't complain about script hooks
-  "def main(.*):",
-  # Ignore branches that don't pertain to this version of Python
-  "pragma: py{ignore_python_version}",
-  # Don't complain about IPython completion helper
-  "def _ipython_key_completions_",
-]

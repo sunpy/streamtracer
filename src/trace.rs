@@ -132,7 +132,7 @@ pub fn trace_streamline(
     };
 }
 
-// Update a coordiante (`x`) by taking a single RK4 step
+// Update a coordinate (`x`) by taking a single RK4 step
 fn rk4_update(
     mut x: Array1<f64>,
     field: &VectorField,
