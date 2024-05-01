@@ -3,7 +3,9 @@ import pandas as pd
 
 fig, ax = plt.subplots()
 
-for v, label in zip(["120", "200"], ["v1.2 (FORTRAN)", "v2.0 (Rust)"]):
+for v, label in zip(
+    ["120", "200", "210dev0"], ["v1.2 (FORTRAN)", "v2.0 (Rust)", "v2.1 (Rust Parallel)"]
+):
     data = pd.read_csv(f"v{v}.csv")
     print(data)
 
