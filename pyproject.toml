@@ -9,13 +9,13 @@ python-source = "python"
 
 [project]
 name = "streamtracer"
-description = "Python wrapped fortran to calculate streamlines"
+description = "Python library to calculate streamlines"
 readme = { file = "README.md", content-type = "text/x-markdown" }
 requires-python = ">=3.10"
 license = {text = "GPL v3"}
 authors = [
   {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
-  {name = "David Stansby", email="dstansby@gmail.com"},
+  {name = "David Stansby"},
   {name = "Lars Mejnertsen"}
 ]
 classifiers = [
