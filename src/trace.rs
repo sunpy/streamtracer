@@ -58,20 +58,22 @@ pub fn trace_streamlines<'a>(
     let field = VectorField::new(xgrid, ygrid, zgrid, values, cyclic);
 
     // Trace from each seed in turn
-    let all_lines: Vec<StreamlineResult> = seeds
+    let (statuses, extracted_lines): (Vec<StreamlineStatus>, Vec<Array2<f64>>) = seeds
         .axis_iter(Axis(0))
         .into_par_iter()
-        .map(|seed| trace_streamline(
+        .map(|seed| {
+             let result = trace_streamline(
                 seed,
                 &field,
                 &direction,
                 &step_size,
                 max_steps,
-            )
-        ).collect();
-    let extracted_lines: Vec<ArrayView2<f64>> = all_lines.iter().map(|result| ArrayView2::from(&result.line)).collect();
-    let statuses: Vec<StreamlineStatus> = all_lines.iter().map(|result| result.status.clone()).collect();
-    let xs = stack(Axis(0), &extracted_lines).unwrap();
+            );
+            (result.status, result.line)
+        }).unzip();
+
+    let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines.iter().map(|arr| arr.view()).collect();
+    let xs = stack(Axis(0), extracted_lines_views.as_slice()).unwrap();
     return (statuses, xs);
 }
 

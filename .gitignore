@@ -264,3 +264,6 @@ package.json
 # Rust specific stuff
 target/*
 Cargo.lock
+
+# other streamtracer things
+benchmarks/*.csv

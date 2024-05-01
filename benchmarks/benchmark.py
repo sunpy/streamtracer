@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from streamtracer import StreamTracer, VectorGrid
+from streamtracer import StreamTracer, VectorGrid, __version__
 
 nsteps = 1000
 step_size = 0.1
@@ -27,7 +27,7 @@ for nseeds in seedlist:
     print(nseeds, dt / nseeds, dt)
 
 
-pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv("v200.csv")
+pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv(f"v{__version__.replace('.', '')}.csv")
 
 fig, ax = plt.subplots()
 

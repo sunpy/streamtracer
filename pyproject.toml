@@ -21,7 +21,7 @@ authors = [
 classifiers = [
   "Programming Language :: Python :: 3",
 ]
-version = "2.0.1"
+version = "2.1.0.dev0"
 dependencies = [
   "numpy>=1.23",
   "packaging>=21.3",
