@@ -22,3 +22,7 @@ ndarray = {version = "0.15", features = ["rayon"]}
 
 [dev-dependencies]
 float_eq = "1.0.0"
+
+[lints.clippy]
+needless_return = "allow"
+implicit_return = "warn"
