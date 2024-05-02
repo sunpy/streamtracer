@@ -73,7 +73,7 @@ pub fn trace_streamlines<'a>(
         }).unzip();
 
     let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines.iter().map(|arr| arr.view()).collect();
-    let xs = stack(Axis(0), extracted_lines_views.as_slice()).unwrap();
+    let xs = stack(Axis(0), &extracted_lines_views).unwrap();
     return (statuses, xs);
 }
 
