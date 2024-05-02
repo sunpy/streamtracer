@@ -69,9 +69,10 @@ pub fn trace_streamlines<'a>(
         })
         .unzip();
 
-    let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines.iter().map(|arr| arr.view()).collect();
+    let extracted_lines_views: Vec<ArrayView2<f64>> =
+        extracted_lines.iter().map(|arr| arr.view()).collect();
     let xs = stack(Axis(0), &extracted_lines_views).unwrap();
-    return (statuses, xs);
+    (statuses, xs)
 }
 
 /// Trace a single streamline
@@ -132,13 +133,13 @@ pub fn trace_streamline(
         status = TracerStatus::RanOutOfSteps;
     }
 
-    return StreamlineResult {
+    StreamlineResult {
         status: StreamlineStatus {
             rot: status,
             n_points,
         },
         line: xs,
-    };
+    }
 }
 
 // Update a coordinate (`x`) by taking a single RK4 step
@@ -157,7 +158,7 @@ fn rk4_update(mut x: Array1<f64>, field: &VectorField, step_size: &f64) -> Array
 
     let step = (k1 + 2. * k2 + 2. * k3 + k4) / 6.;
     x = x + step;
-    return x;
+    x
 }
 
 /// Return the step that a linear tracing method would take
@@ -165,5 +166,5 @@ fn rk4_update(mut x: Array1<f64>, field: &VectorField, step_size: &f64) -> Array
 fn stream_function(x: ArrayView1<f64>, field: &VectorField, step_size: &f64) -> Array1<f64> {
     let vec = field.vector_at_position(x);
     let vmag = (vec[[0]].powf(2.) + vec[[1]].powf(2.) + vec[[2]].powf(2.)).sqrt();
-    return (*step_size) * vec / vmag;
+    (*step_size) * vec / vmag
 }

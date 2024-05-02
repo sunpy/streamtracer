@@ -47,6 +47,7 @@ repos:
     hooks:
       - id: fmt
       - id: cargo-check
+      - id: clippy
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"

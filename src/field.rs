@@ -108,7 +108,7 @@ impl VectorField<'_> {
             }
         }
 
-        return grid_idx;
+        grid_idx
     }
 
     /// Get vector at position `x` using tri-linear interpolation.
@@ -142,7 +142,7 @@ impl VectorField<'_> {
         for i in 0..3 {
             vector_at_pos[[i]] = interp_trilinear(&vec_cube.slice(s![.., .., .., i]), &cell_dist);
         }
-        return vector_at_pos;
+        vector_at_pos
     }
 
     /// If any of the dimensions of the grid are cyclic, wrap a coordinate.
@@ -157,7 +157,7 @@ impl VectorField<'_> {
             x[2] = (x[2] + self.zgrid[self.nz - 1]) % self.upper_bounds[2];
         }
 
-        return x;
+        x
     }
 
     /// Check whether a coordinate is in bounds of the grid.
@@ -169,6 +169,6 @@ impl VectorField<'_> {
         } else if x[2] < self.zgrid[0] || x[2] > self.zgrid[self.nz - 1] {
             return Bounds::Out;
         }
-        return Bounds::In;
+        Bounds::In
     }
 }

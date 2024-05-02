@@ -33,5 +33,5 @@ where
     }
 
     // Interpolate over z
-    return c1[[0]] * m_x[[2]] + c1[[1]] * x[[2]];
+    c1[[0]] * m_x[[2]] + c1[[1]] * x[[2]]
 }
