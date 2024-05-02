@@ -1,12 +1,14 @@
 //! Streamline tracing functionality.
-use num_derive::ToPrimitive;
-use numpy::ndarray::{Array, Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView4, Axis, stack};
 use ndarray::parallel::prelude::*;
+use num_derive::ToPrimitive;
+use numpy::ndarray::{
+    stack, Array, Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView4, Axis,
+};
 
-use crate::field::{VectorField, Bounds};
+use crate::field::{Bounds, VectorField};
 /// Enum denoting status of the streamline tracer
 #[derive(PartialEq, Debug, ToPrimitive, Clone, Copy)]
-pub enum TracerStatus{
+pub enum TracerStatus {
     /// Still running
     Running,
     /// Ran out of steps
@@ -17,17 +19,17 @@ pub enum TracerStatus{
 
 /// A single stream line status
 #[derive(Clone)]
-pub struct StreamlineStatus{
+pub struct StreamlineStatus {
     /// Reason of termination
     pub rot: TracerStatus,
     /// Number of valid coordinates returned
     /// Can be used to slice away extra bits of the array that were not
     /// used for tracing using `xs.slice(s![:n_points, ..])`.
-    pub n_points: usize
+    pub n_points: usize,
 }
 
 /// A result of tracing a streamline
-pub struct StreamlineResult{
+pub struct StreamlineResult {
     /// The status of a trace
     pub status: StreamlineStatus,
     /// The array of line coordinates that were traced
@@ -54,7 +56,7 @@ pub fn trace_streamlines<'a>(
     direction: i32,
     step_size: f64,
     max_steps: usize,
-) ->  (Vec<StreamlineStatus>, Array3<f64>) {
+) -> (Vec<StreamlineStatus>, Array3<f64>) {
     let field = VectorField::new(xgrid, ygrid, zgrid, values, cyclic);
 
     // Trace from each seed in turn
@@ -62,15 +64,10 @@ pub fn trace_streamlines<'a>(
         .axis_iter(Axis(0))
         .into_par_iter()
         .map(|seed| {
-             let result = trace_streamline(
-                seed,
-                &field,
-                &direction,
-                &step_size,
-                max_steps,
-            );
+            let result = trace_streamline(seed, &field, &direction, &step_size, max_steps);
             (result.status, result.line)
-        }).unzip();
+        })
+        .unzip();
 
     let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines.iter().map(|arr| arr.view()).collect();
     let xs = stack(Axis(0), &extracted_lines_views).unwrap();
@@ -107,19 +104,19 @@ pub fn trace_streamline(
     x.assign(&x0);
 
     // Take streamline steps
-    for i in 0..max_steps{
+    for i in 0..max_steps {
         // Copy current coordinate
         for j in 0..3 {
             xs[[i, j]] = x[[j]];
         }
         // +1 to account for the initial point
-        n_points = i+1;
+        n_points = i + 1;
         // Take a single step
         // Updates `x` in place.
         x = rk4_update(x, field, &step);
         x = field.wrap_cyclic(x);
         // Check new point isn't out of bounds
-        match field.check_bounds(x.view()){
+        match field.check_bounds(x.view()) {
             Bounds::Out => {
                 status = TracerStatus::OutOfBounds;
                 break;
@@ -135,21 +132,17 @@ pub fn trace_streamline(
         status = TracerStatus::RanOutOfSteps;
     }
 
-    return StreamlineResult{
-        status: StreamlineStatus{
+    return StreamlineResult {
+        status: StreamlineStatus {
             rot: status,
-            n_points
+            n_points,
         },
         line: xs,
-    }
+    };
 }
 
 // Update a coordinate (`x`) by taking a single RK4 step
-fn rk4_update(
-    mut x: Array1<f64>,
-    field: &VectorField,
-    step_size: &f64
-) -> Array1<f64> {
+fn rk4_update(mut x: Array1<f64>, field: &VectorField, step_size: &f64) -> Array1<f64> {
     let mut xu = x.clone();
     let k1 = stream_function(xu.view(), field, step_size);
 
@@ -169,16 +162,8 @@ fn rk4_update(
 
 /// Return the step that a linear tracing method would take
 /// at a given position.
-fn stream_function(
-    x: ArrayView1<f64>,
-    field: &VectorField,
-    step_size: &f64
-) -> Array1<f64> {
+fn stream_function(x: ArrayView1<f64>, field: &VectorField, step_size: &f64) -> Array1<f64> {
     let vec = field.vector_at_position(x);
-    let vmag = (
-        vec[[0]].powf(2.) +
-        vec[[1]].powf(2.) +
-        vec[[2]].powf(2.)
-    ).sqrt();
+    let vmag = (vec[[0]].powf(2.) + vec[[1]].powf(2.) + vec[[2]].powf(2.)).sqrt();
     return (*step_size) * vec / vmag;
 }

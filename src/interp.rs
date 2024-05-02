@@ -1,7 +1,6 @@
 //! Helper functions for interpolation.
 
-use numpy::ndarray::{Array1, Array, ArrayBase, Ix3, Data};
-
+use numpy::ndarray::{Array, Array1, ArrayBase, Data, Ix3};
 
 /// Trilinear-interpolation of a scalar defined on
 /// the eight corners of a cuboid.
@@ -10,12 +9,9 @@ use numpy::ndarray::{Array1, Array, ArrayBase, Ix3, Data};
 ///
 /// * `values` - Values on the eight cube corners. Must be shape `(2, 2, 2)`.
 /// * `x` - Coordinate to interpolate at. Components must be `>= 0` and `<=1`. Must be shape `(3,)`.
-pub fn interp_trilinear<S>(
-    values: &ArrayBase<S, Ix3>,
-    x: &Array1<f64>
-) -> f64
+pub fn interp_trilinear<S>(values: &ArrayBase<S, Ix3>, x: &Array1<f64>) -> f64
 where
-    S: Data<Elem=f64>
+    S: Data<Elem = f64>,
 {
     if values.dim() != (2, 2, 2) {
         panic!("Interp values are not the right shape {:?}", values.shape());
