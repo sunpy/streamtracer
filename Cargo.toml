@@ -13,10 +13,10 @@ name = "streamtracer"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = {version = "0.20", features = ["extension-module"]}
-numpy = "0.20"
+pyo3 = {version = "0.21", features = ["extension-module"]}
+numpy = "0.21"
 num-traits = "0.2"
-num-derive = "0.3"
+num-derive = "0.4"
 rayon = "1.8"
 ndarray = {version = "0.15", features = ["rayon"]}
 

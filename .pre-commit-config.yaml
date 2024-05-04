@@ -40,7 +40,15 @@ repos:
   - repo: https://github.com/psf/black
     rev: 24.4.0
     hooks:
-        - id: black
+      - id: black
+  # Rust code formatting
+  - repo: https://github.com/FeryET/pre-commit-rust
+    rev: v1.1.0
+    hooks:
+      # - id: fmt
+      - id: cargo-check
+      - id: clippy
+        args: ["--", "-A", "clippy::needless_return"]
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"
