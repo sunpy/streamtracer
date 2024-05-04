@@ -47,8 +47,8 @@ repos:
     hooks:
       - id: cargo-check
       - id: fmt
-      # - id: clippy
-      #   args: ["--", "-A", "clippy::needless_return"]
+      - id: clippy
+        args: ["--allow-staged", "--fix", "--", "-A", "clippy::needless_return"]
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"

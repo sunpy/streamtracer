@@ -162,11 +162,13 @@ impl VectorField<'_> {
 
     /// Check whether a coordinate is in bounds of the grid.
     pub fn check_bounds(&self, x: ArrayView1<f64>) -> Bounds {
-        if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]) {
-            return Bounds::Out;
-        } else if x[1] < self.ygrid[0] || x[1] > self.ygrid[self.ny - 1] {
-            return Bounds::Out;
-        } else if x[2] < self.zgrid[0] || x[2] > self.zgrid[self.nz - 1] {
+        if (x[0] < self.xgrid[0])
+            || (x[0] > self.xgrid[self.nx - 1])
+            || (x[1] < self.ygrid[0])
+            || (x[1] > self.ygrid[self.ny - 1])
+            || (x[2] < self.zgrid[0])
+            || (x[2] > self.zgrid[self.nz - 1])
+        {
             return Bounds::Out;
         }
         return Bounds::In;

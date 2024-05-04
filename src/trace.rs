@@ -46,6 +46,7 @@ pub struct StreamlineResult {
 /// * `step_size` - Size of each individual step to take.
 /// * `max_steps` - Maximum number of steps to take per streamline.
 ///   This directly sets the size of the output streamline array.
+#[allow(clippy::too_many_arguments)]
 pub fn trace_streamlines<'a>(
     seeds: ArrayView2<'a, f64>,
     xgrid: ArrayView1<'a, f64>,

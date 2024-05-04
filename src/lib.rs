@@ -20,6 +20,7 @@ use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 #[pyo3(name = "_streamtracer_rust")]
 fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     #[pyfn(m)]
+    #[allow(clippy::too_many_arguments)]
     fn trace_streamlines<'py>(
         py: Python<'py>,
         seeds: PyReadonlyArray2<f64>,
