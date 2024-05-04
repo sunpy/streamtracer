@@ -10,9 +10,11 @@ mod test_field;
 mod test_interp;
 mod test_tracer;
 
-use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray1, PyArray3, IntoPyArray, ndarray::Array};
+use numpy::{
+    ndarray::Array, IntoPyArray, PyArray1, PyArray3, PyReadonlyArray1, PyReadonlyArray2,
+    PyReadonlyArray4,
+};
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
-
 
 #[pymodule]
 #[pyo3(name = "_streamtracer_rust")]
@@ -39,7 +41,7 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             cyclic.as_array(),
             direction,
             step_size,
-            max_steps
+            max_steps,
         );
 
         let mut termination_reasons = Array::zeros(statuses.len());
@@ -49,7 +51,11 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             n_points[[i]] = status.n_points as i64;
         }
 
-        return (xs.into_pyarray(py), n_points.into_pyarray(py), termination_reasons.into_pyarray(py))
+        return (
+            xs.into_pyarray(py),
+            n_points.into_pyarray(py),
+            termination_reasons.into_pyarray(py),
+        );
     }
 
     Ok(())

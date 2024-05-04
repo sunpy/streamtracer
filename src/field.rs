@@ -1,6 +1,6 @@
 //! Structure for representing a 3D vector field defined on the corners
 //! of a rectilinear grid.
-use numpy::ndarray::{array, Array1, ArrayView1, ArrayView4, s};
+use numpy::ndarray::{array, s, Array1, ArrayView1, ArrayView4};
 
 use crate::interp::interp_trilinear;
 
@@ -10,7 +10,7 @@ pub enum Bounds {
     /// A position vector is in bounds.
     In,
     /// A position vector is out of bounds.
-    Out
+    Out,
 }
 
 /// A 3D vector field defined at grid corners.
@@ -36,7 +36,7 @@ pub struct VectorField<'a> {
     nz: usize,
 
     /// Upper boundaries
-    upper_bounds: Array1<f64>
+    upper_bounds: Array1<f64>,
 }
 
 impl VectorField<'_> {
@@ -46,7 +46,7 @@ impl VectorField<'_> {
         ygrid: ArrayView1<'a, f64>,
         zgrid: ArrayView1<'a, f64>,
         values: ArrayView4<'a, f64>,
-        cyclic: ArrayView1<'a, bool>
+        cyclic: ArrayView1<'a, bool>,
     ) -> VectorField<'a> {
         // Do some shape checking
         let nx = xgrid.len();
@@ -66,54 +66,53 @@ impl VectorField<'_> {
         assert_eq!(ygrid[0], 0.);
         assert_eq!(zgrid[0], 0.);
 
-        let upper_bounds = array![
-            xgrid[nx - 1],
-            ygrid[ny - 1],
-            zgrid[nz - 1]
-        ];
+        let upper_bounds = array![xgrid[nx - 1], ygrid[ny - 1], zgrid[nz - 1]];
 
-        VectorField{xgrid, ygrid, zgrid, values, cyclic, nx, ny, nz, upper_bounds}
+        VectorField {
+            xgrid,
+            ygrid,
+            zgrid,
+            values,
+            cyclic,
+            nx,
+            ny,
+            nz,
+            upper_bounds,
+        }
     }
 
     /// Return grid index of the cell containing `x`.
-    pub fn grid_idx(
-        &self,
-        x: ArrayView1<f64>
-    ) -> Array1<usize>{
-
+    pub fn grid_idx(&self, x: ArrayView1<f64>) -> Array1<usize> {
         // Output array
-        let mut grid_idx = array![self.nx-2, self.ny-2, self.nz-2];
+        let mut grid_idx = array![self.nx - 2, self.ny - 2, self.nz - 2];
 
         // x
-        for i in 0..self.nx-1{
-            if x[0] >= self.xgrid[[i]] && x[0] < self.xgrid[[i+1]]{
+        for i in 0..self.nx - 1 {
+            if x[0] >= self.xgrid[[i]] && x[0] < self.xgrid[[i + 1]] {
                 grid_idx[0] = i;
                 break;
             }
         }
         // y
-        for i in 0..self.ny-1{
-            if x[1] >= self.ygrid[[i]] && x[1] < self.ygrid[[i+1]]{
+        for i in 0..self.ny - 1 {
+            if x[1] >= self.ygrid[[i]] && x[1] < self.ygrid[[i + 1]] {
                 grid_idx[1] = i;
                 break;
             }
         }
         // z
-        for i in 0..self.nz-1{
-            if x[2] >= self.zgrid[[i]] && x[2] < self.zgrid[[i+1]]{
+        for i in 0..self.nz - 1 {
+            if x[2] >= self.zgrid[[i]] && x[2] < self.zgrid[[i + 1]] {
                 grid_idx[2] = i;
                 break;
             }
         }
 
-        return grid_idx
+        return grid_idx;
     }
 
     /// Get vector at position `x` using tri-linear interpolation.
-    pub fn vector_at_position(
-        &self,
-        x0: ArrayView1<f64>
-    ) -> Array1<f64>{
+    pub fn vector_at_position(&self, x0: ArrayView1<f64>) -> Array1<f64> {
         let cell_idx = self.grid_idx(x0);
         let cell_origin = array![
             self.xgrid[cell_idx[0]],
@@ -121,9 +120,9 @@ impl VectorField<'_> {
             self.zgrid[cell_idx[2]]
         ];
         let cell_size = array![
-            self.xgrid[cell_idx[0]+1] - cell_origin[0],
-            self.ygrid[cell_idx[1]+1] - cell_origin[1],
-            self.zgrid[cell_idx[2]+1] - cell_origin[2]
+            self.xgrid[cell_idx[0] + 1] - cell_origin[0],
+            self.ygrid[cell_idx[1] + 1] - cell_origin[1],
+            self.zgrid[cell_idx[2] + 1] - cell_origin[2]
         ];
 
         // Distance along each cell edge in normalised units
@@ -138,22 +137,16 @@ impl VectorField<'_> {
             ..
         ]);
 
-
         let mut vector_at_pos = array![0., 0., 0.];
         // Loop over vector components
-        for i in 0..3{
-            vector_at_pos[[i]] = interp_trilinear(
-                &vec_cube.slice(s![.., .., .., i]),
-                &cell_dist);
+        for i in 0..3 {
+            vector_at_pos[[i]] = interp_trilinear(&vec_cube.slice(s![.., .., .., i]), &cell_dist);
         }
         return vector_at_pos;
     }
 
     /// If any of the dimensions of the grid are cyclic, wrap a coordinate.
-    pub fn wrap_cyclic(
-        &self,
-        mut x: Array1<f64>
-    ) -> Array1<f64> {
+    pub fn wrap_cyclic(&self, mut x: Array1<f64>) -> Array1<f64> {
         if self.cyclic[0] {
             x[0] = (x[0] + self.xgrid[self.nx - 1]) % self.upper_bounds[0];
         }
@@ -168,17 +161,12 @@ impl VectorField<'_> {
     }
 
     /// Check whether a coordinate is in bounds of the grid.
-    pub fn check_bounds(
-        &self,
-        x: ArrayView1<f64>
-    ) -> Bounds {
-        if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]){
+    pub fn check_bounds(&self, x: ArrayView1<f64>) -> Bounds {
+        if (x[0] < self.xgrid[0]) || (x[0] > self.xgrid[self.nx - 1]) {
             return Bounds::Out;
-        }
-        else if x[1] < self.ygrid[0] || x[1] > self.ygrid[self.ny - 1] {
+        } else if x[1] < self.ygrid[0] || x[1] > self.ygrid[self.ny - 1] {
             return Bounds::Out;
-        }
-        else if x[2] < self.zgrid[0] || x[2] > self.zgrid[self.nz - 1] {
+        } else if x[2] < self.zgrid[0] || x[2] > self.zgrid[self.nz - 1] {
             return Bounds::Out;
         }
         return Bounds::In;
