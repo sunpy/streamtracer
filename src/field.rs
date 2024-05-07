@@ -68,7 +68,7 @@ impl VectorField<'_> {
 
         let upper_bounds = array![xgrid[nx - 1], ygrid[ny - 1], zgrid[nz - 1]];
 
-        VectorField {
+        return VectorField {
             xgrid,
             ygrid,
             zgrid,
@@ -78,7 +78,7 @@ impl VectorField<'_> {
             ny,
             nz,
             upper_bounds,
-        }
+        };
     }
 
     /// Return grid index of the cell containing `x`.

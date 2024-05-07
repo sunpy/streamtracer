@@ -66,12 +66,14 @@ pub fn trace_streamlines<'a>(
         .into_par_iter()
         .map(|seed| {
             let result = trace_streamline(seed, &field, &direction, &step_size, max_steps);
-            (result.status, result.line)
+            return (result.status, result.line);
         })
         .unzip();
 
-    let extracted_lines_views: Vec<ArrayView2<f64>> =
-        extracted_lines.iter().map(|arr| arr.view()).collect();
+    let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines
+        .iter()
+        .map(|arr| return arr.view())
+        .collect();
     let xs = stack(Axis(0), &extracted_lines_views).unwrap();
     return (statuses, xs);
 }

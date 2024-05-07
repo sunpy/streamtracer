@@ -64,5 +64,5 @@ fn streamtracer(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
         );
     }
 
-    Ok(())
+    return Ok(());
 }
