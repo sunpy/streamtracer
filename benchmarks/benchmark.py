@@ -1,10 +1,14 @@
 import time
+import importlib.metadata
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from streamtracer import StreamTracer, VectorGrid
+
+# Support old 1.x versions
+__version__ = importlib.metadata.version("streamtracer")
 
 nsteps = 1000
 step_size = 0.1
@@ -17,17 +21,21 @@ grid = VectorGrid(field, grid_spacing)
 seedlist = 2 ** np.arange(12)
 times = []
 for nseeds in seedlist:
-    t = time.time()
-    # Trace from middle of field
-    seeds = np.repeat([[90, 180, 25]], nseeds, axis=0)
-    tracer.trace(seeds, grid)
-    dt = time.time() - t
-    assert len(tracer.xs) == nseeds
-    times += [dt]
-    print(nseeds, dt / nseeds)
+    dts = []
+    for _ in range(5):
+        # Trace from middle of field
+        seeds = np.repeat([[90, 180, 25]], nseeds, axis=0)
+        t = time.time()
+        tracer.trace(seeds, grid)
+        dts.append(time.time() - t)
+        assert len(tracer.xs) == nseeds
+    times += [np.mean(dts)]
+    print(nseeds, times[-1] / nseeds, times[-1])
 
 
-pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv("v200.csv")
+pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv(
+    f"v{__version__.replace('.', '')}.csv"
+)
 
 fig, ax = plt.subplots()
 

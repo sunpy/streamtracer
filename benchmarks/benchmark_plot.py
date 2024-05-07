@@ -1,10 +1,21 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 fig, ax = plt.subplots()
 
-for v, label in zip(["120", "200"], ["v1.2 (FORTRAN)", "v2.0 (Rust)"]):
-    data = pd.read_csv(f"v{v}.csv")
+version_names = {
+    "120": "v1.2 (FORTRAN)",
+    "200": "v2.0 (Rust)",
+    "210dev0": "v2.1 (Rust Parallel)",
+}
+
+files = Path(".").glob("v*.csv")
+
+for file in files:
+    label = version_names.get(file.stem[1:], file.stem)
+    data = pd.read_csv(file)
     print(data)
 
     ax.plot(data["nseeds"], data["time"], label=label, marker="o")

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests{
-    use numpy::ndarray::{array, Array, Array2, s};
+    use numpy::ndarray::{array, Array, s};
 
     use super::super::field::VectorField;
     use super::super::trace::{TracerStatus, trace_streamline};
@@ -22,14 +22,14 @@ mod tests{
         let step_size = 0.1;
 
         // Should take 50 steps before going out of bounds
-        let mut xs: Array2<f64> = Array::zeros((100, 3));
-        let status = trace_streamline(seed.view(), &f, &direction, &step_size, xs.view_mut());
-        assert_eq![status.n_points, 51];
-        assert_eq![status.rot, TracerStatus::OutOfBounds];
+        let max_steps = 100;
+        let result = trace_streamline(seed.view(), &f, &direction, &step_size, max_steps);
+        assert_eq![result.status.n_points, 51];
+        assert_eq![result.status.rot, TracerStatus::OutOfBounds];
 
-        let mut xs: Array2<f64> = Array::zeros((10, 3));
-        let status = trace_streamline(seed.view(), &f, &direction, &step_size, xs.view_mut());
-        assert_eq![status.n_points, 10];
-        assert_eq![status.rot, TracerStatus::RanOutOfSteps];
+        let max_steps = 10;
+        let result = trace_streamline(seed.view(), &f, &direction, &step_size, max_steps);
+        assert_eq![result.status.n_points, max_steps];
+        assert_eq![result.status.rot, TracerStatus::RanOutOfSteps];
     }
 }

@@ -1,9 +1,9 @@
 //! Streamline tracing functionality.
 use num_derive::ToPrimitive;
-use numpy::ndarray::{Array, Array1, Array3, ArrayView1, ArrayView2, ArrayView4, ArrayViewMut2, s};
+use numpy::ndarray::{Array, Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView4, Axis, stack};
+use ndarray::parallel::prelude::*;
 
 use crate::field::{VectorField, Bounds};
-
 /// Enum denoting status of the streamline tracer
 #[derive(PartialEq, Debug, ToPrimitive, Clone, Copy)]
 pub enum TracerStatus{
@@ -16,6 +16,7 @@ pub enum TracerStatus{
 }
 
 /// A single stream line status
+#[derive(Clone)]
 pub struct StreamlineStatus{
     /// Reason of termination
     pub rot: TracerStatus,
@@ -23,6 +24,14 @@ pub struct StreamlineStatus{
     /// Can be used to slice away extra bits of the array that were not
     /// used for tracing using `xs.slice(s![:n_points, ..])`.
     pub n_points: usize
+}
+
+/// A result of tracing a streamline
+pub struct StreamlineResult{
+    /// The status of a trace
+    pub status: StreamlineStatus,
+    /// The array of line coordinates that were traced
+    pub line: Array2<f64>,
 }
 
 /// Trace streamlines
@@ -47,50 +56,50 @@ pub fn trace_streamlines<'a>(
     max_steps: usize,
 ) ->  (Vec<StreamlineStatus>, Array3<f64>) {
     let field = VectorField::new(xgrid, ygrid, zgrid, values, cyclic);
-    let n_seeds: usize = seeds.shape()[0];
-
-    let mut xs = Array::zeros((n_seeds, max_steps, 3));
-    let mut statuses: Vec<StreamlineStatus> = vec![];
 
     // Trace from each seed in turn
-    for i in 0..n_seeds{
-        statuses.push(
-            trace_streamline(
-                seeds.slice(s![i, ..]),
+    let (statuses, extracted_lines): (Vec<StreamlineStatus>, Vec<Array2<f64>>) = seeds
+        .axis_iter(Axis(0))
+        .into_par_iter()
+        .map(|seed| {
+             let result = trace_streamline(
+                seed,
                 &field,
                 &direction,
                 &step_size,
-                xs.slice_mut(s![i, .., ..])
-            )
-        )
-    }
+                max_steps,
+            );
+            (result.status, result.line)
+        }).unzip();
 
-    return (statuses, xs)
+    let extracted_lines_views: Vec<ArrayView2<f64>> = extracted_lines.iter().map(|arr| arr.view()).collect();
+    let xs = stack(Axis(0), &extracted_lines_views).unwrap();
+    return (statuses, xs);
 }
 
 /// Trace a single streamline
 ///
 /// # Parameters
 /// - `x0`: Streamline seed point.
-/// - `field`: Vector field to trace through
+/// - `field`: Vector field to trace through.
 /// - `direction`: Direction to trace in. Can be 1 for forwards or -1 for backwards.
 /// - `step_size`: Step size to take.
-/// - `xs`: Output array. Maximum number of steps to take is set by this.
+/// - `max_steps`: The maximum number of steps to take.
 pub fn trace_streamline(
     x0: ArrayView1<f64>,
     field: &VectorField,
     direction: &i32,
     step_size: &f64,
-    mut xs: ArrayViewMut2<f64>,
-) -> StreamlineStatus{
+    max_steps: usize,
+) -> StreamlineResult {
     // Tracer status
+    let mut xs = Array::zeros((max_steps, 3));
     let mut status = TracerStatus::Running;
     // Number of points traced
     let mut n_points: usize = 1;
     // Fold direction into the definition of step size,
     // using sign(step_size) to determine step direction
     let step = (*step_size) * (*direction as f64);
-    let max_steps: usize = xs.shape()[0];
 
     // Create output array
     // Take a copy of input seed
@@ -126,10 +135,13 @@ pub fn trace_streamline(
         status = TracerStatus::RanOutOfSteps;
     }
 
-    return StreamlineStatus{
-        rot: status,
-        n_points
-    };
+    return StreamlineResult{
+        status: StreamlineStatus{
+            rot: status,
+            n_points
+        },
+        line: xs,
+    }
 }
 
 // Update a coordinate (`x`) by taking a single RK4 step
