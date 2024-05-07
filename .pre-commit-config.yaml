@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: cargo-check
       - id: clippy
-        args: ["--allow-staged", "--fix", "--", "-A", "clippy::needless_return"]
+        args: ["--allow-staged", "--fix", "--", "-A", "clippy::needless_return", "-W", "clippy::implicit_return"]
       - id: fmt
 ci:
   autofix_prs: false
