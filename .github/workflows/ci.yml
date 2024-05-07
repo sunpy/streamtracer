@@ -88,7 +88,10 @@ jobs:
 
   cron:
     if: |
-      github.event_name == 'workflow_dispatch' || (
+      (
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'schedule'
+      ) || (
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
@@ -104,15 +107,11 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
-    # Build wheels when pushing to any branch except main
+    # Build wheels when on a branch or when label is set
     # publish.yml will only publish if tagged ^v.*
     if: |
-      (
-        github.event_name != 'pull_request' && (
-          github.ref_name != 'main' ||
-          github.event_name == 'workflow_dispatch'
-        )
-      ) || (
+      github.event_name != 'pull_request'
+      || (
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
