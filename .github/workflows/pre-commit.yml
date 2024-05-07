@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run_precommit:
+  run:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
