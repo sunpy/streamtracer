@@ -1,9 +1,9 @@
 #[cfg(test)]
-mod tests{
-    use numpy::ndarray::{array, Array, s};
+mod tests {
+    use numpy::ndarray::{array, s, Array};
 
     use super::super::field::VectorField;
-    use super::super::trace::{TracerStatus, trace_streamline};
+    use super::super::trace::{trace_streamline, TracerStatus};
 
     #[test]
     fn test_uniform_field() {
@@ -15,7 +15,13 @@ mod tests{
         field.slice_mut(s![.., .., .., 0]).fill(1.);
 
         let cyclic = array![false, false, false];
-        let f = VectorField::new(xgrid.view(), ygrid.view(), zgrid.view(), field.view(), cyclic.view());
+        let f = VectorField::new(
+            xgrid.view(),
+            ygrid.view(),
+            zgrid.view(),
+            field.view(),
+            cyclic.view(),
+        );
 
         let seed = array![5., 5., 5.];
         let direction = 1;

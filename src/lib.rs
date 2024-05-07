@@ -10,14 +10,18 @@ mod test_field;
 mod test_interp;
 mod test_tracer;
 
-use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArray4, PyArray1, PyArray3, IntoPyArray, ndarray::Array};
-use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
-
+use numpy::{
+    ndarray::Array, IntoPyArray, PyArray1, PyArray3, PyReadonlyArray1, PyReadonlyArray2,
+    PyReadonlyArray4,
+};
+use pyo3::prelude::{pymodule, Bound, PyModule, PyResult, Python};
 
 #[pymodule]
 #[pyo3(name = "_streamtracer_rust")]
-fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn streamtracer(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     #[pyfn(m)]
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::type_complexity)]
     fn trace_streamlines<'py>(
         py: Python<'py>,
         seeds: PyReadonlyArray2<f64>,
@@ -29,7 +33,11 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         direction: i32,
         step_size: f64,
         max_steps: usize,
-    ) -> (&'py PyArray3<f64>, &'py PyArray1<i64>, &'py PyArray1<i64>) {
+    ) -> (
+        Bound<'py, PyArray3<f64>>,
+        Bound<'py, PyArray1<i64>>,
+        Bound<'py, PyArray1<i64>>,
+    ) {
         let (statuses, xs) = trace::trace_streamlines(
             seeds.as_array(),
             xgrid.as_array(),
@@ -39,7 +47,7 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             cyclic.as_array(),
             direction,
             step_size,
-            max_steps
+            max_steps,
         );
 
         let mut termination_reasons = Array::zeros(statuses.len());
@@ -49,8 +57,12 @@ fn streamtracer(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             n_points[[i]] = status.n_points as i64;
         }
 
-        return (xs.into_pyarray(py), n_points.into_pyarray(py), termination_reasons.into_pyarray(py))
+        return (
+            xs.into_pyarray_bound(py),
+            n_points.into_pyarray_bound(py),
+            termination_reasons.into_pyarray_bound(py),
+        );
     }
 
-    Ok(())
+    return Ok(());
 }
