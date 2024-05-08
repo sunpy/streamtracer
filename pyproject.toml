@@ -10,16 +10,26 @@ python-source = "python"
 [project]
 name = "streamtracer"
 description = "Python library to calculate streamlines"
-readme = { file = "README.md", content-type = "text/x-markdown" }
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
-license = {text = "GPL v3"}
+license = {file = "LICENSE"}
 authors = [
   {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
   {name = "David Stansby"},
   {name = "Lars Mejnertsen"}
 ]
 classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Physics",
 ]
 version = "2.1.0.rc1"
 dependencies = [
@@ -28,9 +38,9 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://streamtracer.readthedocs.io/en/stable/"
-documentation = "https://streamtracer.readthedocs.io/en/stable/"
-repository = "https://github.com/sunpy/streamtracer"
+Homepage = "https://docs.sunpy.org/projects/streamtracer"
+Documentation = "https://docs.sunpy.org/projects/streamtracer"
+Repository = "https://github.com/sunpy/streamtracer"
 
 [project.optional-dependencies]
 tests = [
