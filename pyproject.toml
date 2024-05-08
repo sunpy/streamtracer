@@ -38,8 +38,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://streamtracer.readthedocs.io/en/stable/"
-Documentation = "https://streamtracer.readthedocs.io/en/stable/"
+Homepage = "https://docs.sunpy.org/projects/streamtracer"
+Documentation = "https://docs.sunpy.org/projects/streamtracer"
 Repository = "https://github.com/sunpy/streamtracer"
 
 [project.optional-dependencies]
