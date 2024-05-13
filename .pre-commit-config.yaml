@@ -1,7 +1,7 @@
 repos:
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.3"
+    rev: "v0.4.4"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -32,13 +32,13 @@ repos:
         args: [ "--write-changes" ]
   # Run mypy type validation
   -   repo: https://github.com/pre-commit/mirrors-mypy
-      rev: 'v1.9.0'
+      rev: 'v1.10.0'
       hooks:
       - id: mypy
         additional_dependencies: [types-setuptools]
   # Python code formatting
   - repo: https://github.com/psf/black
-    rev: 24.4.0
+    rev: 24.4.2
     hooks:
       - id: black
   # Rust code formatting
