@@ -23,3 +23,6 @@ float_eq = "1.0.0"
 [lints.clippy]
 needless_return = "allow"
 implicit_return = "warn"
+
+[profile.release]
+codegen-units = 1

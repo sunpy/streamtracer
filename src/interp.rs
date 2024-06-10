@@ -1,6 +1,6 @@
 //! Helper functions for interpolation.
 
-use numpy::ndarray::{Array, Array1, ArrayBase, Data, Ix3};
+use numpy::ndarray::{Array1, ArrayBase, Data, Ix3};
 
 /// Trilinear-interpolation of a scalar defined on
 /// the eight corners of a cuboid.
@@ -18,20 +18,21 @@ where
     }
     let m_x = 1. - x;
 
-    let mut c = Array::zeros((2, 2));
+    let mut c: [f64; 4] = [0.0; 4];
     // Interpolate over x
     for iy in 0..2 {
         for iz in 0..2 {
-            c[[iy, iz]] = values[[0, iy, iz]] * m_x[[0]] + values[[1, iy, iz]] * x[[0]];
+            let iix = (2 * iy) + iz;
+            c[iix] = values[[0, iy, iz]] * m_x[[0]] + values[[1, iy, iz]] * x[[0]];
         }
     }
 
     // Interpolate over y
-    let mut c1 = Array::zeros(2);
+    let mut c1: [f64; 2] = [0.0; 2];
     for iz in 0..2 {
-        c1[[iz]] = c[[0, iz]] * m_x[[1]] + c[[1, iz]] * x[[1]];
+        c1[iz] = c[iz] * m_x[[1]] + c[iz + 2] * x[[1]];
     }
 
     // Interpolate over z
-    return c1[[0]] * m_x[[2]] + c1[[1]] * x[[2]];
+    return c1[0] * m_x[[2]] + c1[1] * x[[2]];
 }
