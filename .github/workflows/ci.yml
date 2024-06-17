@@ -151,3 +151,4 @@ jobs:
           roomid: '!jfEXWJFdXwYnBWsiqk:openastronomy.org'
           ignore_pattern: '.*Load.*'
           summarise_success: true
+          workflow_description: 'in sunpy/streamtracer'
