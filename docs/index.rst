@@ -72,6 +72,17 @@ Code reference
 Changelog
 =========
 
+2.2.0
+-----
+
+With this release, streamtracer is now faster than the old FORTRAN version expect for ~10**3 seeds but every other seed size is faster in RUST now.
+
+2.1.0
+-----
+
+streamtracer now includes wheels for Python 3.12, and these have now been uploaded to PyPI as a release.
+The headline feature is that the rust code is now parallelized and while still not as fast as the old FORTRAN verison, is near parity. 
+
 2.0.1
 -----
 streamtracer now includes wheels for Python 3.11, and these have now been uploaded to PyPI as a release (version 2.0.0 was only ever uploaded as an alpha).
