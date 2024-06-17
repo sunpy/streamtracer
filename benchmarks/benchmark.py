@@ -18,7 +18,7 @@ field = np.random.rand(*(180, 360, 50, 3))
 grid_spacing = [1, 2, 3]
 grid = VectorGrid(field, grid_spacing)
 
-seedlist = 2 ** np.arange(12)
+seedlist = 2 ** np.arange(17)
 times = []
 for nseeds in seedlist:
     dts = []
