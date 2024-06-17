@@ -81,7 +81,7 @@ With this release, streamtracer is now faster than the old FORTRAN version expec
 -----
 
 streamtracer now includes wheels for Python 3.12, and these have now been uploaded to PyPI as a release.
-The headline feature is that the rust code is now parallelized and while still not as fast as the old FORTRAN verison, is near parity. 
+The headline feature is that the rust code is now parallelized and while still not as fast as the old FORTRAN version, is near parity.
 
 2.0.1
 -----
