@@ -23,6 +23,7 @@ It is possible to install streamtracer in one go with:
 or using conda with:
 
 .. code-block:: bash
+
   conda install -c conda-forge streamtracer
 
 There are wheels available for Linux, macOS and Windows.
