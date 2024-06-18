@@ -19,6 +19,11 @@ It is possible to install streamtracer in one go with:
 .. code-block:: bash
 
   pip install streamtracer
+  
+or using conda with:
+
+.. code-block:: bash
+  conda install -c conda-forge streamtracer
 
 There are wheels available for Linux, macOS and Windows.
 If you need to compile from source, you will need to have a Rust compiler installed.
