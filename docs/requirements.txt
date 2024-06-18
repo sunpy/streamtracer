@@ -1,7 +1,0 @@
-jupyter-sphinx
-numpydoc
-pydata-sphinx-theme
-sphinx
-sphinx-automodapi
-sphinx_rtd_theme
-streamtracer
