@@ -1,19 +1,20 @@
 2.2.0
 =====
 
-* streamtracer is now faster than the old FORTRAN version expect for -10**3 seeds but every other seed size is faster in Rust now.
+* Improved performance of the Rust streamtracing algorithm, so it is now close to or faster than the old FORTRAN version.
 
 2.1.0
 =====
 
-* streamtracer now includes wheels for Python 3.12, and these have now been uploaded to PyPI as a release.
+* Wheels for Python 3.12 are now built and published on PyPI.
 * Rust code is now parallelized and while still not as fast as the old FORTRAN version, is near parity.
 
 2.0.1
 =====
 
 * streamtracer now includes wheels for Python 3.11, and these have now been uploaded to PyPI as a release (version 2.0.0 was only ever uploaded as an alpha).
-  streamtracer still does not work in parallel, if you require parallel stream tracing then for now either:
+* streamtracer is now available on conda-forge.
+*  streamtracer still does not work in parallel, if you require parallel stream tracing then for now either:
 
     * Downgrade to version 1.2.0
     * Manually run several instances of the streamtracer in parallel
