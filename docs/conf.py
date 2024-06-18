@@ -29,6 +29,7 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx.ext.napoleon",
     "jupyter_sphinx",
+    "sphinx_changelog",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
