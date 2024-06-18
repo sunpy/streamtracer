@@ -51,11 +51,11 @@ tests = [
   "pytest-xdist",
 ]
 docs = [
-  "jupyter-sphinx",
-  "sphinx-automodapi",
-  "sphinx-changelog",
   "sphinx",
+  "sphinx-automodapi",
+  "jupyter-sphinx",
   "sunpy-sphinx-theme",
+  "sphinx-changelog",
 ]
 
 [tool.cibuildwheel]
