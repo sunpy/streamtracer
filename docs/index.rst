@@ -19,7 +19,7 @@ It is possible to install streamtracer in one go with:
 .. code-block:: bash
 
   pip install streamtracer
-  
+
 or using conda with:
 
 .. code-block:: bash
