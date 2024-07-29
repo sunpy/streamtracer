@@ -12,8 +12,8 @@ module-name = "streamtracer._streamtracer_rust"
 name = "streamtracer"
 description = "Python library to calculate streamlines"
 readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
 requires-python = ">=3.10"
-license = {file = "LICENSE"}
 authors = [
   {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
   {name = "David Stansby"},
