@@ -61,7 +61,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify, rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: sunpy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
       coverage: codecov
