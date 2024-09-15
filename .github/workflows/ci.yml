@@ -71,6 +71,8 @@ jobs:
         - macos: py310
         - linux: py312
         - linux: py310-oldestdeps
+        - linux: py312
+          runs-on: arm
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
