@@ -53,6 +53,13 @@ tests = [
 docs = [
   "sphinx",
   "sphinx-automodapi",
+<<<<<<<
+=======
+  "packaging",
+]
+[project.urls]
+repository = "https://github.com/sunpy/streamtracer"
+>>>>>>>
   "jupyter-sphinx",
   "sunpy-sphinx-theme",
   "sphinx-changelog",
