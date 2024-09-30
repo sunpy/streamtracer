@@ -20,7 +20,7 @@ if _version.is_postrelease:
     version = release = _version.base_version
 # Avoid long githashes in rendered Sphinx docs
 elif _version.is_devrelease:
-    version = release = f'{_version.base_version}.dev{_version.dev}'
+    version = release = f"{_version.base_version}.dev{_version.dev}"
 is_development = _version.is_devrelease
 
 project = "streamtracer"
