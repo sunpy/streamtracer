@@ -4,10 +4,6 @@ requires = [
 ]
 build-backend = "maturin"
 
-[tool.maturin]
-python-source = "python"
-module-name = "streamtracer._streamtracer_rust"
-
 [project]
 name = "streamtracer"
 description = "Python library to calculate streamlines"
@@ -38,11 +34,6 @@ dependencies = [
   "packaging>=21.3",
 ]
 
-[project.urls]
-Homepage = "https://docs.sunpy.org/projects/streamtracer"
-Documentation = "https://docs.sunpy.org/projects/streamtracer"
-Repository = "https://github.com/sunpy/streamtracer"
-
 [project.optional-dependencies]
 tests = [
   "pytest",
@@ -53,10 +44,20 @@ tests = [
 docs = [
   "sphinx",
   "sphinx-automodapi",
+  "packaging",
   "jupyter-sphinx",
   "sunpy-sphinx-theme",
   "sphinx-changelog",
 ]
+
+[project.urls]
+Homepage = "https://docs.sunpy.org/projects/streamtracer"
+Documentation = "https://docs.sunpy.org/projects/streamtracer"
+Repository = "https://github.com/sunpy/streamtracer"
+
+[tool.maturin]
+python-source = "python"
+module-name = "streamtracer._streamtracer_rust"
 
 [tool.cibuildwheel]
 before-build = "rustup show"
