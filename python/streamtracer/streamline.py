@@ -305,7 +305,7 @@ class StreamTracer:
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
-            self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
+            self.xs = [xi[:ni, :] for xi, ni in zip(self.xs, self.ns)]
 
         elif direction == 0:
             # Calculate forward streamline
