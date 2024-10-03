@@ -103,7 +103,8 @@ class VectorGrid:
                 shape = np.array(val[i]).shape
                 if shape != (self.vectors.shape[i],):
                     raise ValueError(
-                        f"Expected {self.vectors.shape[i]} {dim} " f"coordinates but got {shape}"
+                        f"Expected {self.vectors.shape[i]} {dim} "
+                        f"coordinates but got {shape}"
                     )
         self._coords = val
 
@@ -143,7 +144,9 @@ class VectorGrid:
             if self.grid_spacing is not None:
                 self._origin_coord = np.array([0, 0, 0])
             else:
-                self._origin_coord = np.array([self.xcoords[0], self.ycoords[0], self.zcoords[0]])
+                self._origin_coord = np.array(
+                    [self.xcoords[0], self.ycoords[0], self.zcoords[0]]
+                )
         else:
             self._origin_coord = np.array(val)
 
