@@ -9,3 +9,11 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "Cargo"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      rust:  # group all rust deps into a single PR
+        patterns:
+          - "*"
