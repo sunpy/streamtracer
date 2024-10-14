@@ -36,6 +36,7 @@ jobs:
       - run: cargo test
 
   core:
+    needs: [rust]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
