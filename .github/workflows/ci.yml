@@ -36,13 +36,14 @@ jobs:
       - run: cargo test
 
   core:
+    needs: [rust]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py312
+        - linux: py313
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -68,6 +69,7 @@ jobs:
       envs: |
         - windows: py311
         - macos: py310
+        - linux: py312
         - linux: py310-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -123,18 +125,20 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs streamtracer'
       submodules: false
       targets: |
-        - cp3{10,11,12}-manylinux_x86_64
-        - cp3{10,11,12}-musllinux_x86_64
-        - cp3{10,11,12}-macosx_x86_64
-        - cp3{10,11,12}-macosx_arm64
-        - cp3{10,11,12}-win_amd64
+        - cp3{10,11,12,13}-manylinux_x86_64
+        - cp3{10,11,12,13}-musllinux_x86_64
+        - cp3{10,11,12,13}-macosx_x86_64
+        - cp3{10,11,12,13}-macosx_arm64
+        - cp3{10,11,12,13}-win_amd64
         # Build aarch64 one wheel per job as they be slow
         - cp310-musllinux_aarch64
         - cp311-musllinux_aarch64
         - cp312-musllinux_aarch64
+        - cp313-musllinux_aarch64
         - cp310-manylinux_aarch64
         - cp311-manylinux_aarch64
         - cp312-manylinux_aarch64
+        - cp313-manylinux_aarch64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
