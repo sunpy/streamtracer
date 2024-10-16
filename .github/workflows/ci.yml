@@ -61,7 +61,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify, rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: sunpy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
       coverage: codecov
@@ -71,6 +71,8 @@ jobs:
         - macos: py310
         - linux: py312
         - linux: py310-oldestdeps
+        - linux: py312
+          runs-on: arm
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
