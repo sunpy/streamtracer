@@ -9,29 +9,30 @@ class VectorGrid:
     """
     A grid of vectors.
 
+    .. note::
+
+        If any of *cyclic* are ``True``, then the grid values on each side of the
+        cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
+        ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
+
     Parameters
     ----------
-    vectors : array
+    vectors : array-like
         A (nx, ny, nz, 3) shaped array. The three values at (i, j, k, :)
         specify the (x, y, z) components of the vector at index (i, j, k).
-    grid_spacing : array, optional
+    grid_spacing : array-like, optional
         A (3,) shaped array, that contains the grid spacings in the (x, y, z)
         directions. If not specified ``grid_coords`` must be specified.
-    origin_coord = [float, float, float], optional
+    origin_coord : [`float`, `float`, `float`], optional
         The coordinate of the ``vectors[0, 0, 0, :]`` vector at the corner of
-        the box. Defaults to ``[0, 0, 0]``.
-    cyclic : [bool, bool, bool], optional
+        the box. Defaults to ``[0, 0, 0]``. This is not used if ``grid_coords``
+        is specified.
+    cyclic : [`bool`, `bool`, `bool`], optional
         Whether to have cyclic boundary conditions in each of the (x, y, z)
         directions. Defaults to ``[False, False, False]``.
     grid_coords : list[array], optional
-        A len(3) list storing the {x, y, z} coordinates of the grid. If not
+        A list of length 3 storing the (x, y, z) coordinates of the grid. If not
         specified ``grid_spacing`` must be specified.
-
-    Notes
-    -----
-    If any of *cyclic* are ``True``, then the grid values on each side of the
-    cyclic dimension **must** match, e.g. if ``cyclic=[False, True, False]``,
-    ``vectors[:, 0, :, :]`` must equal ``vectors[:, -1, :, :]``.
     """
 
     def __init__(
@@ -45,94 +46,125 @@ class VectorGrid:
     ):
         if grid_spacing is not None and grid_coords is not None:
             raise ValueError(
-                'Only one of "grid_spacing" and "grid_coords" ' "can be specified."
+                'Only one of "grid_spacing" and "grid_coords" can be specified.'
             )
         if grid_spacing is None and grid_coords is None:
             raise ValueError(
-                'One of "grid_spacing" and "grid_coords" must ' "be specified."
+                'One of "grid_spacing" and "grid_coords" must be specified.'
             )
-
-        if cyclic is None:
-            cyclic = [False, False, False]
-        if origin_coord is None:
-            origin_coord = [0, 0, 0]
-
-        if grid_spacing is not None:
-            grid_spacing = np.array(grid_spacing)
-            self._validate_spacing(grid_spacing)
-        elif grid_coords is not None:
-            self._validate_coords(grid_coords, vectors)
-
-        self._validate_vectors(vectors)
-        self._validate_cyclic(vectors, cyclic)
-
-        self.vectors = vectors
+        if grid_coords is not None and origin_coord is not None:
+            raise ValueError(
+                'Specifying both "grid_coords" and "origin_coord" is ambiguous.'
+            )
         self.grid_spacing = grid_spacing
+        self.vectors = vectors
+        self.cyclic = cyclic
         self.coords = grid_coords
-        self.cyclic = np.array(cyclic, dtype=bool)
+        self.origin_coord = origin_coord
 
-        self._origin_coord = np.array(origin_coord)
+    @property
+    def grid_spacing(self):
+        """
+        Physical spacing between grid points along each axis.
+        """
+        return self._grid_spacing
 
-    @staticmethod
-    def _validate_vectors(vectors):
-        if len(vectors.shape) != 4:
-            raise ValueError("vectors must be a 4D array")
-        if vectors.shape[-1] != 3:
-            raise ValueError(
-                "vectors must have shape (nx, ny, nz, 3), " f"got {vectors.shape}"
-            )
-
-    @staticmethod
-    def _validate_spacing(grid_spacing):
-        if grid_spacing.shape != (3,):
-            raise ValueError(
-                f"grid spacing must have shape (3,), got " f"{grid_spacing.shape}"
-            )
-
-    @staticmethod
-    def _validate_coords(coords, vectors):
-        if len(coords) != 3:
-            raise ValueError("coords must be len(3)")
-        for i, dim in zip(range(3), ["x", "y", "z"]):
-            shape = np.array(coords[i]).shape
-            if shape != (vectors.shape[i],):
+    @grid_spacing.setter
+    def grid_spacing(self, val):
+        if val is not None:
+            val = np.array(val)
+            if val.shape != (3,):
                 raise ValueError(
-                    f"Expected {vectors.shape[i]} {dim} " f"coordinates but got {shape}"
+                    f"grid spacing must have shape (3,), got " f"{val.shape}"
                 )
+        self._grid_spacing = val
 
-    @staticmethod
-    def _validate_cyclic(vectors, cyclic):
-        dims = {0: "x", 1: "y", 2: "z"}
-        s = [slice(None)] * 4
-        for i, c in enumerate(cyclic):
-            if c:
-                slc = s.copy()
-                slc[i] = slice(0, 1)
-                side1 = vectors[tuple(slc)]
-                slc[i] = slice(-1, None)
-                side2 = vectors[tuple(slc)]
+    @property
+    def vectors(self):
+        """
+        Three-dimensional vector field through which the streamlines will be traced.
+        """
+        return self._vectors
 
-                np.testing.assert_equal(
-                    side1,
-                    side2,
-                    err_msg=f"grid values in dimension {dims[i]} (size {vectors.shape[i]}) "
-                    "do not match on each side of the cube",
-                )
+    @vectors.setter
+    def vectors(self, val):
+        if len(val.shape) != 4:
+            raise ValueError("vectors must be a 4D array")
+        if val.shape[-1] != 3:
+            raise ValueError(
+                "vectors must have shape (nx, ny, nz, 3), " f"got {val.shape}"
+            )
+        self._vectors = val
+
+    @property
+    def coords(self):
+        """
+        The physical coordinates along each axis of the grid.
+        """
+        return self._coords
+
+    @coords.setter
+    def coords(self, val):
+        if val is not None:
+            if len(val) != 3:
+                raise ValueError("coords must be len(3)")
+            for i, dim in zip(range(3), ["x", "y", "z"]):
+                shape = np.array(val[i]).shape
+                if shape != (self.vectors.shape[i],):
+                    raise ValueError(
+                        f"Expected {self.vectors.shape[i]} {dim} "
+                        f"coordinates but got {shape}"
+                    )
+        self._coords = val
 
     @property
     def cyclic(self):
+        """
+        Boolean describing whether to have cyclic boundary conditions in each of the (x, y, z)
+        directions.
+        """
         return self._cyclic
 
     @cyclic.setter
     def cyclic(self, val):
+        if val is None:
+            val = [False, False, False]
+        dims = {0: "x", 1: "y", 2: "z"}
+        s = [slice(None)] * 4
+        for i, c in enumerate(val):
+            if c:
+                slc = s.copy()
+                slc[i] = slice(0, 1)
+                side1 = self.vectors[tuple(slc)]
+                slc[i] = slice(-1, None)
+                side2 = self.vectors[tuple(slc)]
+
+                np.testing.assert_equal(
+                    side1,
+                    side2,
+                    err_msg=f"grid values in dimension {dims[i]} (size {self.vectors.shape[i]}) "
+                    "do not match on each side of the cube",
+                )
         self._cyclic = np.array(val, dtype=bool)
 
     @property
     def origin_coord(self):
-        if self.grid_spacing is not None:
-            return self._origin_coord
+        """
+        The physical coordinate corresponding to the index at ``(0,0,0)``.
+        """
+        return self._origin_coord
+
+    @origin_coord.setter
+    def origin_coord(self, val):
+        if val is None:
+            if self.grid_spacing is not None:
+                self._origin_coord = np.array([0, 0, 0])
+            else:
+                self._origin_coord = np.array(
+                    [self.xcoords[0], self.ycoords[0], self.zcoords[0]]
+                )
         else:
-            return np.array([self.xcoords[0], self.ycoords[0], self.zcoords[0]])
+            self._origin_coord = np.array(val)
 
     def _get_coords(self, i):
         if self.grid_spacing is not None:
@@ -146,21 +178,21 @@ class VectorGrid:
     @property
     def xcoords(self):
         """
-        Coordinates of the x grid points.
+        Physical coordinates corresponding to grid points in the x-direction.
         """
         return self._get_coords(0)
 
     @property
     def ycoords(self):
         """
-        Coordinates of the x grid points.
+        Physical coordinates corresponding to grid points in the y-direction.
         """
         return self._get_coords(1)
 
     @property
     def zcoords(self):
         """
-        Coordinates of the x grid points.
+        Physical coordinates corresponding to grid points in the z-direction.
         """
         return self._get_coords(2)
 
@@ -171,26 +203,11 @@ class StreamTracer:
 
     Parameters
     ----------
-    max_steps : int
+    max_steps : `int`
         Number of steps available for each line. The maximum number of points
         on a single stream line is ``max_steps``.
-    step_size : float
+    step_size : `float`
         Step size as a the fraction of cell size.
-    cyclic : [bool, bool, bool], optional
-        Whether to have cyclic boundary conditions in each dimension.
-
-    Attributes
-    ----------
-    xs : array of (n, 3) arrays
-        An array of the streamlines, which in general can have varying
-        numbers of points.
-    ROT : integer array
-        Reason(s) of termination. Shape ``len(xs)`` if traced in one direction,
-        or ``(len(xs), 2)`` if traced in both directions.
-        Can take the following values:
-        - -1: Encountered a NaN
-        - 1: Reached maximum available steps
-        - 2: Out of bounds
     """
 
     def __init__(self, max_steps, step_size):
@@ -199,7 +216,46 @@ class StreamTracer:
         self.xs = None
 
     @property
+    def xs(self):
+        """
+        List of the coordinates along each streamline.
+
+        List of three-dimensional coordinates for each streamline.
+        Each strealine coordinate has a shape ``(n,3)``, where ``n`` can, in principle, vary
+        from one streamline to the next.
+        """
+        return self._xs
+
+    @xs.setter
+    def xs(self, val):
+        self._xs = val
+
+    @property
+    def ROT(self):
+        """
+        Reason(s) of termination.
+
+        Integer array with shape ``len(xs)`` if traced in one direction,
+        or ``(len(xs), 2)`` if traced in both directions.
+        Can take the following values:
+
+        - -1: Encountered a NaN
+        - 1: Reached maximum available steps
+        - 2: Out of bounds
+        """
+        return self._ROT
+
+    @ROT.setter
+    def ROT(self, val):
+        self._ROT = val
+
+    @property
     def max_steps(self):
+        """
+        Number of steps available for each line.
+
+        The maximum number of points on a single stream line is ``max_steps``.
+        """
         return self._max_steps
 
     @max_steps.setter
@@ -212,7 +268,6 @@ class StreamTracer:
 
         self._max_steps = val
 
-    # Calculate the streamline from a vector array
     def trace(self, seeds, grid, direction=0):
         """
         Trace streamlines.
@@ -222,11 +277,11 @@ class StreamTracer:
 
         Parameters
         ----------
-        seeds : (n, 3) array
+        seeds : array-like with shape ``(n, 3)``
             Seed points.
-        grid : VectorGrid
+        grid : `VectorGrid`
             Grid of field vectors.
-        direction : int, optional
+        direction : `int`, optional
             Integration direction. ``0`` for both directions, ``1`` for
             forward, or ``-1`` for backwards.
         """
@@ -268,7 +323,7 @@ class StreamTracer:
 
             self.xs += grid.origin_coord
             # Reduce the size of the arrays
-            self.xs = np.array([xi[:ni, :] for xi, ni in zip(self.xs, self.ns)])
+            self.xs = [xi[:ni, :] for xi, ni in zip(self.xs, self.ns)]
 
         elif direction == 0:
             # Calculate forward streamline
