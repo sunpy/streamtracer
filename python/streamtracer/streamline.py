@@ -172,21 +172,21 @@ class VectorGrid:
     @property
     def xcoords(self):
         """
-        Coordinates of the x grid points.
+        Physical coordinates corresponding to grid points in the x-direction.
         """
         return self._get_coords(0)
 
     @property
     def ycoords(self):
         """
-        Coordinates of the y grid points.
+        Physical coordinates corresponding to grid points in the y-direction.
         """
         return self._get_coords(1)
 
     @property
     def zcoords(self):
         """
-        Coordinates of the z grid points.
+        Physical coordinates corresponding to grid points in the z-direction.
         """
         return self._get_coords(2)
 
@@ -212,8 +212,11 @@ class StreamTracer:
     @property
     def xs(self):
         """
-        An array of the streamlines each with shape ``(n,3)``, which in general can have varying
-        numbers of points.
+        List of the coordinates along each streamline.
+
+        List of three-dimensional coordinates for each streamline.
+        Each strealine coordinate has a shape ``(n,3)``, where ``n`` can, in principle, vary
+        from one streamline to the next.
         """
         return self._xs
 
