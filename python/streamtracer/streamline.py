@@ -17,10 +17,10 @@ class VectorGrid:
 
     Parameters
     ----------
-    vectors : array
+    vectors : array-like
         A (nx, ny, nz, 3) shaped array. The three values at (i, j, k, :)
         specify the (x, y, z) components of the vector at index (i, j, k).
-    grid_spacing : array, optional
+    grid_spacing : array-like, optional
         A (3,) shaped array, that contains the grid spacings in the (x, y, z)
         directions. If not specified ``grid_coords`` must be specified.
     origin_coord : [`float`, `float`, `float`], optional
@@ -64,6 +64,7 @@ class VectorGrid:
 
     @property
     def grid_spacing(self):
+        "Physical spacing between grid points along each axis."
         return self._grid_spacing
 
     @grid_spacing.setter
@@ -78,6 +79,7 @@ class VectorGrid:
 
     @property
     def vectors(self):
+        "Three-dimensional vector field through which the streamlines will be traced."
         return self._vectors
 
     @vectors.setter
@@ -92,6 +94,7 @@ class VectorGrid:
 
     @property
     def coords(self):
+        "The physical coordinates along each axis of the grid."
         return self._coords
 
     @coords.setter
@@ -110,6 +113,10 @@ class VectorGrid:
 
     @property
     def cyclic(self):
+        """
+        Boolean describing whether to have cyclic boundary conditions in each of the (x, y, z)
+        directions.
+        """
         return self._cyclic
 
     @cyclic.setter
@@ -136,6 +143,9 @@ class VectorGrid:
 
     @property
     def origin_coord(self):
+        """
+        The physical coordinate corresponding to the index at ``(0,0,0)``.
+        """
         return self._origin_coord
 
     @origin_coord.setter
@@ -169,14 +179,14 @@ class VectorGrid:
     @property
     def ycoords(self):
         """
-        Coordinates of the x grid points.
+        Coordinates of the y grid points.
         """
         return self._get_coords(1)
 
     @property
     def zcoords(self):
         """
-        Coordinates of the x grid points.
+        Coordinates of the z grid points.
         """
         return self._get_coords(2)
 
@@ -249,7 +259,6 @@ class StreamTracer:
 
         self._max_steps = val
 
-    # Calculate the streamline from a vector array
     def trace(self, seeds, grid, direction=0):
         """
         Trace streamlines.
