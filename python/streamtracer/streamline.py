@@ -64,7 +64,9 @@ class VectorGrid:
 
     @property
     def grid_spacing(self):
-        "Physical spacing between grid points along each axis."
+        """
+        Physical spacing between grid points along each axis.
+        """
         return self._grid_spacing
 
     @grid_spacing.setter
@@ -79,7 +81,9 @@ class VectorGrid:
 
     @property
     def vectors(self):
-        "Three-dimensional vector field through which the streamlines will be traced."
+        """
+        Three-dimensional vector field through which the streamlines will be traced.
+        """
         return self._vectors
 
     @vectors.setter
@@ -94,7 +98,9 @@ class VectorGrid:
 
     @property
     def coords(self):
-        "The physical coordinates along each axis of the grid."
+        """
+        The physical coordinates along each axis of the grid.
+        """
         return self._coords
 
     @coords.setter
