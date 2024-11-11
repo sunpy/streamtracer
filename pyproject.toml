@@ -48,7 +48,6 @@ docs = [
   "sunpy-sphinx-theme",
   "packaging",
   "jupyter-sphinx",
-  "sunpy-sphinx-theme",
   "sphinx-changelog",
 ]
 
