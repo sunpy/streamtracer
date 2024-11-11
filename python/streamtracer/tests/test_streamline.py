@@ -22,9 +22,9 @@ def uniform_x_field():
 @pytest.mark.parametrize(
     ("direction", "ROTs"),
     [
-        [1, np.array([2, 2, 2])],
-        [-1, np.array([2, 2, 2])],
-        [0, np.array([[2, 2], [2, 2], [2, 2]])],
+        (1, np.array([2, 2, 2])),
+        (-1, np.array([2, 2, 2])),
+        (0, np.array([[2, 2], [2, 2], [2, 2]])),
     ],
 )
 def test_rot(tracer, uniform_x_field, direction, ROTs):
