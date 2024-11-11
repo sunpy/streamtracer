@@ -172,8 +172,7 @@ class VectorGrid:
                 self.grid_spacing[i] * np.arange(self.vectors.shape[i])
                 + self.origin_coord[i]
             )
-        else:
-            return self.coords[i]
+        return self.coords[i]
 
     @property
     def xcoords(self):

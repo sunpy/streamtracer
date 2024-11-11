@@ -30,7 +30,6 @@ for nseeds in seedlist:
         dts.append(time.time() - t)
         assert len(tracer.xs) == nseeds
     times += [np.mean(dts)]
-    print(nseeds, times[-1] / nseeds, times[-1])
 
 
 pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv(

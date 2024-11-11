@@ -217,18 +217,18 @@ def test_invalid_max_steps(val, errstr):
 
 
 # Paramatrize to make sure behaviour is same in x,y,z directions
-@pytest.mark.parametrize("dir", [0, 1, 2])
-def test_bounds(dir):
+@pytest.mark.parametrize("dirs", [0, 1, 2])
+def test_bounds(dirs):
     v = np.zeros((3, 3, 3, 3))
     # Make all vectors point along the specified dimension
-    v[:, :, :, dir] = 1
+    v[:, :, :, dirs] = 1
     spacing = [1, 1, 1]
     grid = VectorGrid(v, spacing)
 
     seed = np.array([[0.5, 0.5, 0.5]])
     tracer = StreamTracer(max_steps=10, step_size=1.0)
     tracer.trace(seed, grid)
-    expected = np.roll(np.array([1.5, 0.5, 0.5]), dir)
+    expected = np.roll(np.array([1.5, 0.5, 0.5]), dirs)
     assert (tracer.xs[0][-1, :] == expected).all()
     expected = np.array([0.5, 0.5, 0.5])
     assert (tracer.xs[0][0, :] == expected).all()

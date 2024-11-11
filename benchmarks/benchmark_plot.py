@@ -11,12 +11,11 @@ version_names = {
     "210dev0": "v2.1 (Rust Parallel)",
 }
 
-files = Path(".").glob("v*.csv")
+files = Path().glob("v*.csv")
 
 for file in files:
     label = version_names.get(file.stem[1:], file.stem)
     data = pd.read_csv(file)
-    print(data)
 
     ax.plot(data["nseeds"], data["time"], label=label, marker="o")
 
