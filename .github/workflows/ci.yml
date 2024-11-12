@@ -120,7 +120,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
+    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@publish-runs-on
     with:
       sdist: true
       test_extras: 'tests'
@@ -132,15 +132,8 @@ jobs:
         - cp3{10,11,12,13}-macosx_x86_64
         - cp3{10,11,12,13}-macosx_arm64
         - cp3{10,11,12,13}-win_amd64
-        # Build aarch64 one wheel per job as they be slow
-        - cp310-musllinux_aarch64
-        - cp311-musllinux_aarch64
-        - cp312-musllinux_aarch64
-        - cp313-musllinux_aarch64
-        - cp310-manylinux_aarch64
-        - cp311-manylinux_aarch64
-        - cp312-manylinux_aarch64
-        - cp313-manylinux_aarch64
+        - target: cp3{10,11,12,13}-manylinux_aarch64
+          runs-on: arm
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
