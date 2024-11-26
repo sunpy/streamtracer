@@ -120,7 +120,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@publish-runs-on
+    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       sdist: true
       test_extras: 'tests'
