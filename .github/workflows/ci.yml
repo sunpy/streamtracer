@@ -36,12 +36,8 @@ jobs:
       - run: cargo test
 
   core:
-<<<<<<<
     needs: [rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
-=======
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
->>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -66,11 +62,7 @@ jobs:
   test:
 <<<<<<<
     needs: [core, sdist_verify, rust]
-    uses: sunpy/github-actions-workflows/.github/workflows/tox.yml@main
-=======
-    needs: [core, sdist_verify]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
->>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -129,11 +121,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-<<<<<<<
-    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@main
-=======
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v1
->>>>>>>
+    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@v1
     with:
       sdist: true
       test_extras: 'tests'
