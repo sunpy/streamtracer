@@ -9,7 +9,7 @@ The actual streamline tracing is done at a low level in Rust, with a nice Python
     :maxdepth: 1
 
     streamtracer
-    changelog
+    whatsnew/index
 
 Installing
 ==========

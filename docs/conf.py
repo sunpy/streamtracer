@@ -37,9 +37,11 @@ master_doc = "index"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_automodapi.automodapi",
     "sphinx.ext.napoleon",
     "jupyter_sphinx",
+    "sphinx.ext.mathjax",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
     "sphinx_changelog",
 ]
 

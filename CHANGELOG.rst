@@ -3,7 +3,7 @@
 
 * Add support for Python 3.13 `#176 <https://github.com/sunpy/streamtracer/pull/176>`__
 * Minor docstring formatting fixes, refactor input argument validation, and fix bug when tracing in +/-1 direction `#172 <https://github.com/sunpy/streamtracer/pull/172>`__
-* Buid binaries for aarch64 on native runners `#167 <https://github.com/sunpy/streamtracer/pull/167>`__
+* Build binaries for aarch64 on native runners `#167 <https://github.com/sunpy/streamtracer/pull/167>`__
 
 2.2.0
 =====
