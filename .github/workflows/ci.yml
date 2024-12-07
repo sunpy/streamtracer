@@ -60,7 +60,6 @@ jobs:
       - run: python -m twine check dist/*
 
   test:
-<<<<<<<
     needs: [core, sdist_verify, rust]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
