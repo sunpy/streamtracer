@@ -129,7 +129,8 @@ jobs:
       targets: |
         - cp3{10,11,12,13}-manylinux_x86_64
         - cp3{10,11,12,13}-musllinux_x86_64
-        - cp3{10,11,12,13}-macosx_x86_64
+        - target: cp3{10,11,12,13}-macosx_x86_64
+          runs-on: macos-13
         - cp3{10,11,12,13}-macosx_arm64
         - cp3{10,11,12,13}-win_amd64
         - target: cp3{10,11,12,13}-manylinux_aarch64
