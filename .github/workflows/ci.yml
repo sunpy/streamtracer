@@ -72,7 +72,7 @@ jobs:
         - linux: py312
         - linux: py310-oldestdeps
         - linux: py312
-          runs-on: arm
+          runs-on: ubuntu-24.04-arm
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -133,7 +133,7 @@ jobs:
         - cp3{10,11,12,13}-macosx_arm64
         - cp3{10,11,12,13}-win_amd64
         - target: cp3{10,11,12,13}-manylinux_aarch64
-          runs-on: arm
+          runs-on: ubuntu-24.04-arm
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
