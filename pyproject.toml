@@ -72,7 +72,8 @@ environment = {"PATH" = "$PATH:$HOME/.cargo/bin"}
 before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
 
 [tool.cibuildwheel.macos]
-before-all = "rustup target add aarch64-apple-darwin"
+environment = {"MACOSX_DEPLOYMENT_TARGET" = "10.12"}
+before-all = "rustup target add aarch64-apple-darwin; rustup target add x86_64-apple-darwin"
 
 [tool.setuptools_scm]
 write_to = "streamtracer/version.py"
