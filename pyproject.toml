@@ -76,7 +76,7 @@ environment = {"MACOSX_DEPLOYMENT_TARGET" = "10.12"}
 before-all = "rustup target add aarch64-apple-darwin; rustup target add x86_64-apple-darwin"
 
 [tool.setuptools_scm]
-write_to = "streamtracer/version.py"
+version_file = "streamtracer/version.py"
 
 [tool.gilesbot]
   [tool.gilesbot.pull_requests]
