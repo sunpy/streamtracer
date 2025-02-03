@@ -1,6 +1,12 @@
 [build-system]
 requires = [
+<<<<<<<
     "maturin>=1.0,<2.0",
+=======
+  "setuptools>=62.1",
+  "setuptools_scm[toml]>=8.0.0",
+  "wheel",
+>>>>>>>
 ]
 build-backend = "maturin"
 
@@ -76,7 +82,7 @@ environment = {"MACOSX_DEPLOYMENT_TARGET" = "10.12"}
 before-all = "rustup target add aarch64-apple-darwin; rustup target add x86_64-apple-darwin"
 
 [tool.setuptools_scm]
-write_to = "streamtracer/version.py"
+version_file = "streamtracer/version.py"
 
 [tool.gilesbot]
   [tool.gilesbot.pull_requests]
