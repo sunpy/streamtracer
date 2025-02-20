@@ -44,7 +44,6 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py313
-
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
