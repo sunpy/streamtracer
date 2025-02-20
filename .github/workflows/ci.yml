@@ -21,7 +21,7 @@ on:
     #        │ │ ┌───────── day of the month (1 - 31)
     #        │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
     #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
-    - cron: '0 7 * * 1'  # Every Monday at 07:00 UTC
+    - cron: '0 7 * * 3'  # Every Wed at 07:00 UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -73,6 +73,7 @@ jobs:
         - linux: py310-oldestdeps
         - linux: py312
           runs-on: ubuntu-24.04-arm
+        - linux: py313-devdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -89,26 +90,6 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs
-
-  cron:
-    if: |
-      (
-        github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'schedule'
-      ) || (
-        github.event_name == 'pull_request' &&
-        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
-      )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
-    with:
-      default_python: '3.12'
-      submodules: false
-      coverage: codecov
-      toxdeps: tox-pypi-filter
-      envs: |
-        - linux: py311-devdeps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
@@ -139,7 +120,7 @@ jobs:
 
   notify:
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    needs: [publish, cron]
+    needs: [publish]
     runs-on: ubuntu-latest
     steps:
       - uses: Cadair/matrix-notify-action@main
