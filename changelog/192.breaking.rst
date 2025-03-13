@@ -1,1 +1,0 @@
-The minimum supported version for macos binaries is now Sierra (10.12).

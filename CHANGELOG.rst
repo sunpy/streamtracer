@@ -1,3 +1,12 @@
+2.4.0 (2025-03-13)
+==================
+
+Breaking Changes
+----------------
+
+- The minimum supported version for macos binaries is now Sierra (10.12). (`#192 <https://github.com/sunpy/streamtracer/pull/192>`__)
+
+
 2.3.0
 =====
 
