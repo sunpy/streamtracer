@@ -58,9 +58,9 @@ fn streamtracer(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
         }
 
         return (
-            xs.into_pyarray_bound(py),
-            n_points.into_pyarray_bound(py),
-            termination_reasons.into_pyarray_bound(py),
+            xs.into_pyarray(py),
+            n_points.into_pyarray(py),
+            termination_reasons.into_pyarray(py),
         );
     }
 

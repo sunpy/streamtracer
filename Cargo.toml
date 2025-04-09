@@ -1,7 +1,7 @@
 [package]
 name = "streamtracer"
 # rc versions in rust landhave the format x.y.z-rc.q
-version = "2.4.0"
+version = "2.4.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,8 +10,8 @@ name = "streamtracer"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = {version = "0.22", features = ["extension-module"]}
-numpy = "0.22"  # I think this should follow the pyo3 version, but it can be slow to release
+pyo3 = {version = "0.24.1", features = ["extension-module"]}
+numpy = "0.24"  # I think this should follow the pyo3 version, but it can be slow to release
 num-traits = "0.2"
 num-derive = "0.4"
 rayon = "1.10"

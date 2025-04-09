@@ -1,3 +1,12 @@
+2.4.1 (2025-04-09)
+==================
+
+Breaking Changes
+----------------
+
+- Increased version of pyo3 and numpy to account for "Risk of buffer overflow" exploit (`#201 <https://github.com/sunpy/streamtracer/pull/201>`__)
+
+
 2.4.0 (2025-03-13)
 ==================
 
