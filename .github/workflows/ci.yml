@@ -37,7 +37,7 @@ jobs:
 
   core:
     needs: [rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       submodules: false
       coverage: codecov
@@ -61,15 +61,14 @@ jobs:
 
   test:
     needs: [core, sdist_verify, rust]
-    uses: sunpy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
         - windows: py311
-        - macos: py310
-        - linux: py312
+        - macos: py312
         - linux: py310-oldestdeps
         - linux: py312
           runs-on: ubuntu-24.04-arm
@@ -79,7 +78,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       default_python: '3.12'
       submodules: false
@@ -101,7 +100,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v2
     with:
       sdist: true
       test_extras: 'tests'
