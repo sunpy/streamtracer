@@ -27,11 +27,12 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Physics",
 ]
-version = "2.4.1"
+version = "2.5.0"
 dependencies = [
-  "numpy>=1.23",
+  "numpy>=1.26",
   "packaging>=21.3",
 ]
 
