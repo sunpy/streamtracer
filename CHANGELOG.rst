@@ -1,3 +1,18 @@
+2.5.0 (2025-09-01)
+==================
+
+New Features
+------------
+
+- Bump minimum supported numpy to 1.26, and add support for Python 3.14. (`#211 <https://github.com/sunpy/streamtracer/pull/211>`__)
+
+
+Internal Changes
+----------------
+
+- Bump various rust build dependencies for Python 3.14 support. (`#211 <https://github.com/sunpy/streamtracer/pull/211>`__)
+
+
 2.4.1 (2025-04-09)
 ==================
 
