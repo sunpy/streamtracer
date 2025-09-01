@@ -32,7 +32,7 @@ classifiers = [
 ]
 version = "2.5.0"
 dependencies = [
-  "numpy>=1.23",
+  "numpy>=1.26",
   "packaging>=21.3",
 ]
 
