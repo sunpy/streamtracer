@@ -6,7 +6,7 @@
     "cookiecutter": {
       "package_name": "streamtracer",
       "module_name": "streamtracer",
-      "short_description": "Python wrapped fortran to calculate streamlines",
+      "short_description": "Python library to calculate streamlines",
       "author_name": "The SunPy Developers",
       "author_email": "sunpy@googlegroups.com",
       "project_url": "https://sunpy.org",
