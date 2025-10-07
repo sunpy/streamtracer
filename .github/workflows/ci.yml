@@ -43,7 +43,7 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py314
+        - linux: py313
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -67,13 +67,13 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - windows: py311
+        - linux: py314
+        - windows: py312
         - macos: py312
-        - linux: py310-oldestdeps
-        - linux: py312
-          runs-on: ubuntu-24.04-arm
-        - linux: py313-devdeps
+        - linux: py312-oldestdeps
+        - linux: py314-devdeps
         - linux: py313
+          runs-on: ubuntu-24.04-arm
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -108,12 +108,12 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs streamtracer'
       submodules: false
       targets: |
-        - cp3{10,11,12,13,14}-manylinux_x86_64
-        - cp3{10,11,12,13,14}-musllinux_x86_64
-        - cp3{10,11,12,13,14}-macosx_x86_64
-        - cp3{10,11,12,13,14}-macosx_arm64
-        - cp3{10,11,12,13,14}-win_amd64
-        - target: cp3{10,11,12,13,14}-manylinux_aarch64
+        - cp3{12,13,14}-manylinux_x86_64
+        - cp3{12,13,14}-musllinux_x86_64
+        - cp3{12,13,14}-macosx_x86_64
+        - cp3{12,13,14}-macosx_arm64
+        - cp3{12,13,14}-win_amd64
+        - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
