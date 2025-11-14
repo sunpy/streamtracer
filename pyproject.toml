@@ -9,7 +9,7 @@ name = "streamtracer"
 description = "Python library to calculate streamlines"
 requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = { file = "LICENSE" }
+license-files = ["licenses/LICENSE.rst"]
 authors = [
   {name = "The SunPy Developers", email="sunpy@googlegroups.com"},
   {name = "David Stansby"},
