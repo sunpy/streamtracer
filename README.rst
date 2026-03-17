@@ -3,23 +3,16 @@ streamtracer
 
 Fast streamline tracing in python
 
-<<<<<<<
 |Documentation Status| |Build Status| |codecov|
-=======
+
+Usage of Generative AI
+----------------------
+
 We expect authentic engagement in our community.
 **Do not post the output from Large Language Models or similar generative AI as code, issues or comments on GitHub or any other platform.**
 If you use generative AI tools as an aid in developing code or documentation changes, ensure that you fully understand the proposed changes and can explain why they are the correct approach and an improvement to the current state.
 For more information see our documentation on fair and appropriate `AI usage <https://docs.sunpy.org/en/latest/dev_guide/contents/ai_usage.html>`__.
 
-License
--------
-
-This project is Copyright (c) The SunPy Developers and licensed under
-the terms of the GNU GPL v3+ license. This package is based upon
-the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`__
-which is licensed under the BSD 3-clause licence. See the licenses folder for
-more information.
->>>>>>>
 
 Documentation
 -------------
@@ -31,14 +24,4 @@ For full documentation, including installation instructions, see https://docs.su
 .. |Build Status| image:: https://github.com/sunpy/streamtracer/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/sunpy/streamtracer/actions/workflows/ci.yml
 .. |codecov| image:: https://codecov.io/gh/sunpy/streamtracer/graph/badge.svg?token=4AzS0q7VPY
-<<<<<<<
    :target: https://codecov.io/gh/sunpy/streamtracer
-=======
-the errors and assumptions that seasoned contributors have glossed over.
-
-Note: This disclaimer was originally written by
-`Adrienne Lowe <https://github.com/adriennefriend>`__ for a
-`PyCon talk <https://www.youtube.com/watch?v=6Uj746j9Heo>`__, and was adapted by
-streamtracer based on its use in the README file for the
-`MetPy project <https://github.com/Unidata/MetPy>`__.
->>>>>>>
