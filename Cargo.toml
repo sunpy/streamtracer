@@ -10,12 +10,12 @@ name = "streamtracer"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = {version = "0.25", features = ["extension-module"]}
-numpy = "0.25"  # I think this should follow the pyo3 version, but it can be slow to release
+pyo3 = {version = "0.28", features = ["extension-module"]}
+numpy = "0.28"  # I think this should follow the pyo3 version, but it can be slow to release
 num-traits = "0.2"
 num-derive = "0.4"
 rayon = "1.11"
-ndarray = {version = "0.16", features = ["rayon"]}
+ndarray = {version = "0.17", features = ["rayon"]}
 
 [dev-dependencies]
 float_eq = "1.0.0"
