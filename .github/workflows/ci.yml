@@ -27,17 +27,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: hecrj/setup-rust-action@v2
+      - uses: actions/checkout@v6  # zizmor: ignore[unpinned-uses]
+        with:
+          persist-credentials: false
+      - uses: hecrj/setup-rust-action@v2  # zizmor: ignore[unpinned-uses]
       - run: cargo test
 
   core:
     needs: [rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       submodules: false
       coverage: codecov
@@ -50,8 +54,10 @@ jobs:
   sdist_verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v6  # zizmor: ignore[unpinned-uses]
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6  # zizmor: ignore[unpinned-uses]
         with:
           python-version: '3.13'
       - run: python -m pip install -U --user build
@@ -60,8 +66,8 @@ jobs:
       - run: python -m twine check dist/*
 
   test:
-    needs: [core, sdist_verify, rust]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+    needs: [core, sdist_verify]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       submodules: false
       coverage: codecov
@@ -79,7 +85,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       default_python: '3.13'
       submodules: false
@@ -91,7 +97,7 @@ jobs:
       envs: |
         - linux: build_docs
 
-  publish:
+  build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
     # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
     if: |
@@ -101,12 +107,11 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       sdist: true
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs streamtracer'
-      submodules: false
       targets: |
         - cp3{12,13,14}-manylinux_x86_64
         - cp3{12,13,14}-musllinux_x86_64
@@ -115,20 +120,45 @@ jobs:
         - cp3{12,13,14}-win_amd64
         - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
-    secrets:
-      pypi_token: ${{ secrets.pypi_token }}
+      submodules: false
+      save_artifacts: true
+      upload_to_pypi: false
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Upload to PyPI
+    runs-on: ubuntu-latest
+    needs: [build_dists]
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8  # zizmor: ignore[unpinned-uses]
+        with:
+          merge-multiple: true
+          pattern: dist-*
+          path: dist
+
+      - run: ls -lha dist/
+
+      - name: Run upload
+        uses: pypa/gh-action-pypi-publish@v1.13.0  # zizmor: ignore[unpinned-uses]
 
   notify:
-    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    needs: [publish]
+    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') }}
+    needs: [build_dists]
     runs-on: ubuntu-latest
+    environment:
+      name: matrix
     steps:
-      - uses: Cadair/matrix-notify-action@main
+      - uses: Cadair/matrix-notify-action@main  # zizmor: ignore[unpinned-uses]
         with:
-          matrix_token: ${{ secrets.matrix_access_token }}
+          workflow_description: "CI Workflow in sunpy/streamtracer"
+          matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          homeserver: ${{ secrets.matrix_homeserver }}
+          homeserver: ${{ secrets.MATRIX_HOMESERVER }}
           roomid: '!jfEXWJFdXwYnBWsiqk:openastronomy.org'
-          ignore_pattern: '.*Load.*'
+          ignore_pattern: '.*(Load|report overall).*'
           summarise_success: true
-          workflow_description: 'in sunpy/streamtracer'
