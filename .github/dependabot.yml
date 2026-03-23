@@ -6,7 +6,7 @@ updates:
       interval: "monthly"
     cooldown:
       default-days: 7
-  - package-ecosystem: "Cargo"
+  - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "monthly"
