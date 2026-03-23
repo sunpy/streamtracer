@@ -1,3 +1,12 @@
+v2.6.0 (2026-03-23)
+===================
+
+Internal Changes
+----------------
+
+- Bump rust dependencies. (`#224 <https://github.com/sunpy/streamtracer/pull/224>`__)
+
+
 2.5.0 (2025-09-01)
 ==================
 

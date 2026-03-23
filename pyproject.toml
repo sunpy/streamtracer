@@ -30,7 +30,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Physics",
 ]
-version = "2.5.0"
+version = "2.6.0"
 dependencies = [
   "numpy>=1.26",
   "packaging>=21.3",
