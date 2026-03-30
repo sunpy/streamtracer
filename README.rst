@@ -1,14 +1,7 @@
-<<<<<<<
-streamtracer
-============
-=======
 ``streamtracer``
 ================
 
 Python library to calculate streamlines
->>>>>>>
-
-Fast streamline tracing in python
 
 |Documentation Status| |Build Status| |codecov|
 
