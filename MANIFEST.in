@@ -1,6 +1,4 @@
 # Exclude specific files
-<<<<<<<
-=======
 # All files which are tracked by git and not explicitly excluded here are included by setuptools_scm
 exclude .codecov.yaml
 exclude .coveragerc
@@ -12,7 +10,6 @@ exclude .readthedocs.yaml
 exclude .rtd-environment.yml
 exclude .ruff.toml
 
->>>>>>>
 # Prune folders
 prune .github
 prune build
