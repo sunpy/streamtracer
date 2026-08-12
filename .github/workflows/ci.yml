@@ -79,11 +79,8 @@ jobs:
         - macos: py312
         - linux: py312-oldestdeps
         - linux: py314-devdeps
-<<<<<<<
         - linux: py313
           runs-on: ubuntu-24.04-arm
-=======
->>>>>>>
 
   docs:
     needs: [core]
