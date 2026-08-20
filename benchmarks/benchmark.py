@@ -1,5 +1,5 @@
-import time
 import importlib.metadata
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,9 +32,7 @@ for nseeds in seedlist:
     times += [np.mean(dts)]
 
 
-pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv(
-    f"v{__version__.replace('.', '')}.csv"
-)
+pd.DataFrame({"nseeds": seedlist, "time": times}).to_csv(f"v{__version__.replace('.', '')}.csv")
 
 fig, ax = plt.subplots()
 
