@@ -8,6 +8,9 @@ repos:
         types: [python]
         # Define here once and then reference using YAML anchor
         exclude: &exclude_dirs ^streamtracer/(data|extern)/
+      - id: ruff-format
+        types: [python]
+        exclude: *exclude_dirs
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -49,13 +52,6 @@ repos:
         types: [python]
         exclude: *exclude_dirs
         additional_dependencies: [types-setuptools]
-  # Python code formatting
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
-    hooks:
-      - id: black
-        types: [python]
-        exclude: *exclude_dirs
   # Rust code formatting
   - repo: https://github.com/FeryET/pre-commit-rust
     rev: v1.1.0
@@ -66,19 +62,13 @@ repos:
         args: ["--allow-staged", "--fix", "--", "-A", "clippy::needless_return", "-W", "clippy::implicit_return"]
         types: [rust]
       - id: fmt
-<<<<<<<
         types: [rust]
-=======
-        args: [ "--write-changes" ]
-        types_or: [python, rst]
-        exclude: *exclude_dirs
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: v1.0.2
     hooks:
       - id: sphinx-lint
         types_or: [python, rst]
         exclude: *exclude_dirs
->>>>>>>
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"

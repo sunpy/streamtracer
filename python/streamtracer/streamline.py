@@ -45,17 +45,11 @@ class VectorGrid:
         grid_coords=None,
     ):
         if grid_spacing is not None and grid_coords is not None:
-            raise ValueError(
-                'Only one of "grid_spacing" and "grid_coords" can be specified.'
-            )
+            raise ValueError('Only one of "grid_spacing" and "grid_coords" can be specified.')
         if grid_spacing is None and grid_coords is None:
-            raise ValueError(
-                'One of "grid_spacing" and "grid_coords" must be specified.'
-            )
+            raise ValueError('One of "grid_spacing" and "grid_coords" must be specified.')
         if grid_coords is not None and origin_coord is not None:
-            raise ValueError(
-                'Specifying both "grid_coords" and "origin_coord" is ambiguous.'
-            )
+            raise ValueError('Specifying both "grid_coords" and "origin_coord" is ambiguous.')
         self.grid_spacing = grid_spacing
         self.vectors = vectors
         self.cyclic = cyclic
@@ -74,9 +68,7 @@ class VectorGrid:
         if val is not None:
             val = np.array(val)
             if val.shape != (3,):
-                raise ValueError(
-                    f"grid spacing must have shape (3,), got " f"{val.shape}"
-                )
+                raise ValueError(f"grid spacing must have shape (3,), got {val.shape}")
         self._grid_spacing = val
 
     @property
@@ -91,9 +83,7 @@ class VectorGrid:
         if len(val.shape) != 4:
             raise ValueError("vectors must be a 4D array")
         if val.shape[-1] != 3:
-            raise ValueError(
-                "vectors must have shape (nx, ny, nz, 3), " f"got {val.shape}"
-            )
+            raise ValueError(f"vectors must have shape (nx, ny, nz, 3), got {val.shape}")
         self._vectors = val
 
     @property
@@ -111,10 +101,7 @@ class VectorGrid:
             for i, dim in zip(range(3), ["x", "y", "z"]):
                 shape = np.array(val[i]).shape
                 if shape != (self.vectors.shape[i],):
-                    raise ValueError(
-                        f"Expected {self.vectors.shape[i]} {dim} "
-                        f"coordinates but got {shape}"
-                    )
+                    raise ValueError(f"Expected {self.vectors.shape[i]} {dim} coordinates but got {shape}")
         self._coords = val
 
     @property
@@ -160,18 +147,13 @@ class VectorGrid:
             if self.grid_spacing is not None:
                 self._origin_coord = np.array([0, 0, 0])
             else:
-                self._origin_coord = np.array(
-                    [self.xcoords[0], self.ycoords[0], self.zcoords[0]]
-                )
+                self._origin_coord = np.array([self.xcoords[0], self.ycoords[0], self.zcoords[0]])
         else:
             self._origin_coord = np.array(val)
 
     def _get_coords(self, i):
         if self.grid_spacing is not None:
-            return (
-                self.grid_spacing[i] * np.arange(self.vectors.shape[i])
-                + self.origin_coord[i]
-            )
+            return self.grid_spacing[i] * np.arange(self.vectors.shape[i]) + self.origin_coord[i]
         return self.coords[i]
 
     @property
@@ -263,7 +245,7 @@ class StreamTracer:
             raise ValueError(f"max_steps must be an integer (got {type(val)})")
 
         if not val > 0:
-            raise ValueError("max_steps must be greater than zero " f"(got {val})")
+            raise ValueError(f"max_steps must be greater than zero (got {val})")
 
         self._max_steps = val
 
