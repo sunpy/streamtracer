@@ -66,7 +66,19 @@ repos:
         args: ["--allow-staged", "--fix", "--", "-A", "clippy::needless_return", "-W", "clippy::implicit_return"]
         types: [rust]
       - id: fmt
+<<<<<<<
         types: [rust]
+=======
+        args: [ "--write-changes" ]
+        types_or: [python, rst]
+        exclude: *exclude_dirs
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v1.0.2
+    hooks:
+      - id: sphinx-lint
+        types_or: [python, rst]
+        exclude: *exclude_dirs
+>>>>>>>
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"
