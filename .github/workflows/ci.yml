@@ -107,11 +107,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@3a3dcf3ba6828dac29eba10334948ef38364ed14  # v3.1.0
-=======
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
->>>>>>>
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
     with:
       sdist: true
       test_extras: 'tests'
