@@ -49,7 +49,6 @@ jobs:
       coverage: codecov-oidc
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py315
         - linux: py314
 
   sdist_verify:
