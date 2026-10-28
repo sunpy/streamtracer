@@ -1,3 +1,12 @@
+v2.7.0 (2026-10-28)
+===================
+
+New Features
+------------
+
+- Publish Python 3.15 wheels. (`#251 <https://github.com/sunpy/streamtracer/pull/251>`__)
+
+
 v2.6.0 (2026-03-23)
 ===================
 
